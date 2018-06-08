@@ -270,6 +270,7 @@ if ( ! class_exists( 'LearnPress' ) ) {
 				require_once 'inc/admin/class-lp-admin-notice.php';
 				require_once 'inc/admin/class-lp-admin.php';
 				require_once( 'inc/admin/settings/abstract-settings-page.php' );
+				require_once( 'inc/admin/lp-export-sections-functions.php' );
 			}
 			if ( ! is_admin() ) {
 				require_once 'inc/class-lp-assets.php';
