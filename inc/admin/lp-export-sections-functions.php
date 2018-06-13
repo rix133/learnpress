@@ -102,3 +102,23 @@ function learn_press_fource_export_sections( $return_me, $meta_key, $meta ) {
 	return $return_me;
 }
 add_filter( 'wxr_export_skip_postmeta', 'learn_press_fource_export_sections', 10, 3 );
+
+function learn_press_prepare_import_sections_simple($post, $wp){
+	if( isset($wp->section) && $post['post_type'] === LP_COURSE_CPT ){
+		$post['sections'] = array();
+		foreach ( $wp->section as $section ) {
+			$section_element = array(
+				'section_id' => (int) $section->section_id,
+				'section_name' => (string) $section->section_name,
+				'section_course_id' => (int) $section->section_course_id,
+				'section_order' => (int) $section->section_order,
+				'section_description' => (string) $section->section_description,
+			);
+			$post['sections'][] = $section_element;
+		}
+	}
+
+	return $post;
+}
+//add_action( 'thim_import_import_post', 'learn_press_prepare_import_sections', 10, 1);
+add_filter( 'thim_extra_fields_parser_simple', 'learn_press_prepare_import_sections_simple', 10, 2);
