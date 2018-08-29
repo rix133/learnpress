@@ -159,7 +159,7 @@ function learn_press_get_current_url() {
 	if ( ! $current_url ) {
 		$url = untrailingslashit( $_SERVER['REQUEST_URI'] );
 		if ( ! preg_match( '!^https?!', $url ) ) {
-			$siteurl = trailingslashit( get_site_url() );
+			$siteurl = trailingslashit( get_home_url() /* SITE_URL */ );
 			$segs1   = explode( '/', $siteurl );
 			$segs2   = explode( '/', $url );
 			if ( $removed = array_intersect( $segs1, $segs2 ) ) {
@@ -1611,6 +1611,13 @@ add_filter( 'pre_get_posts', 'learn_press_filter_search', 99 );
  */
 function learn_press_send_json( $data ) {
 	echo '<-- LP_AJAX_START -->';
+	/**
+	 * fixed bug: can't buy course with PayPal 
+	 */
+	@header('HTTP/1.0 200 OK'); 
+	/**
+	 *  end 
+	 **/
 	@header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
 	echo wp_json_encode( $data );
 	echo '<-- LP_AJAX_END -->';
@@ -2167,7 +2174,7 @@ function learn_press_user_profile_link( $user_id = 0, $tab = null ) {
 	);
 	if ( $tab ) {
 		$args['tab'] = $tab;
-	} else {
+	} elseif(learn_press_is_profile()) {
 		$args['tab'] = learn_press_get_current_profile_tab();
 	}
 	$args         = array_map( '_learn_press_urlencode', $args );

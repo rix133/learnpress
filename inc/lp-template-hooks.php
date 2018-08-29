@@ -95,11 +95,11 @@ add_action( 'learn_press_curriculum_section_summary', 'learn_press_curriculum_se
 add_action( 'learn_press_after_section_item_title', 'learn_press_section_item_meta', 5, 3 );
 
 /* order */
-add_action( 'learn_press_checkout_before_order_review', 'learn_press_checkout_user_form', 5 );
-add_action( 'learn_press_checkout_before_order_review', 'learn_press_checkout_user_logged_in', 10 );
+//add_action( 'learn_press_checkout_before_order_review', 'learn_press_checkout_user_form', 5 );
+//add_action( 'learn_press_checkout_before_order_review', 'learn_press_checkout_user_logged_in', 10 );
 
-add_action( 'learn_press_checkout_user_form', 'learn_press_checkout_user_form_login', 5 );
-add_action( 'learn_press_checkout_user_form', 'learn_press_checkout_user_form_register', 10 );
+//add_action( 'learn_press_checkout_user_form', 'learn_press_checkout_user_form_login', 5 );
+//add_action( 'learn_press_checkout_user_form', 'learn_press_checkout_user_form_register', 10 );
 
 add_action( 'learn_press_checkout_order_review', 'learn_press_order_review', 5 );
 add_action( 'learn_press_checkout_order_review', 'learn_press_order_comment', 10 );

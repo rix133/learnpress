@@ -16,6 +16,7 @@ if ( ! class_exists( 'LP_Admin_Ajax' ) ) {
 			$ajaxEvents = array(
 				'create_page'                     => false,
 				'add_quiz_question'               => false,
+			    'add_multi_quiz_question'         => false,
 				'convert_question_type'           => false,
 				'update_quiz_question_state'      => false,
 				'update_editor_hidden'            => false,
@@ -319,7 +320,7 @@ if ( ! class_exists( 'LP_Admin_Ajax' ) ) {
 
 			$args = array(
 				'post_type'      => array( $type ),
-				'posts_per_page' => - 1,
+				'posts_per_page' => 20,
 				'post_status'    => 'publish',
 				'order'          => 'ASC',
 				'orderby'        => 'parent title',
@@ -332,8 +333,12 @@ if ( ! class_exists( 'LP_Admin_Ajax' ) ) {
 			}
 			
 			// allow super admin can search course of other user 
-			if( is_super_admin() && $context == 'course-items' && $type=='lp_course' ) {
-			    unset( $args['author'] );
+			if( is_super_admin() && (
+					( $context == 'course-items' && in_array( $type, array( LP_COURSE_CPT, LP_LESSON_CPT, LP_QUIZ_CPT ) ))
+					|| ( $context == 'quiz-items' && $type == LP_QUESTION_CPT )
+				)
+			) {
+				unset( $args['author'] );
 			}
 			
 			$args        = apply_filters( 'learn_press_filter_admin_ajax_modal_search_items_args', $args, $context, $context_id );
@@ -447,7 +452,7 @@ if ( ! class_exists( 'LP_Admin_Ajax' ) ) {
 
 			$args = array(
 				'post_type'      => array( 'lp_question' ),
-				'posts_per_page' => - 1,
+				'posts_per_page' => 20,
 				'post_status'    => 'publish',
 				'order'          => 'ASC',
 				'orderby'        => 'parent title',
@@ -839,6 +844,40 @@ if ( ! class_exists( 'LP_Admin_Ajax' ) ) {
 			}
 			learn_press_send_json( $response );
 			die();
+		}
+		
+		public static function add_multi_quiz_question() {
+		    global $post;
+		    $question_ids = learn_press_get_request( 'question_ids' );
+		    $quiz_id      = learn_press_get_request( 'quiz_id' );
+		    $type         = learn_press_get_request( 'type' );
+		    $user_id      = get_current_user_id();
+		    $response     = array();
+		    $post     = get_post( $quiz_id );
+
+		    if ( $question_ids && $quiz_id ) {
+		        global $wpdb;
+		        $max_order = $wpdb->get_var( $wpdb->prepare( "SELECT max(question_order) FROM {$wpdb->prefix}learnpress_quiz_questions WHERE quiz_id = %d", $quiz_id ) );
+		        ob_start();
+		        foreach ( $question_ids as $question_id ) {
+		            $max_order++;
+                    $wpdb->insert(
+		                $wpdb->prefix . 'learnpress_quiz_questions',
+		                array(
+		                    'quiz_id'        => $quiz_id,
+		                    'question_id'    => $question_id,
+		                    'question_order' => $max_order
+		                ),
+		                array( '%d', '%d', '%d' )
+                    );
+		            $question = LP_Question_Factory::get_question( $question_id );
+		            learn_press_admin_view( 'meta-boxes/quiz/question.php', array( 'question' => $question ) );
+		            $response['ids'][] = $question_id;
+		        }
+		        $response['html'] = ob_get_clean();
+		    }
+		    learn_press_send_json( $response );
+		    die();
 		}
 
 		public static function convert_question_type() {

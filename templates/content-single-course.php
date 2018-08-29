@@ -32,7 +32,7 @@ if ( post_password_required() ) {
 	<?php } else { ?>
 		<?php learn_press_get_template( 'single-course/content-landing.php' ); ?>
 	<?php } ?>
-
+	
 </div>
 
 <?php do_action( 'learn_press_after_single_course_summary' ); ?>

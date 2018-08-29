@@ -157,11 +157,53 @@
 			addItemsToSection       : function (e, $view, $items) {
 				var that = this,
 					selected = $items;
+				var items = [];
 				selected.each(function () {
 					var $li = $(this);//.closest('li').addClass('selected'),
 					args = $li.dataToJSON();
-					that.addQuestion(args);
-					$li.remove();
+					items.push( args );
+					//that.addQuestion(args);
+//					$li.remove();
+				});
+				//∂console.log( items );
+//				LP.blockContent();
+				that.addQuestions(items);
+			},
+			addQuestions: function (items ) {
+				var that = this;
+				if( !items || !items.length ) {
+					return;
+				}
+				var question_ids = [];
+				$.each( items, function( index, element ) {
+					question_ids.push( element.id );
+				});
+				if(!question_ids || !question_ids.length){
+					return;
+				}
+				args = {'question_ids': question_ids};
+				var that = this,
+					post_data = $.extend({
+						action : 'learnpress_add_multi_quiz_question',
+						quiz_id: $('#post_ID').val()
+					}, args);
+				post_data = LP.Hook.applyFilters('LP.add_multi_question_post_data', post_data);
+				this.$( '#learn-press-modal-search-items .lp-list-items li input[type="checkbox"]').attr('disabled','disabled');
+				$.ajax({
+					url     : LP_Settings.ajax,
+					dataType: 'html',
+					type    : 'post',
+					data    : post_data,
+					success : function (response) {
+						response = LP.parseJSON(response);
+						var $newQuestion = $(response.html);
+						$('#learn-press-list-questions').append( $newQuestion );
+						$.each(response.ids, function(index, question_id){
+							that.$( '#learn-press-modal-search-items .lp-list-items li[data-id="' + question_id + '"]' ).remove();
+						});
+						that.$( '#learn-press-modal-search-items .lp-list-items li input[type="checkbox"]').removeAttr('disabled');
+						LP.Hook.doAction('learn_press_add_multi_quiz_question', response.ids, response.ids );
+					}
 				});
 			},
 			addQuestion             : function (args) {
@@ -236,7 +278,11 @@
 						args = $li.dataToJSON();
 					/*$item = that.createItem( args, $section );
 					 $item.removeClass('lp-item-empty');*/
-					that.addQuestion({id: $(this).val()});
+					alert( $li );
+					console.log( $li );
+					console.log( args );
+					console.log( '-----------' );
+					//that.addQuestion({id: $(this).val()});
 				});
 				$form.remove();
 				LP.MessageBox.hide();

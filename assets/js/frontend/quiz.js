@@ -5,31 +5,33 @@
  * @package LearnPress/JS
  * @version 1.1
  */
-;(function ($) {
+;
+(function ($) {
 
     var Quiz = function (args) {
-        this.model = new Quiz.Model(args);
-        this.view = new Quiz.View({
-            model: this.model
-        });
-        this.destroy = function () {
-            this.model.questions.forEach(function (m) {
-                try {
-                    m instanceof Model_Question ? (
-                        // prevent trigger 'sync' action
-                        m.set('id', null),
-                            m.destroy()
-                    ) : false;
-                } catch (ex) {
-                    console.log(ex);
-                }
+            this.model = new Quiz.Model(args);
+            this.view = new Quiz.View({
+                model: this.model
             });
-            this.model.set('id', null);
-            this.model.destroy();
-            this.view.destroy();
-            this.view.undelegateEvents();
-        };
-    }, Model_Question, List_Questions, windowTarget = parent.window || window;
+            this.destroy = function () {
+                this.model.questions.forEach(function (m) {
+                    try {
+                        m instanceof Model_Question ? (
+                            // prevent trigger 'sync' action
+                            m.set('id', null),
+                            m.destroy()
+                        ) : false;
+                    } catch (ex) {
+                        console.log(ex);
+                    }
+                });
+                this.model.set('id', null);
+                this.model.destroy();
+                this.view.destroy();
+                this.view.undelegateEvents();
+            };
+        },
+        Model_Question, List_Questions, windowTarget = parent.window || window;
 
     Quiz.Model_Question = Model_Question = Backbone.Model.extend({
         defaults: {
@@ -43,8 +45,7 @@
         urlRoot: function () {
             return 'abc';
         },
-        initialize: function () {
-        },
+        initialize: function () {},
         element: function () {
             return $(this.get('content'));
         },
@@ -99,7 +100,10 @@
                     if ($content) {
                         $content.find('.learn-press-question-options').replaceWith($(response).filter('.learn-press-question-options'));
                     }
-                    that.set({checked: 'yes', response: $content});
+                    that.set({
+                        checked: 'yes',
+                        response: $content
+                    });
                     $.isFunction(args.complete) && args.complete.call(that, response);
                 }
             });
@@ -174,8 +178,7 @@
                     }
                     try {
                         this.view.updateUrl();
-                    } catch (e) {
-                    }
+                    } catch (e) {}
                 }
             }
         }
@@ -194,7 +197,9 @@
             this.set('remainingTime', args.totalTime - args.userTime);
             LP.Hook.addFilter('learn_press_finish_quiz_data', this.getQuizData);
 
-            this.prepareQuestion({delayTime: this.delayTime})
+            this.prepareQuestion({
+                delayTime: this.delayTime
+            })
         },
         _initQuestions: function () {
             this.questions = new List_Questions();
@@ -206,9 +211,18 @@
             }
         },
         _secondsToDHMS: function (t) {
-            var d = Math.floor(t / (24 * 3600)), t = t - d * 24 * 3600, h = Math.floor(t / 3600), t = t - h * 3600,
-                m = Math.floor(t / 60), s = Math.floor(t - m * 60);
-            return {d: d, h: h, m: m, s: s}
+            var d = Math.floor(t / (24 * 3600)),
+                t = t - d * 24 * 3600,
+                h = Math.floor(t / 3600),
+                t = t - h * 3600,
+                m = Math.floor(t / 60),
+                s = Math.floor(t - m * 60);
+            return {
+                d: d,
+                h: h,
+                m: m,
+                s: s
+            }
         },
         getRemainingTime: function (format) {
             var t = this.get('remainingTime');
@@ -294,7 +308,9 @@
             }, args);
         },
         select: function (id, callback, args) {
-            var question = this.questions.findWhere({id: parseInt(id)}),
+            var question = this.questions.findWhere({
+                    id: parseInt(id)
+                }),
                 that = this,
                 loadedCallback = function () {
                     $.isFunction(callback) && callback(question, that);
@@ -315,7 +331,7 @@
                     url: question.get('url'),
                     data: $.extend({
                         id: question.get('id'),
-                        'lp-ajax': 'fetch-question',
+                        'lp-action': 'fetch-question',
                         'lp-update-current-question': true
                     }, args || {}),
                     dataType: 'html'
@@ -326,11 +342,15 @@
                     data: $.extend({
                         id: question.get('id'),
                         data: $('form[name="quiz-question-content"]').serialize(),
-                        'lp-ajax': 'fetch-question'
+                        'lp-action': 'fetch-question'
                     }, args || {}),
                     dataType: 'html',
                     success: function (response) {
-                        var $html = $(response).contents().find('.learn-press-content-item-summary');
+                        try {
+                            var $html = $(response).contents().find('.learn-press-content-item-summary');
+                        } catch (err) {
+                            var $html = $(response).find('.learn-press-content-item-summary');
+                        }
                         question.set('response', $html);
                         loadedCallback();
                     }
@@ -341,7 +361,7 @@
             this.prepareQuestion(args)
         },
         prepareQuestion: function (args) {
-
+            return;
             var next = this.findNext(),
                 prev = this.findPrev();
 
@@ -354,7 +374,9 @@
         },
         prepareResponse: function (id, args) {
 
-            var question = this.questions.findWhere({id: parseInt(id)}),
+            var question = this.questions.findWhere({
+                    id: parseInt(id)
+                }),
                 currentQuestion = this.current();
 
             if (question.get('response')) {
@@ -372,7 +394,12 @@
                 }, args || {}),
                 dataType: 'html',
                 success: function (response) {
-                    var $html = $(response).contents().find('.learn-press-content-item-summary');
+                    var $html = '';
+                    try {
+                        var $html = $(response).contents().find('.learn-press-content-item-summary');
+                    } catch (error) {
+                        var $html = $(response).find('.learn-press-content-item-summary');
+                    }
                     question.set('response', $html);
                 }
             });
@@ -386,17 +413,23 @@
         },
         isLast: function (question_id) {
             question_id = question_id || this.getCurrent('id');
-            var q = this.questions.findWhere({id: parseInt(question_id)});
+            var q = this.questions.findWhere({
+                id: parseInt(question_id)
+            });
             return q ? q.get('index') == this.questions.length - 1 : false;
         },
         isFirst: function (question_id) {
             question_id = question_id || this.getCurrent('id');
-            var q = this.questions.findWhere({id: parseInt(question_id)});
+            var q = this.questions.findWhere({
+                id: parseInt(question_id)
+            });
             return q ? q.get('index') == 0 : false;
         },
         findNext: function (question_id) {
             question_id = question_id || this.getCurrent('id');
-            var q = this.questions.findWhere({id: parseInt(question_id)}),
+            var q = this.questions.findWhere({
+                    id: parseInt(question_id)
+                }),
                 next = false;
             if (q) {
                 var index = q.get('index');
@@ -406,7 +439,9 @@
         },
         findPrev: function (question_id) {
             question_id = question_id || this.getCurrent('id');
-            var q = this.questions.findWhere({id: parseInt(question_id)}),
+            var q = this.questions.findWhere({
+                    id: parseInt(question_id)
+                }),
                 prev = false;
             if (q) {
                 var index = q.get('index');
@@ -423,7 +458,9 @@
             return r;
         },
         current: function (create) {
-            var current = this.questions.findWhere({current: 'yes'});
+            var current = this.questions.findWhere({
+                current: 'yes'
+            });
             if (!current && create) {
                 current = new Model_Question();
             }
@@ -462,7 +499,9 @@
         getQuestion: function (thing) {
             var question = false;
             if ($.isNumeric(thing)) {
-                question = this.questions.findWhere({id: parseInt(thing)});
+                question = this.questions.findWhere({
+                    id: parseInt(thing)
+                });
             } else if ($.isPlainObject(thing)) {
                 question = this.questions.findWhere(thing);
             } else if ($.type(thing) == 'undefined' || $.type(thing) == null) {
@@ -564,13 +603,18 @@
             e.preventDefault();
             var delayTime = this.delayTime;
             this._beforeFetchQuestion();
-            this.model.prev(this._loadQuestionCompleted, {delayTime: delayTime});
+            this.model.prev(this._loadQuestionCompleted, {
+                delayTime: delayTime
+            });
         },
         _nextQuestion: function (e) {
             e.preventDefault();
             var delayTime = this.delayTime;
             this._beforeFetchQuestion();
-            this.model.next(this._loadQuestionCompleted, {delayTime: delayTime});
+
+            this.model.next(this._loadQuestionCompleted, {
+                delayTime: delayTime
+            });
 
         },
         _selectQuestion: function (e) {
@@ -582,10 +626,36 @@
                     return;
                 }
                 this._beforeFetchQuestion();
-                this.model.select(id, this._loadQuestionCompleted, {delayTime: delayTime});
+                this.model.select(id, this._loadQuestionCompleted, {
+                    delayTime: delayTime
+                });
             }
         },
         _beforeFetchQuestion: function () {
+            var $button = $('button.button-finish-quiz');
+            var btdata = $button.data();
+            console.log(btdata.id);
+            var data = {
+                quiz_id:btdata.id,
+                answers:''
+            };
+            // var url = this.getCurrent('url');
+            // console.log(data);
+
+            answers = this.model.getQuizData({});
+            data.answers = answers;
+            // console.log(this.model.get('url'));
+            LP.ajax({
+                url: this.model.get('url'),
+                action: 'submit-quiz-data',
+                data: data,
+                dataType: 'json',
+                success: function (response) {
+                    ///response = LP.parseJSON(response);
+                    console.log(response);
+                }
+            });
+
             windowTarget.LP.blockContent();
             this.pause();
             this.incrDelay(true);
@@ -644,7 +714,7 @@
                 this.$('.button-next-question').toggleClass('hide-if-js', this.model.isLast());
                 var current = this.model.current();
                 if (current) {
-                    this.$('.button-check-answer').toggleClass('hide-if-js', current.get('hasCheckAnswer') !== 'yes');
+                    this.$('.button-check-answer').toggleClass('hide-if-js', current.get('hasCheckAnswer') !== 'yes' && current.get('checked') !== false);
                     this.$('.button-hint').toggleClass('hide-if-js', current.get('hasHint') !== 'yes');
                 }
             }
@@ -681,12 +751,13 @@
             }
             strTime.push(this._addLeadingZero(remainingTime.m));
             strTime.push(this._addLeadingZero(remainingTime.s));
-            var t = parseInt(this.model.get('remainingTime') / this.model.get('totalTime') * 100);// * 360;
+            var t = parseInt(this.model.get('remainingTime') / this.model.get('totalTime') * 100); // * 360;
             this.$('.quiz-countdown').attr('data-value', t).attr('data-' + this.model.get('id'), 100).toggleClass('warning-time-over', t < 10).find('.countdown').html(strTime.join(':'));
         },
         itemUrl: function (url, item) {
             if (item.get('id') == this.model.get('id')) {
-                var questionName = this.model.getCurrent('name'), reg;
+                var questionName = this.model.getCurrent('name'),
+                    reg;
                 if (questionName && this.model.get('status') !== 'completed') {
                     reg = new RegExp('!' + questionName + '/?$!', '');
                     if (!url.match(reg)) {
@@ -706,7 +777,6 @@
         _submit: function (args) {
             var data = {};
             data = this.model.getQuizData(data);
-
             args = $.extend({
                 security: '',
                 action: ''
@@ -765,9 +835,13 @@
             var that = this,
                 $button = $(e.target);
             e.preventDefault();
+            // console.log($button.data());
+            // return;
             if (typeof e.originalEvent === 'undefined') {
                 windowTarget.LP.Hook.doAction('learn_press_before_finish_quiz', this);
-                that._submit($.extend($button.data(), {auto_finish: 'yes'}));
+                that._submit($.extend($button.data(), {
+                    auto_finish: 'yes'
+                }));
             } else {
                 this._confirm('confirm_finish_quiz', function () {
                     windowTarget.LP.Hook.doAction('learn_press_before_finish_quiz', this);
@@ -816,8 +890,7 @@
             _.forEach(args, function (v, k) {
                 if (($.inArray(k, ['content', 'current', 'title', 'url']) == -1) && !$.isFunction(v)) {
                     data[k] = v;
-                }
-                ;
+                };
             });
             LP.ajax({
                 url: this.get('url'),
@@ -838,7 +911,8 @@
                 quiz_id: this.model.get('id'),
                 security: null
             }, args || {});
-            var data = this._validateObject(args), that = this;
+            var data = this._validateObject(args),
+                that = this;
             LP.ajax({
                 url: this.model.get('url'),
                 action: 'start-quiz',
@@ -855,10 +929,13 @@
                 quiz_id: this.model.get('id'),
                 security: null
             }, args || {});
-            var data = this._validateObject(args), that = this;
+            console.log(args);
+            var data = this._validateObject(args),
+                that = this;
             data = LP.Hook.applyFilters('learn_press_finish_quiz_data', data);
-            var beforeSend = args.beforeSend || function () {
-                };
+            var beforeSend = args.beforeSend || function () {};
+            console.log(data);
+            return;
             LP.ajax({
                 url: this.model.get('url'),
                 action: 'finish-quiz',
@@ -877,7 +954,8 @@
                 quiz_id: this.model.get('id'),
                 security: null
             }, args || {});
-            var data = this._validateObject(args), that = this;
+            var data = this._validateObject(args),
+                that = this;
             LP.ajax({
                 url: this.model.get('url'),
                 action: 'retake-quiz',
@@ -921,7 +999,9 @@
     window.LP_Quiz = Quiz;
     $(document).ready(function () {
         if (typeof LP_Quiz_Params != 'undefined') {
-            window.$LP_Quiz = new LP_Quiz($.extend({course: LP.$LP_Course}, LP_Quiz_Params));
+            window.$LP_Quiz = new LP_Quiz($.extend({
+                course: LP.$LP_Course
+            }, LP_Quiz_Params));
         }
         windowTarget.LP.unblockContent();
     });

@@ -477,41 +477,41 @@ if ( ! function_exists( 'learn_press_order_comment' ) ) {
 	}
 }
 
-if ( ! function_exists( 'learn_press_checkout_user_form' ) ) {
-	/**
-	 * Output login/register form before order review if user is not logged in
-	 */
-	function learn_press_checkout_user_form() {
-		learn_press_get_template( 'checkout/user-form.php' );
-	}
-}
-
-if ( ! function_exists( 'learn_press_checkout_user_form_login' ) ) {
-	/**
-	 * Output login form before order review if user is not logged in
-	 */
-	function learn_press_checkout_user_form_login() {
-		learn_press_get_template( 'checkout/form-login.php' );
-	}
-}
-
-if ( ! function_exists( 'learn_press_checkout_user_form_register' ) ) {
-	/**
-	 * Output register form before order review if user is not logged in
-	 */
-	function learn_press_checkout_user_form_register() {
-		learn_press_get_template( 'checkout/form-register.php' );
-	}
-}
-
-if ( ! function_exists( 'learn_press_checkout_user_logged_in' ) ) {
-	/**
-	 * Output message before order review if user is logged in
-	 */
-	function learn_press_checkout_user_logged_in() {
-		learn_press_get_template( 'checkout/form-logged-in.php' );
-	}
-}
+//if ( ! function_exists( 'learn_press_checkout_user_form' ) ) {
+//	/**
+//	 * Output login/register form before order review if user is not logged in
+//	 */
+//	function learn_press_checkout_user_form() {
+//		learn_press_get_template( 'checkout/user-form.php' );
+//	}
+//}
+//
+//if ( ! function_exists( 'learn_press_checkout_user_form_login' ) ) {
+//	/**
+//	 * Output login form before order review if user is not logged in
+//	 */
+//	function learn_press_checkout_user_form_login() {
+//		learn_press_get_template( 'checkout/form-login.php' );
+//	}
+//}
+//
+//if ( ! function_exists( 'learn_press_checkout_user_form_register' ) ) {
+//	/**
+//	 * Output register form before order review if user is not logged in
+//	 */
+//	function learn_press_checkout_user_form_register() {
+//		learn_press_get_template( 'checkout/form-register.php' );
+//	}
+//}
+//
+//if ( ! function_exists( 'learn_press_checkout_user_logged_in' ) ) {
+//	/**
+//	 * Output message before order review if user is logged in
+//	 */
+//	function learn_press_checkout_user_logged_in() {
+//		learn_press_get_template( 'checkout/form-logged-in.php' );
+//	}
+//}
 
 if ( ! function_exists( 'learn_press_enroll_script' ) ) {
 	/**

@@ -25,5 +25,4 @@ if ( !$item ) {
 		<?php learn_press_display_message( __( 'This lesson has no content', 'learnpress' ) ); ?>
 
 	<?php endif; ?>
-
 </div>

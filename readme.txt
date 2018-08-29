@@ -3,8 +3,8 @@ Contributors: thimpress, tunnhn, phonglq.foobla, thongta, kendy73, leehld
 Donate link:  
 Tags: WordPress LMS, LMS, eLearning, e-Learning, Learning Management System, LMS WordPress, Course, Courses, Quiz, Quizzes, Training, Guru, Sell Courses  
 Requires at least: 3.8
-Tested up to: 4.8
-Stable tag: 2.1.9.1
+Tested up to: 4.9.4
+Stable tag: 2.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,13 +14,15 @@ A WordPress LMS Plugin to create WordPress Learning Management System. Turn your
 
 **<a href="http://thimpress.com/learnpress" target="_blank">WordPress LMS Plugin</a>** - LearnPress is a comprehensive *WordPress LMS Plugin* for WordPress, just like WordPress Moodle or Moodle for WordPress if you know what Moodle is. This is one of the best WordPress LMS Plugins can be used to easily create & sell courses online. Each course curriculum can be made with lessons & quizzes which can be managed with easy-to-use user interface, we really made it for lazy people.
 
+<a href="https://demo-learnpress.thimpress.com/" target="_blank">Live Demo</a> | <a href="https://thimpress.com/wordpress/themes/learnpress-premium-theme/" target="_blank">LearnPress Themes</a>
+
 LearnPress is free and always be free, but it has premium high quality WordPress Plugin which will probably help you make money from your **WordPress based LMS**, try and see how it is. LearnPress WordPress Online Course plugin is lightweight but super powerful with lots of add-ons to empower its core system.
 
-> **10 Days Left - Limited Time Offer**
+> **New Year Sale - 10 Days Left - Limited Time Offer**
 
-> [Click here](http://eepurl.com/cbKSQX) to get a coupon for 25% Off all Learnpress Add-ons
+> [Click here](https://goo.gl/JzwYkj) to get a coupon for 20% Off all Learnpress Add-ons
 
-> Or you can buy [Education WP Theme](http://themeforest.net/item/education-wordpress-theme-education-wp/14058034?utm_source=wporg&utm_medium=learnpressDC&ref=thimpress&utm_campaign=learnpress) for only $64 and get all of theme.
+> Or you can buy [Education WP Theme](http://themeforest.net/item/education-wordpress-theme-education-wp/14058034?utm_source=wporg&utm_medium=learnpressDC&ref=thimpress&utm_campaign=learnpress) for only $69 and get all of them.
 
 > **HOT!!** [WordPress theme for Coaches, Trainers, Teachers - Coaching WP](https://themeforest.net/item/speaker-and-life-coach-wordpress-theme-coaching-wp/17097658?utm_source=wporg&utm_medium=learnpressDC&ref=thimpress&utm_campaign=learnpress) is also FOR SALE at only $59, LearnPress included.
 
@@ -83,7 +85,7 @@ We are developing and improving LearnPress day by day and bringing new features 
 
 ###Premium add-ons for LearnPress WordPress LMS Plugin###
 
-- [myCRED add-on for LearnPress](http://thimpress.com/product/mycred-add-on-for-learnpress/) - adding myCRED support for LearnPress WordPress LMS plugin, you can add badges, point system to your eLearning WordPress site using LearnPress + myCRED add-on.
+- [myCRED add-on for LearnPress](http://thimpress.com/product/mycred-add-on-for-learnpress/) - adding myCRED support for LearnPress WordPress LMS plugin, you can add point system to your eLearning WordPress site using LearnPress + myCRED add-on.
 - [Certificates add-on for LearnPress](http://thimpress.com/product/certificates-add-on-for-learnpress/) - adding drag & drop certificates builder as well as selecting designed certificate for each LMS course, your student will get particular certificate when they finished a course.
 - [Co-instructors add-on for LearnPress](http://thimpress.com/product/co-instructors-add-on-for-learnpress/) - multiple instructors support for each LMS course.
 - [Collections add-on for LearnPress](http://thimpress.com/product/collections-add-on-for-learnpress/) - making LMS courses collection by selecting number of courses, this is helpful if you want to combine multiple LMS courses into a collection for a group of skills.
@@ -197,36 +199,92 @@ https://www.transifex.com/projects/p/learnpress/
 
 == Changelog ==
 
+= 2.2.1 =
++ Fixed bug open lesson show nested popup window
++ Fixed bug calculator wrong total raised
++ Fixed external link for free course not working
++ Update view of widget LearnPress status in dashboard page
+
+= 2.2 =
++ Compatible with WordPress 4.9.4
++ Fixed "Finish Course" button not show in can retake course
+
+= 2.1.9.9 =
++ Compatible with WordPress 4.9.3
++ Fixed warnings at the Edit Quiz page
++ Fixed error when upload user avatar in case GD php extensions is not enabled
++ Fixed next and Previous button not work when do a quiz
+
+= 2.1.9.8 =
++ Changed get_home_url() instead of get_site_url()
++ Add limit ajax search items in admin area
++ Fixed: Course process status in user profile not show correct
++ Improve performance 
+
+= 2.1.9.7 =
++ Fixed get Invalid Post Type error when click link in LearnPress Status widget in Dashboard
++ Cannot enroll course again when order is move to trash
++ Fixed date time in quiz history not translated
+
+= 2.1.9.6 =
++ Fixed issue when 2 users do a quiz at the same time
++ Fixed issue with course item permalink when set the Wordpress site URL to another directory
++ Fixed calculate passing course grade wrong
++ Fixed number student enrolled not correct
++ Fixed display wrong duration of lesson in list of lesson in admin.
++ Remove code not compatible with PHP 7
++ Fixed conflict with Yoast SEO, content of lesson not auto add paragraph
+
+= 2.1.9.5 =
++ Fixed minor bug related to purchase course
++ Fixed minor bug related to get user profile link
++ Fixed ordering exists questions added to quiz
+
+= 2.1.9.4 =
++ Compatible with WordPress 4.9
++ Fixed buy this course button in single course
++ Fixed lost course content when update page
++ Fixed enrolled course email
++ Fixed course auto finish before expired
+
+= 2.1.9.3 =
++ Compatible with WordPress 4.8.3
++ Fixed show check answer option in quiz settings
++ Fixed course category page
+
+= 2.1.9.2 =
++ Fixed "Block Lessons Content" option in course settings
+
 = 2.1.9.1 =
 + Update language
 
 = 2.1.9 =
-~ Fixed lesons lost when press preview button in edit course page.
-~ Fixed the "Buy this course" button display after course is "finished"
-~ Fixed Courses and Instructor Tab from Profile page not shows courses
-~ Fixed Profile does not show courses created by himself
-~ Fixed Notify email not send when cousre auto finished
-~ Fixed user can not receive email when course is expired
-~ Fixed issue when ordering the course is free
-~ Fixed first lesson does not load
-~ Fixed course does not show in user profile
-~ Fixed Quiz does not work correctly
-~ Fixed auto enroll option
-~ Fixed issue of quiz countdown with timezone option
++ Fixed lessons lost when press preview button in edit course page.
++ Fixed the "Buy this course" button display after course is "finished"
++ Fixed Courses and Instructor Tab from Profile page not shows courses
++ Fixed Profile does not show courses created by himself
++ Fixed Notify email not send when cousre auto finished
++ Fixed user can not receive email when course is expired
++ Fixed issue when ordering the course is free
++ Fixed first lesson does not load
++ Fixed course does not show in user profile
++ Fixed Quiz does not work correctly
++ Fixed auto enroll option
++ Fixed issue of quiz countdown with timezone option
 
 = 2.1.8 =
-~ Fixed missing template tag
++ Fixed missing template tag
 
 = 2.1.7.3 =
-~ Fixed can not save curriculum with SiteOrigin.
-~ Fixed instructor can select lessons/quizzes of an another user when editing course.
-~ Fixed get request var does not exists while updating course.
-~ Fixed can not load lesson with Yoast Seo enabled.
-~ Fixed become a teacher page with page builder.
-~ Fixed eye icon does not show when opening a lesson.
++ Fixed can not save curriculum with SiteOrigin.
++ Fixed instructor can select lessons/quizzes of an another user when editing course.
++ Fixed get request var does not exists while updating course.
++ Fixed can not load lesson with Yoast Seo enabled.
++ Fixed become a teacher page with page builder.
++ Fixed eye icon does not show when opening a lesson.
 
 = 2.1.7.2 =
-~ Fixed can add a question to multiple quizzes
++ Fixed can add a question to multiple quizzes
 
 = 2.1.7 =
 + Added link to navigate to course in checkout page
@@ -266,7 +324,7 @@ https://www.transifex.com/projects/p/learnpress/
 + Fixed a bug when using template_include filter
 
 = 2.1.5.2 =
-+ Fixed some warning messaages
++ Fixed some warning messages
 + Fixed orders display missing in user profile
 
 = 2.1.5 =
