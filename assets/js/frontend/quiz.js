@@ -634,7 +634,6 @@
         _beforeFetchQuestion: function () {
             var $button = $('button.button-finish-quiz');
             var btdata = $button.data();
-            console.log(btdata.id);
             var data = {
                 quiz_id:btdata.id,
                 answers:''
@@ -652,7 +651,6 @@
                 dataType: 'json',
                 success: function (response) {
                     ///response = LP.parseJSON(response);
-                    console.log(response);
                 }
             });
 
