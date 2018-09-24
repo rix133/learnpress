@@ -19,7 +19,7 @@ if ( ! class_exists( 'LP_Background_Schedule_Items' ) ) {
 		/**
 		 * @var string
 		 */
-		protected $action = 'lp_schedule_items';
+		protected $action = 'schedule_items';
 
 		/**
 		 * @var string
@@ -32,6 +32,13 @@ if ( ! class_exists( 'LP_Background_Schedule_Items' ) ) {
 		 */
 		public function __construct() {
 			parent::__construct();
+
+			if ( !$this->is_queue_empty() ) {
+				return;
+			}
+
+			$this->push_to_queue( array('callback' => __CLASS__.'::') );
+			$this->save()->dispatch();
 		}
 
 		public function test() {
@@ -46,8 +53,6 @@ if ( ! class_exists( 'LP_Background_Schedule_Items' ) ) {
 		protected function task( $data ) {
 			parent::task( $data );
 
-			$x = ! empty( $_REQUEST['xxx'] );
-			if ( $x ) {
 				$this->_get_items();
 				if ( ! $items = get_transient( $this->transient_key ) ) {
 					return false;
@@ -97,11 +102,12 @@ if ( ! class_exists( 'LP_Background_Schedule_Items' ) ) {
 						learn_press_update_user_item_meta( $item_course->get_user_item_id(), 'via', 'schedule' );
 						learn_press_update_user_item_meta( $item_course->get_user_item_id(), 'exceeded', $exceeded );
 					}
-				}
 
 				remove_action( 'shutdown', array( $this, 'dispatch_queue' ) );
 			}
-			LP_Debug::instance()->add( 'Auto completing item', 'auto-complete-items', false, true );
+			LP_Debug::instance()->add( $data, 'auto-complete-items', false, true );
+
+			update_option( sanitize_key( 'task-' . LP()->session->get_customer_id()), microtime() );
 
 			return false;
 		}

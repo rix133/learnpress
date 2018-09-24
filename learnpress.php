@@ -752,3 +752,9 @@ function load_learn_press() {
  * Create new instance of LearnPress and put it to global
  */
 $GLOBALS['LearnPress'] = LP();
+
+if ( ! empty( $_REQUEST['cj'] ) && $_REQUEST['cj'] == 'learn-press' ) {
+    ob_start();
+    print_r($_REQUEST);
+	file_put_contents( dirname( __FILE__ ) . '/crontab1.txt', date( 'd.m.Y h:i:s' ) . "\n" . ob_get_clean() );
+}
