@@ -2,6 +2,8 @@
 /**
  *
  */
+
+return;
 $course      = LP_Global::course();
 $course_item = LP_Global::course_item();
 $context     = $course_item ? 'course-item' : 'course';
@@ -15,7 +17,6 @@ $context     = $course_item ? 'course-item' : 'course';
         opacity: 1;
     }
 </style>
-
 <div :class="['course-curriculum', ready ? 'ready' : '']" id="learn-press-course-curriculum"
      data-context="<?php echo $context; ?>">
     <div class="curriculum-scrollable">
@@ -57,7 +58,6 @@ $context     = $course_item ? 'course-item' : 'course';
 
 <?php
 
-
 ?>
 
 <script>
@@ -73,6 +73,7 @@ $context     = $course_item ? 'course-item' : 'course';
         }
 
         window.LP_Event_Bus = new Vue();
+        console.log('XXXXXXXXXXX')
 
         function xxx() {
             var $request = null;
@@ -271,6 +272,7 @@ $context     = $course_item ? 'course-item' : 'course';
                 $request = window.$request = new LP.Request($courseStore, {courseId: LP_Course_Settings.courseId});
                 window.$vmCourse = new Vue(vueConfig);
                 console.timeEnd('Load curriculum data')
+
             };
 
 

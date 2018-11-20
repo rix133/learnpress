@@ -307,9 +307,7 @@ $context     = $course_item ? 'course-item' : 'course';
                 $request = window.$request = new LP.Request($courseStore, {courseId: LP_Course_Settings.courseId});
                 window.$vmCourse = new Vue(vueConfig);
             };
-
             yyy(LP_Course_Settings)
-
         }
 
         $(document).ready(function () {

@@ -853,7 +853,7 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 					}
 
 					LP_Object_Cache::set( 'course-' . $cid, $course_sections, 'learn-press/course-sections' );
-					LP_Object_Cache::set( $cid, wp_list_pluck( $course_sections, 'section_id' ), 'learn-press/course-sections-ids' );
+					LP_Object_Cache::set( $cid, wp_list_pluck( $course_sections, 'id' ), 'learn-press/course-sections-ids' );
 				}
 			}
 
