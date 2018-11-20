@@ -416,6 +416,7 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 
 		public function get_course_items( $course_id, $section_ids = array() ) {
 			global $wpdb;
+
 			$query = $wpdb->prepare( "
 				SELECT section_items.item_id 
 				FROM {$wpdb->posts} course
