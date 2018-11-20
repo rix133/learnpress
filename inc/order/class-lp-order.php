@@ -151,7 +151,7 @@ if ( ! class_exists( 'LP_Order' ) ) {
 
 				}
 			} elseif ( ! $date instanceof LP_Datetime ) {
-				$date = LP_Datetime::instance( $date );
+				$date = new LP_Datetime( $date );
 			}
 
 			return $date;
