@@ -223,8 +223,6 @@
             var $tab = $(tab),
                 $parent = $tab.closest('.course-nav');
 
-            //getCurriculum();
-
             if ($parent.siblings().length === 0) {
                 return;
             }
@@ -238,7 +236,6 @@
          * @returns {boolean}
          */
         function onSearchInputKeypress(e) {
-
             if (e.type === 'keypress' && e.keyCode === 13) {
                 return false;
             }
@@ -286,7 +283,6 @@
         }
 
         function maybeShowCurriculum(e) {
-            //return;
             var offset = $(this).offset(),
                 offsetX = e.pageX - offset.left,
                 curriculumWidth = getCurriculumWidth();
@@ -579,14 +575,7 @@
                 toggleEventShowCurriculum();
             }
 
-            setTimeout(function () {
-                var $cs = $body.find('.curriculum-sections').parent();
-                $cs.scrollTo($cs.find('.course-item.current'), 100);
-
-                if (window.location.hash) {
-                    $('.content-item-scrollable:last').scrollTo($(window.location.hash));
-                }
-            }, 300);
+            getCurriculum();
 
             $body.css('opacity', 1);
 

@@ -192,7 +192,6 @@ class LP_Assets extends LP_Abstract_Assets {
 				)
 			);
 
-
 		return apply_filters( 'learn-press/frontend-default-scripts', $default_scripts );
 	}
 

@@ -71,8 +71,7 @@ class LP_User_Item_Quiz extends LP_User_Item {
 	 */
 	public function update( $force = false ) {
 		$return = parent::update();
-		$a = learn_press_update_user_item_meta( $this->get_user_item_id(), '_question_answers', $this->_answers );
-
+		learn_press_update_user_item_meta( $this->get_user_item_id(), '_question_answers', $this->_answers );
 		$this->calculate_results();
 
 		return $return;
@@ -142,6 +141,19 @@ class LP_User_Item_Quiz extends LP_User_Item {
 			$this->set_meta( '_current_question', $question_id );
 			$this->update_meta();
 		}
+
+
+//		if ( ! $question || ! $question->is_publish() ) {
+//			if ( $questions = $this->get_quiz()->get_questions() ) {
+//				$question_id = reset( $questions );
+//				$this->set_meta( '_current_question', $question_id );
+//				$this->update_meta();
+//			} else {
+//				$question_id = 0;
+//			}
+//
+//			var_dump($questions);
+//		}
 
 		if ( $question_id ) {
 			if ( $return == 'object' ) {

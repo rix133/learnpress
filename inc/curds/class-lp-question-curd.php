@@ -945,7 +945,6 @@ if ( ! class_exists( 'LP_Question_CURD' ) ) {
 
 
 			if ( is_array( $question_id ) ) {
-				$z = microtime( true );
 
 				if ( $single ) {
 					foreach ( $question_id as $q_id ) {

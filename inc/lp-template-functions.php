@@ -540,6 +540,8 @@ if ( ! function_exists( 'learn_press_course_item_content' ) ) {
 	 * @since 3.0.0
 	 */
 	function learn_press_course_item_content() {
+		global $lp_course, $lp_course_item;
+
 		$item = LP_Global::course_item();
 		$vm   = learn_press_is_vm_hook() ? '_vm/' : '';
 		if ( $item->is_blocked() ) {
@@ -1152,7 +1154,7 @@ if ( ! function_exists( 'learn_press_content_item_script' ) ) {
                 background: #FFF;
                 border-right: 1px solid #DDD;
                 overflow: auto;
-                z-index: 9999;
+                z-index: 99999;
             }
 
             body.course-item-popup.distraction-on #learn-press-course-curriculum {
@@ -1642,8 +1644,8 @@ if ( ! function_exists( 'learn_press_content_single_item' ) ) {
 
 		if ( $course_item = LP_Global::course_item() ) {
 			// remove course comment form on singler item
-			//add_filter( 'comments_open', 'learn_press_course_comments_open', 10, 2 );
-			//learn_press_get_template( 'content-single-item.php' );
+			add_filter( 'comments_open', 'learn_press_course_comments_open', 10, 2 );
+			learn_press_get_template( 'content-single-item.php' );
 		}
 	}
 }
@@ -2199,6 +2201,7 @@ function learn_press_setup_object_data( $post ) {
 			unset( $GLOBALS['course'] );
 		}
 		$object                = learn_press_get_course( $post );
+		$object->prepare();
 		LP()->global['course'] = $GLOBALS['course'] = $GLOBALS['lp_course'] = $object;
 	}
 
@@ -3928,11 +3931,10 @@ function learn_press_filter_can_view_item( $view, $item_id, $course_id, $user_id
 	return $view;
 }
 
-add_filter( 'learn_press_get_template', 'learn_press_filter_block_content_template', 10, 5 );
+//add_filter( 'learn-press/can-view-item', 'learn_press_filter_can_view_item', 10, 4 );
 
 function learn_press_filter_block_content_template( $located, $template_name, $args, $template_path, $default_path ) {
 
-	$can_view_item = '';
 	if ( $template_name == 'global/block-content.php' ) {
 		if ( ! is_user_logged_in() ) {
 			$can_view_item = 'not-logged-in';

@@ -2630,10 +2630,6 @@ if ( ! class_exists( 'LP_Abstract_User' ) ) {
 			return $result;
 		}
 
-		public function complete_item( $item_id, $course_id ) {
-
-		}
-
 		public function get_role() {
 			return $this->is_admin() ? 'admin' : ( $this->is_instructor() ? 'instructor' : 'user' );
 		}

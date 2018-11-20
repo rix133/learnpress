@@ -364,7 +364,9 @@ if ( ! class_exists( 'LP_AJAX' ) ) {
 					throw new Exception( __( 'Error! Invalid lesson or failed security check.', 'learnpress' ), 8000 );
 				}
 
-				$result = $user->complete_lesson( $item_id );
+				//LP_Debug::startTransaction();
+
+				$result = $user->complete_lesson( $item_id, $course_id, true );
 
 				if ( ! is_wp_error( $result ) ) {
 					if ( $next = $course->get_next_item() ) {
@@ -375,6 +377,7 @@ if ( ! class_exists( 'LP_AJAX' ) ) {
 				} else {
 					learn_press_add_message( $result->get_error_message(), 'error' );
 				}
+				//LP_Debug::rollbackTransaction();
 
 				$response = apply_filters( 'learn-press/user-completed-lesson-result', $response, $item_id, $course_id, $user->get_id() );
 			}
@@ -389,6 +392,7 @@ if ( ! class_exists( 'LP_AJAX' ) ) {
 			learn_press_maybe_send_json( $response );
 
 			if ( ! empty( $response['redirect'] ) ) {
+				wp_cache_flush();
 				wp_redirect( $response['redirect'] );
 				exit();
 			}
