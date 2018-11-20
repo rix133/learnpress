@@ -837,10 +837,11 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 			foreach ( $course_id as $cid ) {
 				if ( false === ( $course_sections = LP_Object_Cache::get( 'course-' . $cid, 'learn-press/course-sections' ) ) ) {
 					$query = $wpdb->prepare( "
-						SELECT s.* FROM {$wpdb->posts} p
+						SELECT s.section_id id, s.section_name name, s.section_description description 
+						FROM {$wpdb->posts} p
 						INNER JOIN {$wpdb->learnpress_sections} s ON p.ID = s.section_course_id
 						WHERE p.ID = %d
-						ORDER BY p.ID, `section_order` ASC
+						ORDER BY p.ID, `section_order`, `section_id` ASC
 					", $cid );
 
 					if ( ! $course_sections = $wpdb->get_results( $query ) ) {
