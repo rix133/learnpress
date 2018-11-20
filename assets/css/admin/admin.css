@@ -704,11 +704,10 @@
   z-index: 20; }
 
 .learn-press-advertisement-slider {
-  margin: 0px 20px 0px 180px;
+  margin: 50px 20px 0 0;
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
-  padding-bottom: 50px;
   z-index: 10; }
   .learn-press-advertisement-slider .slider-items:after {
     clear: both;
@@ -720,14 +719,13 @@
     width: 100%;
     margin-right: -100%;
     padding: 20px;
-    visibility: hidden;
     opacity: 0;
     background: #FFF;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    -webkit-transition: visibility 0.5s linear, opacity 0.5s linear;
-    transition: visibility 0.5s linear, opacity 0.5s linear; }
+    -webkit-transition: opacity 0.5s linear;
+    transition: opacity 0.5s linear; }
     .learn-press-advertisement-slider .slide-item .slide-thumbnail {
       float: left;
       width: 35%; }
@@ -745,11 +743,10 @@
       .learn-press-advertisement-slider .slide-item .slide-detail .description-short {
         display: none; }
     .learn-press-advertisement-slider .slide-item.slide-active {
-      visibility: visible;
       opacity: 1; }
   .learn-press-advertisement-slider .slider-controls {
     position: absolute;
-    bottom: 70px;
+    bottom: 20px;
     right: 20px; }
     .learn-press-advertisement-slider .slider-controls .next-item,
     .learn-press-advertisement-slider .slider-controls .prev-item {
@@ -771,9 +768,9 @@
         .learn-press-advertisement-slider .slider-controls .prev-item:hover:before {
           color: #0085ba; }
     .learn-press-advertisement-slider .slider-controls .next-item:before {
-      content: "\f341"; }
-    .learn-press-advertisement-slider .slider-controls .prev-item:before {
       content: "\f345"; }
+    .learn-press-advertisement-slider .slider-controls .prev-item:before {
+      content: "\f341"; }
 
 @media only screen and (max-width: 1200px) {
   .learn-press-advertisement-slider .slide-item .slide-thumbnail {
@@ -1382,10 +1379,10 @@
   margin-right: 10px;
   color: #FF0000; }
 
-.post-type-lp_lesson .column-preview {
+.wp-list-table .column-preview {
   text-align: left;
   float: none; }
-  .post-type-lp_lesson .column-preview input[type="checkbox"] {
+  .wp-list-table .column-preview input[type="checkbox"] {
     border: none;
     width: 30px;
     height: auto;
@@ -1398,20 +1395,20 @@
     -ms-transform: rotate(-180deg);
     -o-transform: rotate(-180deg);
     transform: rotate(-180deg); }
-    .post-type-lp_lesson .column-preview input[type="checkbox"]:before, .post-type-lp_lesson .column-preview input[type="checkbox"]:checked:before {
+    .wp-list-table .column-preview input[type="checkbox"]:before, .wp-list-table .column-preview input[type="checkbox"]:checked:before {
       font: 400 21px/1 fontawesome;
       content: "\f205";
       font-size: 24px;
       width: 30px;
       margin: 0;
       text-align: center; }
-    .post-type-lp_lesson .column-preview input[type="checkbox"]:checked {
+    .wp-list-table .column-preview input[type="checkbox"]:checked {
       -webkit-transform: rotate(0deg);
       -moz-transform: rotate(0deg);
       -ms-transform: rotate(0deg);
       -o-transform: rotate(0deg);
       transform: rotate(0deg); }
-      .post-type-lp_lesson .column-preview input[type="checkbox"]:checked:before {
+      .wp-list-table .column-preview input[type="checkbox"]:checked:before {
         margin-top: -1px; }
 
 .post-type-page .column-lp-page {
@@ -1434,14 +1431,14 @@
     height: 24px;
     line-height: 22px; }
 
-.modal {
+.learn-press-modal {
   position: fixed;
   z-index: 1000000;
   width: 100%;
   height: 100%;
   top: 0;
   display: table; }
-  .modal .modal-overlay {
+  .learn-press-modal .modal-overlay {
     position: fixed;
     z-index: 1000000;
     background: #000;
@@ -1449,12 +1446,12 @@
     width: 100%;
     height: 100%;
     top: 0; }
-  .modal .modal-wrapper {
+  .learn-press-modal .modal-wrapper {
     display: table-cell;
     vertical-align: middle;
     z-index: 1000010;
     position: relative; }
-    .modal .modal-wrapper .modal-container {
+    .learn-press-modal .modal-wrapper .modal-container {
       max-width: 800px;
       width: 90%;
       margin: 0px auto;
@@ -1466,13 +1463,13 @@
       -webkit-box-sizing: border-box;
       -moz-box-sizing: border-box;
       box-sizing: border-box; }
-    .modal .modal-wrapper header {
+    .learn-press-modal .modal-wrapper header {
       font-size: 16px;
       padding: 15px 20px;
       border-bottom: 1px solid #DDD; }
-    .modal .modal-wrapper article {
+    .learn-press-modal .modal-wrapper article {
       margin: 45px 20px; }
-      .modal .modal-wrapper article input[name="search"] {
+      .learn-press-modal .modal-wrapper article input[name="search"] {
         width: 100%;
         font-size: 16px;
         box-sizing: border-box;
@@ -1483,21 +1480,21 @@
         border-radius: 2px;
         border-color: #e4e4e4;
         font-weight: lighter; }
-      .modal .modal-wrapper article .search-results li > label {
+      .learn-press-modal .modal-wrapper article .search-results li > label {
         display: block; }
-    .modal .modal-wrapper footer {
+    .learn-press-modal .modal-wrapper footer {
       padding: 15px 20px;
       overflow: hidden;
       border: 1px solid #eee; }
-      .modal .modal-wrapper footer .search-nav {
+      .learn-press-modal .modal-wrapper footer .search-nav {
         float: left; }
-        .modal .modal-wrapper footer .search-nav a, .modal .modal-wrapper footer .search-nav span {
+        .learn-press-modal .modal-wrapper footer .search-nav a, .learn-press-modal .modal-wrapper footer .search-nav span {
           display: inline-block;
           line-height: 26px;
           height: 28px;
           margin: 0;
           padding: 0 10px 1px; }
-      .modal .modal-wrapper footer button {
+      .learn-press-modal .modal-wrapper footer button {
         float: right;
         margin-left: 3px; }
 
@@ -2108,8 +2105,6 @@
     #admin-editor-lp_course .lp-course-curriculum .section-list-items .section-item:hover .drag {
       visibility: visible; }
     #admin-editor-lp_course .lp-course-curriculum .section-list-items .section-item:not(.lp_lesson) .item-actions .actions .preview-item {
-      display: none; }
-    #admin-editor-lp_course .lp-course-curriculum .section-list-items .section-item.lp_quiz .item-actions .actions .preview-item {
       display: none; }
   #admin-editor-lp_course .lp-course-curriculum .section-list-items .new-section-item {
     border-bottom-width: 1px;
@@ -3111,6 +3106,52 @@ body.lp-item-moving {
     padding-bottom: 0; }
     #learn-press-advertisement .slider-controls {
       bottom: 40px; } }
+
+.rtl .section-item-counts {
+  left: 41px;
+  right: auto; }
+
+.rtl #admin-editor-lp_course .lp-course-curriculum .heading .status {
+  margin-right: 10px; }
+
+.rtl #admin-editor-lp_course .lp-course-curriculum .collapse-sections {
+  left: 0;
+  right: unset !important; }
+
+.rtl #admin-editor-lp_course .lp-course-curriculum .section-list-items .section-item .title {
+  margin-right: 5px; }
+
+.rtl #admin-editor-lp_course .lp-course-curriculum .section-list-items .section-item .item-actions {
+  left: 0;
+  right: unset !important; }
+  .rtl #admin-editor-lp_course .lp-course-curriculum .section-list-items .section-item .item-actions .actions .ui-sortable {
+    right: unset !important;
+    left: 0; }
+    .rtl #admin-editor-lp_course .lp-course-curriculum .section-list-items .section-item .item-actions .actions .ui-sortable li {
+      text-align: left; }
+
+.rtl #admin-editor-lp_course .lp-course-curriculum .section-actions .remove {
+  float: left; }
+
+.rtl #admin-editor-lp_course .lp-course-curriculum .actions {
+  right: unset !important;
+  left: 0; }
+
+.rtl #admin-editor-lp_quiz .lp-list-questions .question-item .lp-toolbar-btn-dropdown ul {
+  left: 0;
+  right: unset !important; }
+  .rtl #admin-editor-lp_quiz .lp-list-questions .question-item .lp-toolbar-btn-dropdown ul li a {
+    text-align: left; }
+
+.rtl #admin-editor-lp_quiz .add-new-question {
+  text-align: right; }
+
+.rtl #lp-modal-choose-items .header .preview-title {
+  padding-right: 20px; }
+
+.rtl #lp-modal-choose-items .header .close {
+  left: 0;
+  right: unset; }
 
 .button.disabled {
   pointer-events: none; }

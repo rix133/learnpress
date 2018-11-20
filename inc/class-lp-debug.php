@@ -30,6 +30,9 @@ class LP_Debug {
 	 */
 	private static $_log_functions = array();
 
+	protected static $log_times = array();
+
+
 	/**
 	 * Constructor for the logger.
 	 */
@@ -53,8 +56,6 @@ class LP_Debug {
 	 * @var bool
 	 */
 	protected static $_transaction_started = false;
-
-	protected static $log_times = array();
 
 	/**
 	 * Destructor.
@@ -271,10 +272,6 @@ class LP_Debug {
 	}
 
 	public static function timeStart( $name = '' ) {
-		if ( ! learn_press_is_debug() ) {
-			return;
-		}
-
 		if ( ! $name ) {
 			self::$_current_name = md5( uniqid() );
 			$name                = self::$_current_name;

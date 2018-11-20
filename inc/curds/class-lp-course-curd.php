@@ -396,19 +396,40 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 
 			$section_items = array();
 			foreach ( $course_ids as $course_id ) {
-				if ( false !== ( $curriculum = LP_Object_Cache::get( 'course-' . $course_id, 'learn-press/course-curriculum' ) ) ) {
+				if ( false !== ( $curriculum = LP_Object_Cache::get( $course_id, 'learn-press/course-curriculum' ) ) ) {
 					continue;
 				}
 
-				if ( ! $section_ids = $this->get_course_sections( $course_id, 'ids' ) ) {
-					continue;
+				$section_items[ $course_id ] = array();
+
+				if ( $section_ids = $this->get_course_sections( $course_id, 'ids' ) ) {
+					$section_items[ $course_id ] = $this->get_course_items( $course_id, $section_ids );// $this->_read_course_section_items( $section_ids, $course_id );
 				}
 
+				LP_Object_Cache::set( $course_id, $section_items[ $course_id ], 'learn-press/course-curriculum' );
 				//$section_ids   = wp_list_pluck( $sections, 'section_id' );
 				$section_items[ $course_id ] = $this->_read_course_section_items( $section_ids, $course_id );
 			}
 
 			return reset( $section_items );
+		}
+
+		public function get_course_items( $course_id, $section_ids = array() ) {
+			global $wpdb;
+
+			$query = $wpdb->prepare( "
+				SELECT section_items.item_id 
+				FROM {$wpdb->posts} course
+				INNER JOIN {$wpdb->learnpress_sections} course_sections ON course.ID  = course_sections.section_course_id
+				INNER JOIN {$wpdb->learnpress_section_items} section_items ON course_sections.section_id = section_items.section_id
+				WHERE course.ID = %d
+			", $course_id );
+
+			if ( $section_ids ) {
+				$query .= " AND course_sections.section_id IN(" . join( ',', $section_ids ) . ")";
+			}
+
+			return $wpdb->get_col( $query );
 		}
 
 		/**
@@ -520,6 +541,7 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 			}
 
 			return $this->_read_course_curriculum( $course_id );
+// 			return $this->_read_course_curriculum( $course_id );# cái này có vẻ chưa hoạt động đúng, ảnh hưởng tới contentdrip addon
 
 			/**
 			 * Get course's data from cache and if it is already existed
@@ -678,7 +700,6 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 					$position = 0;
 					foreach ( $sections as $k => $section ) {
 						$_section = new LP_Course_Section( $section );
-
 						$_section->set_position( ++ $position );
 						$curriculum[ $section->section_id ] = $_section;
 					}
@@ -735,12 +756,11 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 		 * @return array
 		 */
 		public function get_course_sections( $course_id, $return = '' ) {
-			if ( false === ( $sections = LP_Object_Cache::get( 'course-' . $course_id, 'learn-press/course-sections' ) ) ) {
+			if ( false === ( $sections = LP_Object_Cache::get( $course_id, 'learn-press/course-sections' ) ) ) {
 				$sections = $this->read_course_sections( $course_id );
-				LP_Object_Cache::set( 'course-' . $course_id, $sections, 'learn-press/course-sections' );
 			}
 
-			return $return === 'ids' ? LP_Object_Cache::get( 'course-' . $course_id, 'learn-press/course-sections-ids' ) : $sections;
+			return $return === 'ids' ? LP_Object_Cache::get( $course_id, 'learn-press/course-sections-ids' ) : $sections;
 		}
 
 		/**
@@ -773,20 +793,23 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 		 *
 		 * @return array
 		 */
-		public function count_items( $course_id ) {
+		public function count_items( $course_id, $context = 'view' ) {
 			global $wpdb;
-
-			$query = $wpdb->prepare( "
-				SELECT COUNT(it.ID) `count`, it.post_type 
-				FROM {$wpdb->learnpress_section_items} si 
-				INNER JOIN {$wpdb->learnpress_sections} s ON si.section_id = s.section_id 
-				INNER JOIN {$wpdb->posts} c ON c.ID = s.section_course_id 
-				INNER JOIN {$wpdb->posts} it ON it.ID = si.item_id 
-				WHERE s.section_course_id = %d 
-				AND c.post_status = %s 
-				AND it.post_status = %s 
-				GROUP BY it.post_type
-			", $course_id, 'publish', 'publish' );
+			$params = array( $course_id );
+			$sql    = "
+				SELECT COUNT(it.ID) `count`, it.post_type
+				FROM {$wpdb->learnpress_section_items} si
+				INNER JOIN {$wpdb->learnpress_sections} s ON si.section_id = s.section_id
+				INNER JOIN {$wpdb->posts} c ON c.ID = s.section_course_id
+				INNER JOIN {$wpdb->posts} it ON it.ID = si.item_id
+				WHERE s.section_course_id = %d";
+			if ( $context == 'view' ) {
+				$sql    .= " AND c.post_status = %s
+					AND it.post_status = %s ";
+				$params = array_merge( $params, array( 'publish', 'publish' ) );
+			}
+			$sql   .= " GROUP BY it.post_type ";
+			$query = $wpdb->prepare( $sql, $params );
 
 			$stats_object = array();
 
@@ -810,71 +833,32 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 			global $wpdb;
 
 			settype( $course_id, 'array' );
-			sort( $course_id );
-			$fetch_ids = array();
+			$first_course_sections = false;
 
-			foreach ( $course_id as $fetch_id ) {
-				if ( get_post_type( $fetch_id ) != LP_COURSE_CPT ) {
-					continue;
-				}
+			foreach ( $course_id as $cid ) {
+				if ( false === ( $course_sections = LP_Object_Cache::get( 'course-' . $cid, 'learn-press/course-sections' ) ) ) {
+					$query = $wpdb->prepare( "
+						SELECT s.section_id id, s.section_name name, s.section_description description 
+						FROM {$wpdb->posts} p
+						INNER JOIN {$wpdb->learnpress_sections} s ON p.ID = s.section_course_id
+						WHERE p.ID = %d
+						ORDER BY p.ID, `section_order`, `section_id` ASC
+					", $cid );
 
-				/**
-				 * Get course's data from cache and if it is already existed
-				 * then ignore that course.
-				 */
-				if ( false !== LP_Object_Cache::get( 'course-' . $fetch_id, 'lp-course-sections' ) ) {
-					continue;
-				}
-
-				LP_Object_Cache::set( 'course-' . $fetch_id, array(), 'lp-course-sections' );
-
-				$section_curd = new LP_Section_CURD( $fetch_id );
-				$section_curd->read_sections_ids();
-
-				$fetch_ids[] = $fetch_id;
-			}
-
-			if ( ! $fetch_ids ) {
-				return false;
-			}
-
-			$cache_key = md5( serialize( $fetch_ids ) );
-
-			if ( false === ( $course_sections = LP_Hard_Cache::get( $cache_key, 'lp-course-sections' ) ) ) {
-				$format = array_fill( 0, sizeof( $fetch_ids ), '%d' );
-				$query  = $wpdb->prepare( "
-					SELECT s.* FROM {$wpdb->posts} p
-					INNER JOIN {$wpdb->learnpress_sections} s ON p.ID = s.section_course_id
-					WHERE p.ID IN(" . join( ',', $format ) . ")
-					ORDER BY p.ID, `section_order` ASC
-				", $fetch_ids );
-
-				$course_sections = array();
-
-				if ( $results = $wpdb->get_results( $query ) ) {
-					$cur_id = 0;
-					foreach ( $results as $row ) {
-						if ( $row->section_course_id !== $cur_id ) {
-							if ( $cur_id ) {
-								LP_Object_Cache::set( 'course-' . $cur_id, $course_sections, 'lp-course-sections' );
-							}
-							$cur_id          = $row->section_course_id;
-							$course_sections = array();
-						}
-						$course_sections[] = $row;
+					if ( ! $course_sections = $wpdb->get_results( $query ) ) {
+						$course_sections = array();
 					}
-					LP_Object_Cache::set( 'course-' . $cur_id, $course_sections, 'lp-course-sections' );
-				}
 
-				LP_Hard_Cache::set( $cache_key, $course_sections, 'lp-course-sections' );
-			} else {
-				foreach ( $fetch_ids as $cid ) {
-					LP_Object_Cache::set( 'course-' . $cid, $course_sections, 'lp-course-sections' );
+					if ( false === $first_course_sections ) {
+						$first_course_sections = $course_sections;
+					}
+
+					LP_Object_Cache::set( 'course-' . $cid, $course_sections, 'learn-press/course-sections' );
+					LP_Object_Cache::set( $cid, wp_list_pluck( $course_sections, 'section_id' ), 'learn-press/course-sections-ids' );
 				}
 			}
-			unset( $course_sections );
 
-			return true;
+			return $first_course_sections;
 		}
 
 		/**
@@ -900,19 +884,33 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 				}
 				$query = $wpdb->prepare( "
 					DELETE si
-					FROM {$wpdb->prefix}learnpress_section_items si 
+					FROM {$wpdb->learnpress_section_items} si 
 					INNER JOIN {$wpdb->learnpress_sections} s ON s.section_id = si.section_id
 					WHERE item_id = %d
 					{$where}
 				", $item_id );
 			} else {
-				$query = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}learnpress_section_items WHERE item_id = %d", $item_id );
+
+				$query = $wpdb->prepare( "
+					SELECT s.section_course_id
+					FROM {$wpdb->learnpress_sections} s
+					INNER JOIN {$wpdb->learnpress_section_items} si ON s.section_id = si.section_id
+					WHERE si.item_id = %d 
+				", $item_id );
+
+				$course_id = $wpdb->get_col( $query );
+				$query     = $wpdb->prepare( "DELETE FROM {$wpdb->learnpress_section_items} WHERE item_id = %d", $item_id );
 			}
 
 			// delete item from course's section
 			$wpdb->query( $query );
 
-			do_action( 'learn-press/removed-item-from-section', $item_id, $course_id );
+			if ( $course_id ) {
+				settype( $course_id, 'array' );
+				foreach ( $course_id as $cid ) {
+					do_action( 'learn-press/removed-item-from-section', $item_id, $cid );
+				}
+			}
 
 			learn_press_reset_auto_increment( 'learnpress_section_items' );
 		}
@@ -990,7 +988,7 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 			}
 			$query = $wpdb->prepare( "
 				SELECT DISTINCT user.ID FROM {$wpdb->users} user
-				INNER JOIN {$wpdb->prefix}learnpress_user_items user_item ON user_item.user_id = user.ID
+				INNER JOIN {$wpdb->learnpress_user_items} user_item ON user_item.user_id = user.ID
 				WHERE user_item.item_id = %d
 				AND user_item.item_type = %s
 				LIMIT %d
@@ -1016,8 +1014,8 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 			settype( $course_ids, 'array' );
 			$sql = $wpdb->prepare( "
 					SELECT item_id cid, count(ID) `count`
-					FROM(SELECT DISTINCT user.ID,user_item.item_id FROM wp_users user
-						INNER JOIN wp_learnpress_user_items user_item ON user_item.user_id = user.ID
+					FROM(SELECT DISTINCT user.ID,user_item.item_id FROM {$wpdb->users} user
+						INNER JOIN {$wpdb->learnpress_user_items} user_item ON user_item.user_id = user.ID
 						WHERE user_item.item_id IN(" . join( ',', $course_ids ) . ")
 						AND user_item.item_type = %s
 					) AS X GROUP BY item_id", LP_COURSE_CPT );

@@ -55,12 +55,9 @@ if ( ! class_exists( 'LP_Abstract_Background_Process' ) ) {
 			 *
 			 * @since 3.0.8
 			 */
-			///add_action( 'shutdown', array( $this, 'dispatch_queue' ), 1000 );
+			//add_action( 'shutdown', array( $this, 'dispatch_queue' ), 1000 );
 		}
 
-		/**
-		 * Dispatch queue emails
-		 */
 		public function dispatch_queue() {
 			if ( ! empty( $this->data ) ) {
 				$this->save()->dispatch();
@@ -85,20 +82,17 @@ if ( ! class_exists( 'LP_Abstract_Background_Process' ) ) {
 		/**
 		 * @param mixed $data
 		 *
-		 * @return LP_Abstract_Background_Process
+		 * @return mixed
 		 */
 		public function push_to_queue( $data ) {
-			global $pagenow;
-
 			// Check to preventing loop
 			if ( $this->safe ) {
-				if ( learn_press_is_ajax() || ( $pagenow === 'admin-ajax.php' ) ) {
-					//return $this;
+				if ( learn_press_is_ajax() || ! empty( $_REQUEST['action'] ) ) {
+					///return $this;
 				}
 			}
 
-			parent::push_to_queue( $data );
-			return $this;
+			return parent::push_to_queue( $data );
 		}
 
 		/**
@@ -116,6 +110,7 @@ if ( ! class_exists( 'LP_Abstract_Background_Process' ) ) {
 			print_r( $_REQUEST );
 			$msg = ob_get_clean();
 			LP_Debug::instance()->add( $msg, 'background-process-task', false, true );
+
 			return false;
 		}
 
@@ -145,11 +140,6 @@ if ( ! class_exists( 'LP_Abstract_Background_Process' ) ) {
 			}
 
 			return self::$instances[ $name ];
-		}
-
-		public function complete(){
-			parent::complete();
-			do_action('learn-press/background-process-completed', $this->identifier);
 		}
 
 		/**

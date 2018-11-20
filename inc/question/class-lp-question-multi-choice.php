@@ -56,7 +56,6 @@ if ( ! class_exists( 'LP_Question_Multi_Choice' ) ) {
 		 */
 		public function check( $user_answer = null ) {
 			$return = parent::check();
-
 			settype( $user_answer, 'array' );
 
 			if ( $answers = $this->get_answers() ) {

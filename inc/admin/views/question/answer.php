@@ -133,8 +133,6 @@ learn_press_admin_view( 'question/option' );
                             }
                         });
                     }
-
-                    console.log(this.status)
                 }
             }
         })

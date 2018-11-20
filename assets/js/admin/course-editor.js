@@ -814,7 +814,7 @@ jQuery(function ($) {
             payload['nonce'] = $store.getters.nonce;
             payload['lp-ajax'] = $store.getters.action;
 
-            return LP_Request.push($store.getters.urlAjax,
+            return Vue.http.post($store.getters.urlAjax,
                 payload,
                 {
                     emulateJSON: true,
@@ -822,15 +822,6 @@ jQuery(function ($) {
                         namespace: 'LPCurriculumRequest'
                     }
                 });
-
-            // return Vue.http.post($store.getters.urlAjax,
-            //     payload,
-            //     {
-            //         emulateJSON: true,
-            //         params: {
-            //             namespace: 'LPCurriculumRequest'
-            //         }
-            //     });
         };
 
         Vue.http.interceptors.push(function (request, next) {

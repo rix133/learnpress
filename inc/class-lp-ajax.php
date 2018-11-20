@@ -3,6 +3,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
+
+include_once 'user-item/ajax.php';
 if ( ! class_exists( 'LP_AJAX' ) ) {
 	/**
 	 * Class LP_AJAX
@@ -29,7 +31,11 @@ if ( ! class_exists( 'LP_AJAX' ) ) {
 				'retake-course',
 				'external-link:nopriv',
 				'continue-course',
-				'toggle-distraction-mode'
+				'toggle-distraction-mode',
+				'load_course_curriculum',
+				'get_notifications',
+				'test-heartbeat'
+
 				//'register-user:nopriv',
 				//'login-user:nopriv'
 			);
@@ -55,6 +61,31 @@ if ( ! class_exists( 'LP_AJAX' ) ) {
 
 			add_action( 'wp_ajax_learnpress_upload-user-avatar', array( __CLASS__, 'upload_user_avatar' ) );
 		}
+
+		/**
+		 * Get notifications
+		 *
+		 * @since 3.2.0
+		 */
+		public static function get_notifications() {
+			echo $noti = LP_Notifications::instance();
+
+			learn_press_send_json( $noti->get( '', true ) );
+		}
+
+		/**
+		 * Load course curriculum
+		 */
+		public static function load_course_curriculum() {
+			$course_id = LP_Request::get_int( 'course_ID' );
+			learn_press_send_json( learn_press_get_course_curriculum_for_js( $course_id ) );
+		}
+
+		public static function test_heartbeat() {
+			sleep( rand( 3, 7 ) );
+			learn_press_send_json( $_REQUEST );
+		}
+
 
 		/**
 		 * Update current state of distraction mode when user viewing content of course's item
@@ -333,9 +364,7 @@ if ( ! class_exists( 'LP_AJAX' ) ) {
 					throw new Exception( __( 'Error! Invalid lesson or failed security check.', 'learnpress' ), 8000 );
 				}
 
-				//LP_Debug::startTransaction();
-
-				$result = $user->complete_lesson( $item_id, $course_id, true );
+				$result = $user->complete_lesson( $item_id );
 
 				if ( ! is_wp_error( $result ) ) {
 					if ( $next = $course->get_next_item() ) {
@@ -346,7 +375,6 @@ if ( ! class_exists( 'LP_AJAX' ) ) {
 				} else {
 					learn_press_add_message( $result->get_error_message(), 'error' );
 				}
-				//LP_Debug::rollbackTransaction();
 
 				$response = apply_filters( 'learn-press/user-completed-lesson-result', $response, $item_id, $course_id, $user->get_id() );
 			}
@@ -361,7 +389,6 @@ if ( ! class_exists( 'LP_AJAX' ) ) {
 			learn_press_maybe_send_json( $response );
 
 			if ( ! empty( $response['redirect'] ) ) {
-				wp_cache_flush();
 				wp_redirect( $response['redirect'] );
 				exit();
 			}
@@ -372,12 +399,13 @@ if ( ! class_exists( 'LP_AJAX' ) ) {
 		 */
 		public static function retake_course() {
 			$security        = LP_Request::get_string( 'retake-course-nonce' );
-			$course_id       = LP_Request::get_int( 'course_id' );
+			$course_id       = LP_Request::get_int( 'course_id' ) || LP_Request::get_int( 'retake-course' );
 			$user            = learn_press_get_current_user();
 			$course          = learn_press_get_course( $course_id );
 			$response        = array(
 				'result' => 'error'
 			);
+
 			$security_action = sprintf( 'retake-course-%d-%d', $course->get_id(), $user->get_id() );
 			// security check
 			if ( ! wp_verify_nonce( $security, $security_action ) ) {

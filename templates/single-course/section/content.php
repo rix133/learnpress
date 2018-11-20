@@ -14,11 +14,6 @@
  */
 defined( 'ABSPATH' ) || exit();
 
-/**
- * @var LP_Course_Section $section
- * @var LP_Course_Item    $item
- */
-
 if ( ! isset( $section ) ) {
 	return;
 }
@@ -41,9 +36,9 @@ $user = LP_Global::user();
 					 */
 					do_action( 'learn-press/begin-section-loop-item', $item );
 
-					if (  $item_url = $user->get_item_url($item->get_id()) ) {
+					if ( $user->can_view_item( $item->get_id() ) ) {
 						?>
-                        <a class="section-item-link" href="<?php echo $item_url; ?>">
+                        <a class="section-item-link" href="<?php echo $item->get_permalink(); ?>">
 							<?php learn_press_get_template( 'single-course/section/content-item.php', array(
 								'item'    => $item,
 								'section' => $section

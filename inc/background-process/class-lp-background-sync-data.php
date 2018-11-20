@@ -32,6 +32,10 @@ if ( ! class_exists( 'LP_Background_Sync_Data' ) ) {
 		 */
 		public function __construct() {
 			parent::__construct();
+
+			//add_action( 'shutdown', array( $this, 'dispatch' ), 100000 );
+
+			//print_r($this->data);echo "XXXXXX";
 		}
 
 		public function test() {
@@ -44,9 +48,8 @@ if ( ! class_exists( 'LP_Background_Sync_Data' ) ) {
 		 * @return bool
 		 */
 		protected function task( $data ) {
-			$user_ids = array();
 			if ( $queue_user_ids = get_option( $data['option_key'] ) ) {
-				$user_ids  = array_splice( $queue_user_ids, 0, 50 );
+				$user_ids  = array_splice( $queue_user_ids, 0, 1 );
 				$course_id = $data['course_id'];
 
 				foreach ( $user_ids as $user_id ) {
@@ -54,10 +57,6 @@ if ( ! class_exists( 'LP_Background_Sync_Data' ) ) {
 					$course_data = $user->get_course_data( $course_id );
 					$course_data->calculate_course_results();
 				}
-			}
-
-			if ( $user_ids ) {
-				LP_Debug::instance()->add( $user_ids, 'sync-data', false, true );
 			}
 
 			if ( ! $queue_user_ids ) {
@@ -70,6 +69,10 @@ if ( ! class_exists( 'LP_Background_Sync_Data' ) ) {
 			}
 
 			return $data;
+		}
+
+		public function is_running() {
+			return false === $this->is_queue_empty();
 		}
 
 	}

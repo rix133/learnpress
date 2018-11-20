@@ -29,14 +29,9 @@ class LP_Preview_Course {
 		if ( empty( self::$_preview_course ) ) {
 			global $wpdb;
 
-			$query = $wpdb->prepare( "
-				SELECT ID
-				FROM {$wpdb->posts} p 
-				INNER JOIN {$wpdb->postmeta} pm ON pm.post_id = p.ID AND pm.meta_key = %s 
-				WHERE pm.meta_value = %s
-			", '_lp_preview_course', 'yes' );
+			$ids = self::get_preview_courses();
 
-			if ( ! $course_id = $wpdb->get_var( $query ) ) {
+			if ( $ids === false ) {
 				$title                 = __( 'Preview Course', 'learnpress' );
 				self::$_preview_course = wp_insert_post(
 					array(
@@ -49,8 +44,10 @@ class LP_Preview_Course {
 				);
 
 				update_post_meta( self::$_preview_course, '_lp_preview_course', 'yes' );
+
+				LP_Object_Cache::set( 'preview-courses', array( self::$_preview_course ), 'learnpress' );
 			} else {
-				self::$_preview_course = $course_id;
+				self::$_preview_course = $ids[0];
 			}
 		}
 
@@ -123,12 +120,17 @@ class LP_Preview_Course {
 
 			self::$_item_id = $post_id;
 
-			$preview_course = self::get_preview_course();
-			$post_course    = get_post( $preview_course );
+			if ( $preview_courses = self::get_preview_courses() ) {
+				$preview_course = $preview_courses[0];
+			} else {
+				$preview_course = - 1;
+			}
 
-			$post              = wp_cache_get( self::$_preview_course, 'posts' );
+			$post_course = get_post( $preview_course );
+
+			$post              = wp_cache_get( $preview_course, 'posts' );
 			$post->post_status = 'publish';
-			wp_cache_set( self::$_preview_course, $post, 'posts' );
+			wp_cache_set( $preview_course, $post, 'posts' );
 
 			/**
 			 * Set FAKE url of preview course to request uri so WP will parse
@@ -158,11 +160,12 @@ class LP_Preview_Course {
 	}
 
 	public static function get_preview_courses() {
-		if ( false === ( $ids = LP_Object_Cache::get( 'preview-courses', 'learnpress' ) ) ) {
+		if ( false === ( $ids = LP_Object_Cache::get( 'preview-courses', 'learn-press' ) ) ) {
 			global $wpdb;
 			$query = $wpdb->prepare( "
 				SELECT post_id
-				FROM {$wpdb->postmeta}
+				FROM {$wpdb->postmeta} pm
+				INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
 				WHERE meta_key = %s AND meta_value = %s
 			", '_lp_preview_course', 'yes' );
 

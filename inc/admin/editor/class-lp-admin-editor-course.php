@@ -214,15 +214,15 @@ class LP_Admin_Editor_Course extends LP_Admin_Editor {
 	 * @return mixed
 	 */
 	public function remove_section_item( $args = array() ) {
-		$item_id   = ! empty( $args['item_id'] ) ? $args['item_id'] : false;
-		$course_id = ! empty( $args['id'] ) ? $args['id'] : false;
+		$section_id = ! empty( $args['section_id'] ) ? $args['section_id'] : false;
+		$item_id    = ! empty( $args['item_id'] ) ? $args['item_id'] : false;
 
-		if ( ! ( $course_id && $item_id ) ) {
+		if ( ! ( $section_id && $item_id ) ) {
 			return false;
 		}
 
 		// remove item from course
-		$this->course_curd->remove_item( $item_id, $course_id );
+		$this->course_curd->remove_item( $item_id );
 
 		return true;
 	}
@@ -251,7 +251,6 @@ class LP_Admin_Editor_Course extends LP_Admin_Editor {
 	 * @return array|bool
 	 */
 	public function new_section_item( $args = array() ) {
-		$course_id  = ! empty( $args['id'] ) ? $args['id'] : false;
 		$section_id = ! empty( $args['section_id'] ) ? $args['section_id'] : false;
 		$item       = ! empty( $args['item'] ) ? $args['item'] : false;
 		$item       = json_decode( wp_unslash( $item ), true );
@@ -261,7 +260,7 @@ class LP_Admin_Editor_Course extends LP_Admin_Editor {
 		}
 
 		// create new lesson, quiz and add to course
-		$this->result = $this->section_curd->new_item( $section_id, $item, $course_id );
+		$this->result = $this->section_curd->new_item( $section_id, $item );
 
 		$this->section_curd->update_final_item();
 

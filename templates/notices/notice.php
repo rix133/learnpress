@@ -13,12 +13,13 @@
  * Prevent loading this file directly
  */
 defined( 'ABSPATH' ) || exit();
+?>
 
-if ( ! isset($messages) ) {
+<?php if ( ! $messages ) {
 	return;
-}
+} ?>
 
-foreach ( $messages as $message ) { ?>
+<?php foreach ( $messages as $message ) { ?>
 
     <div class="learn-press-message notice">
 
@@ -26,4 +27,4 @@ foreach ( $messages as $message ) { ?>
 
     </div>
 
-<?php }
+<?php } ?>

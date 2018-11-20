@@ -113,9 +113,7 @@
                 }
             }
         });
-        if (!window.LP) {
-            window.LP = {};
-        }
+
         window.LP.$modalSearchUsers = new Vue({
             el: '#vue-modal-search-users',
             data: {

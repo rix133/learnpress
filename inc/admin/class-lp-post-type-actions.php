@@ -12,6 +12,9 @@ class LP_Post_Type_Actions {
 	 */
 	protected static $instance = null;
 
+	/**
+	 * @var array
+	 */
 	protected $data = array();
 
 	/**

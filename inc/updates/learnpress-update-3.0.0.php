@@ -49,7 +49,7 @@ class LP_Update_30 extends LP_Update_Base {
 		@$wpdb->query( $sql );
 
 		// Update start_time_gmt, end_time_gmt with offset time from start_time, end_time
-		$time      = new LP_Datetime();
+		$time      = LP_Datetime::instance();
 		$offset    = $time->getOffset( true );
 		$null_time = LP_Datetime::getSqlNullDate();
 
@@ -243,7 +243,7 @@ class LP_Update_30 extends LP_Update_Base {
 
 		global $wpdb;
 
-		$query = $wpdb->prepare( "
+		echo $query = $wpdb->prepare( "
 				INSERT INTO {$wpdb->learnpress_user_itemmeta}( `learnpress_user_item_id`, `meta_key`, `meta_value` )
 				SELECT user_item_id, %s, COUNT(user_item_id) - 1 Y
 				FROM (

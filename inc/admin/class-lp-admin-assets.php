@@ -26,13 +26,11 @@ class LP_Admin_Assets extends LP_Abstract_Assets {
 	protected function _get_script_data() {
 		return array(
 			'learn-press-global'         => array(
-				'i18n'      => array(
+				'i18n'    => array(
 					'test_message' => 'This is global script for both admin and site'
 				),
-				'ajax'      => admin_url( 'admin-ajax.php' ),
-				'admin_url' => admin_url(),
-				'siteurl'   => site_url(),
-				'_wpnonce'  => wp_create_nonce()
+				'ajax'    => admin_url( 'admin-ajax.php' ),
+				'siteurl' => site_url()
 			),
 			'learn-press-meta-box-order' => apply_filters(
 				'learn-press/meta-box-order/script-data',
@@ -56,13 +54,15 @@ class LP_Admin_Assets extends LP_Abstract_Assets {
 	 * @return mixed
 	 */
 	protected function _get_scripts() {
+		$min = defined( 'LP_DEBUG_DEV' ) && LP_DEBUG_DEV ? '' : '.min';
+
 		return apply_filters(
 			'learn-press/admin-default-scripts',
 			array(
 				'select2'                           => LP_Admin_Assets::url( '../inc/libraries/meta-box/js/select2/select2.min.js' ),
 				'lp-vue'                            => array(
-					'url' => self::url( 'js/vendor/vue.js' ),
-					'ver' => '2.4.0'
+					'url' => self::url( 'js/vendor/vue' . $min . '.js' ),
+					'ver' => '2.5.16'
 				),
 				'lp-vuex'                           => array(
 					'url' => self::url( 'js/vendor/vuex.2.3.1.js' ),
@@ -72,15 +72,15 @@ class LP_Admin_Assets extends LP_Abstract_Assets {
 					'url' => self::url( 'js/vendor/vue-resource.1.3.4.js' ),
 					'ver' => '1.3.4'
 				),
-//				'lp-sortable'                       => array(
-//					'url' => self::url( 'js/vendor/sortable.1.6.0.js' ),
-//					'ver' => '1.6.0'
-//				),
-//				'lp-vuedraggable'                   => array(
-//					'url'  => self::url( 'js/vendor/vuedraggable.2.14.1.js' ),
-//					'ver'  => '2.14.1',
-//					'deps' => array( 'lp-sortable' )
-//				),
+				'lp-sortable'                       => array(
+					'url' => self::url( 'js/vendor/sortable.1.6.0.js' ),
+					'ver' => '1.6.0'
+				),
+				'lp-vuedraggable'                   => array(
+					'url'  => self::url( 'js/vendor/vuedraggable.2.14.1.js' ),
+					'ver'  => '2.14.1',
+					'deps' => array( 'lp-sortable' )
+				),
 				'learn-press-global'                => array(
 					'url'  => $this->url( 'js/global.js' ),
 					'deps' => array( 'jquery', 'underscore', 'utils', 'jquery-ui-sortable', 'select2' )
@@ -107,7 +107,7 @@ class LP_Admin_Assets extends LP_Abstract_Assets {
 						'lp-vue',
 						'lp-vuex',
 						'lp-vue-resource',
-						//'lp-vuedraggable',
+						'lp-vuedraggable',
 					),
 					'screens' => array( LP_COURSE_CPT )
 				),
@@ -117,7 +117,7 @@ class LP_Admin_Assets extends LP_Abstract_Assets {
 						'lp-vue',
 						'lp-vuex',
 						'lp-vue-resource',
-						//'lp-vuedraggable',
+						'lp-vuedraggable',
 					),
 					'screens' => array( LP_QUIZ_CPT )
 				),
@@ -127,7 +127,7 @@ class LP_Admin_Assets extends LP_Abstract_Assets {
 						'lp-vue',
 						'lp-vuex',
 						'lp-vue-resource',
-						//'lp-vuedraggable',
+						'lp-vuedraggable',
 					),
 					'screens' => array( LP_QUESTION_CPT )
 				),
@@ -193,14 +193,7 @@ class LP_Admin_Assets extends LP_Abstract_Assets {
 		if ( $scripts = $this->_get_scripts() ) {
 			foreach ( $scripts as $handle => $data ) {
 				do_action( 'learn-press/enqueue-script/' . $handle );
-
-				$screens = ! empty( $data['screens'] ) ? $data['screens'] : array();
-
-				if ( ! is_array( $screens ) ) {
-					settype( $screens, 'array' );
-				}
-
-				if ( empty( $screens ) || ! empty( $screens ) && in_array( $screen_id, $screens ) ) {
+				if ( empty( $data['screens'] ) || ! empty( $data['screens'] ) && in_array( $screen_id, $data['screens'] ) ) {
 					wp_enqueue_script( $handle );
 				}
 			}

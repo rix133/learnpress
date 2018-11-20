@@ -82,6 +82,7 @@ class LP_Assets extends LP_Abstract_Assets {
 	}
 
 	public function _get_scripts() {
+		$suffix          = defined( 'LP_DEV' ) && LP_DEV ? '' : '';
 		$default_scripts = learn_press_is_compress_assets()
 			? array(
 				'global'           => array(
@@ -114,19 +115,21 @@ class LP_Assets extends LP_Abstract_Assets {
 				'jalerts'          => self::url( 'js/vendor/jquery.alert.js' ),
 				//'circle-bar'       => self::url( 'js/vendor/circle-bar.js' ),
 				'lp-vue'           => array(
-					'url'     => self::url( 'js/vendor/vue.min.js' ),
+					'url'     => self::url( 'js/vendor/vue' . $suffix . '.js' ),
 					'ver'     => '2.5.16',
 					'enqueue' => false
 				),
 				'lp-vuex'          => array(
 					'url'     => self::url( 'js/vendor/vuex.2.3.1.js' ),
 					'ver'     => '2.3.1',
-					'enqueue' => false
+					'enqueue' => false,
+					'deps'    => array( 'lp-vue' )
 				),
 				'lp-vue-resource'  => array(
 					'url'     => self::url( 'js/vendor/vue-resource.1.3.4.js' ),
 					'ver'     => '1.3.4',
-					'enqueue' => false
+					'enqueue' => false,
+					'deps'    => array( 'lp-vue', 'lp-vuex' )
 				),
 				'global'           => array(
 					'url'  => self::url( 'js/global.js' ),
@@ -177,6 +180,12 @@ class LP_Assets extends LP_Abstract_Assets {
 				),
 				'become-a-teacher' => array(
 					'url'  => self::url( 'js/frontend/become-teacher.js' ),
+					'deps' => array(
+						'jquery'
+					)
+				),
+				'notifications'    => array(
+					'url'  => self::url( 'js/frontend/notifications.js' ),
 					'deps' => array(
 						'jquery'
 					)

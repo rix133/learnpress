@@ -35,6 +35,11 @@ if ( ! class_exists( 'LP_Abstract_Post_Data' ) ) {
 		protected $_video = null;
 
 		/**
+		 * @var string
+		 */
+		protected $_item_type = '';
+
+		/**
 		 * LP_Abstract_Post_Data constructor.
 		 *
 		 * @since 3.0.0
@@ -58,6 +63,25 @@ if ( ! class_exists( 'LP_Abstract_Post_Data' ) ) {
 		}
 
 		/**
+		 * Get type of item.
+		 *
+		 * @param string $context
+		 *
+		 * @return string
+		 */
+		public function get_item_type( $context = '' ) {
+			$post_type = $this->_item_type;
+
+			if ( $context === 'display' ) {
+				if ( $post_type_object = get_post_type_object( $post_type ) ) {
+					$post_type = $post_type_object->labels->singular_name;
+				}
+			}
+
+			return $post_type;
+		}
+
+		/**
 		 * Get status of post.
 		 *
 		 * @since 3.0.0
@@ -76,7 +100,7 @@ if ( ! class_exists( 'LP_Abstract_Post_Data' ) ) {
 		 * @return bool
 		 */
 		public function is_exists() {
-			return learn_press_get_post_type( $this->get_id() ) === $this->_post_type;
+			return get_post_type( $this->get_id() ) === $this->_post_type;
 		}
 
 		/**
@@ -148,6 +172,7 @@ if ( ! class_exists( 'LP_Abstract_Post_Data' ) ) {
 					setup_postdata( $post );
 					ob_start();
 					the_content();
+
 					$this->_content = ob_get_clean();
 					wp_reset_postdata();
 				}
@@ -209,7 +234,7 @@ if ( ! class_exists( 'LP_Abstract_Post_Data' ) ) {
 		 * @return false|string
 		 */
 		public function get_post_type() {
-			return learn_press_get_post_type( $this->get_id() );
+			return get_post_type( $this->get_id() );
 		}
 
 		/**
@@ -221,6 +246,14 @@ if ( ! class_exists( 'LP_Abstract_Post_Data' ) ) {
 		 */
 		public static function get_default_meta() {
 			return array();
+		}
+
+		public function get_edit_link() {
+			return get_edit_post_link( $this->get_id() );
+		}
+
+		public function current_user_can_edit() {
+			return learn_press_get_current_user()->can_edit( $this->get_id() );
 		}
 
 		/**
@@ -240,14 +273,6 @@ if ( ! class_exists( 'LP_Abstract_Post_Data' ) ) {
 			}
 
 			return get_post_meta( $this->get_id(), $key, $single );
-		}
-
-		public function get_edit_link() {
-			return get_edit_post_link( $this->get_id() );
-		}
-
-		public function current_user_can_edit() {
-			return learn_press_get_current_user()->can_edit( $this->get_id() );
 		}
 	}
 }

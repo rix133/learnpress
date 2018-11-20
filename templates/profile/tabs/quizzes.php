@@ -14,10 +14,6 @@
  */
 defined( 'ABSPATH' ) || exit();
 
-/**
- * @var LP_User_Item_Quiz $user_quiz
- */
-
 $profile       = learn_press_get_profile();
 $filter_status = LP_Request::get_string( 'filter-status' );
 $query         = $profile->query_quizzes( array( 'status' => $filter_status ) );
@@ -48,11 +44,7 @@ $query         = $profile->query_quizzes( array( 'status' => $filter_status ) );
             <tbody>
 			<?php foreach ( $query['items'] as $user_quiz ) { ?>
 				<?php $quiz = learn_press_get_quiz( $user_quiz->get_id() );
-				$courses    = learn_press_get_item_courses( array( $user_quiz->get_id() ) );
-				if ( ! $courses ) {
-					continue;
-				}
-				?>
+				$courses    = learn_press_get_item_courses( array( $user_quiz->get_id() ) ); ?>
                 <tr>
                     <td class="column-course">
 						<?php if ( $courses ) {
@@ -64,7 +56,7 @@ $query         = $profile->query_quizzes( array( 'status' => $filter_status ) );
 							<?php }
 						} ?>
                     </td>
-                    <td class="column-quiz column-quiz-<?php echo $user_quiz->get_id(); ?>">
+                    <td class="column-quiz column-quiz-<?php echo $user_quiz->get_id();?>">
 						<?php if ( $courses ) {
 							foreach ( $courses as $course ) {
 								$course = LP_Course::get_course( $course->ID ); ?>
@@ -75,7 +67,7 @@ $query         = $profile->query_quizzes( array( 'status' => $filter_status ) );
 						} ?>
                     </td>
                     <td class="column-date"><?php
-						echo $user_quiz->get_time( 'start_time', '', true ); ?></td>
+						echo $user_quiz->get_start_time( 'i18n' ); ?></td>
                     <td class="column-status">
                         <span class="result-percent"><?php echo $user_quiz->get_percent_result(); ?></span>
                         <span class="lp-label label-<?php echo esc_attr( $user_quiz->get_results( 'status' ) ); ?>">

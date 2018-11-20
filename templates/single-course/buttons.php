@@ -25,7 +25,6 @@ defined( 'ABSPATH' ) || exit();
 	 * @see learn_press_course_retake_button - 10
 	 */
 	do_action( 'learn-press/course-buttons' );
-
 	?>
 	<?php do_action( 'learn-press/after-course-buttons' ); ?>
 

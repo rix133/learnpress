@@ -154,6 +154,7 @@ class LP_Gateway_Abstract extends LP_Abstract_Settings {
 	}
 
 	public function is_enabled() {
+		///echo "[xxxxxxx",$this->id, ',',$this->enabled,"]";
 		return $this->enabled == 'yes';
 	}
 

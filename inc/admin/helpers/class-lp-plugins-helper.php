@@ -187,6 +187,7 @@ class LP_Plugins_Helper {
 			$themes = self::$themes;
 		}
 
+
 		return $themes;
 	}
 
@@ -201,7 +202,7 @@ class LP_Plugins_Helper {
 	public static function count_themes( $type = '' ) {
 		$count = 0;
 
-		if ( ( $themes = self::get_related_themes() ) && is_array( $themes ) ) {
+		if ( $themes = self::get_related_themes() ) {
 			if ( array_key_exists( $type, $themes ) ) {
 				$count = ! empty( $themes[ $type ] ) ? sizeof( $themes[ $type ] ) : 0;
 			} else {

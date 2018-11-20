@@ -29,7 +29,7 @@ class LP_User_Factory {
 	public static function init() {
 		self::$_guest_transient = WEEK_IN_SECONDS;
 		add_action( 'wp_login', array( __CLASS__, 'clear_temp_user_data' ) );
-		add_action( 'learn_press_user_start_quiz', array( __CLASS__, 'start_quiz' ), 10, 4 );
+		add_action( 'learn-press/user/quiz-started', array( __CLASS__, 'start_quiz' ), 10, 3 );
 		add_action( 'learn_press_user_retake_quiz', array( __CLASS__, 'retake_quiz' ), 10, 4 );
 		add_action( 'learn_press_activate', array( __CLASS__, 'register_event' ), 15 );
 		add_action( 'learn_press_deactivate', array( __CLASS__, 'deregister_event' ), 15 );
@@ -40,7 +40,7 @@ class LP_User_Factory {
 		/**
 		 * Filters into wp users manager
 		 */
-		//add_filter( 'users_list_table_query_args', array( __CLASS__, 'exclude_temp_users' ) );
+		add_filter( 'users_list_table_query_args', array( __CLASS__, 'exclude_temp_users' ) );
 
 		add_action( 'learn-press/order/status-changed', array( __CLASS__, 'update_user_items' ), 10, 3 );
 		add_action( 'learn-press/deleted-order-item', array( __CLASS__, 'delete_user_item' ), 10, 2 );
@@ -123,17 +123,6 @@ class LP_User_Factory {
 		}
 		foreach ( $order->get_users() as $user_id ) {
 			foreach ( $items as $item ) {
-
-				$user        = learn_press_get_user( $user_id );
-				$user_course = $user->get_course_data( $item['course_id'] );
-
-				if ( $user_course->get_status() ) {
-					$user_course->set_status( $new_status );
-					$user_course->update();
-				}
-
-				continue;
-
 				$item = $curd->get_user_item(
 					$user_id,
 					$item['course_id']
@@ -174,30 +163,15 @@ class LP_User_Factory {
 			foreach ( $items as $item ) {
 
 				if ( $user_item_id = self::_get_course_item( $order->get_id(), $item['course_id'], $user_id ) ) {
-//					$user_item_id = $curd->update_user_item(
-//						$user_id,
-//						$item['course_id'],
-//						array(
-//							'ref_id'    => $order->get_id(),
-//							'ref_type'  => LP_ORDER_CPT,
-//							'parent_id' => 0
-//						)
-//					);
-
-					$wpdb->update(
-						$wpdb->learnpress_user_items,
+					$user_item_id = $curd->update_user_item(
+						$user_id,
+						$item['course_id'],
 						array(
 							'ref_id'    => $order->get_id(),
 							'ref_type'  => LP_ORDER_CPT,
 							'parent_id' => 0
-						),
-						array(
-							'user_item_id' => $user_item_id
-						),
-						array( '%d', '%s', '%d' ),
-						array( '%d' )
+						)
 					);
-
 				} else {
 					$wpdb->insert(
 						$wpdb->learnpress_user_items,
@@ -219,14 +193,14 @@ class LP_User_Factory {
 					$user 		= learn_press_get_user($user_id);
 					$course_id 	= $item['item_id'];
 					$can_enroll 	= $user->can_enroll_course($course_id);
-					$auto_enroll 	= LP()->settings->get( 'auto_enroll', 'yes' ) == 'yes';
+					$auto_enroll 	= LP()->settings->get( 'auto_enroll' ) == 'yes';
 					if ( $new_status == 'completed' && $can_enroll && $auto_enroll) {
 						$args['status'] = 'enrolled';
 					}
 					if ( ! $last_status ) {
 						$args['status'] = $auto_enroll && $can_enroll ? 'enrolled' : 'purchased';
 						if ( 'enrolled' == $args['status'] ) {
-							$time                   = new LP_Datetime();
+							$time                   = LP_Datetime::instance();
 							$args['start_time']     = $time->toSql();
 							$args['start_time_gmt'] = $time->toSql( false );
 						}
@@ -270,7 +244,7 @@ class LP_User_Factory {
 	}
 
 	public static function get_pending_requests() {
-		if ( false === ( $pending_requests = LP_Object_Cache::get( 'pending-requests', 'learn-press/users' ) ) ) {
+		if ( false === ( $pending_requests = LP_Object_Cache::get( 'pending-requests', 'lp-users' ) ) ) {
 			global $wpdb;
 			$query = $wpdb->prepare( "
 				SELECT ID
@@ -280,7 +254,7 @@ class LP_User_Factory {
 			", '_requested_become_teacher', 'yes' );
 
 			$pending_requests = $wpdb->get_col( $query );
-			LP_Object_Cache::set( 'pending-requests', $pending_requests, 'learn-press/users' );
+			LP_Object_Cache::set( 'pending-requests', $pending_requests, 'lp-users' );
 		}
 
 		return $pending_requests;
@@ -450,7 +424,7 @@ class LP_User_Factory {
 	}
 
 	public static function get_guest_id() {
-		return empty( $_COOKIE['learn_press_user_guest_id'] ) ? false : $_COOKIE['learn_press_user_guest_id'];
+		return LP()->session->guest_user_id;// empty( $_COOKIE['learn_press_user_guest_id'] ) ? false : $_COOKIE['learn_press_user_guest_id'];
 	}
 
 	/**
@@ -546,13 +520,17 @@ class LP_User_Factory {
 	}
 
 	/**
-	 * @param $item
-	 * @param $quiz_id
-	 * @param $course_id
-	 * @param $user_id
+	 * @param int $quiz_id
+	 * @param int $course_id
+	 * @param int $user_id
 	 */
-	public static function start_quiz( $item, $quiz_id, $course_id, $user_id ) {
-		self::_update_user_item_meta( $item, $quiz_id, $course_id, $user_id );
+	public static function start_quiz( $quiz_id, $course_id, $user_id ) {
+
+		if ( $user = learn_press_get_user( $user_id ) ) {
+			if ( $item = $user->get_item_data( $quiz_id, $course_id ) ) {
+				self::_update_user_item_meta( $item, $quiz_id, $course_id, $user_id );
+			}
+		}
 	}
 
 	/**
@@ -566,21 +544,22 @@ class LP_User_Factory {
 	}
 
 	/**
-	 * @param $item
-	 * @param $quiz_id
-	 * @param $course_id
-	 * @param $user_id
+	 * @param LP_User_Item $item
+	 * @param int          $quiz_id
+	 * @param int          $course_id
+	 * @param int          $user_id
 	 */
 	private static function _update_user_item_meta( $item, $quiz_id, $course_id, $user_id ) {
 		if ( get_user_by( 'id', $user_id ) ) {
 			return;
 		}
+
 		if ( ! $item ) {
 			return;
 		}
-		$item_id = ! empty( $item->user_item_id ) ? $item->user_item_id : $item->history_id;
-		learn_press_add_user_item_meta( $item_id, 'temp_user_id', 'yes' );
-		learn_press_add_user_item_meta( $item_id, 'temp_user_time', date( 'Y-m-d H:i:s', time() ) );
+
+		learn_press_add_user_item_meta( $item->get_user_item_id(), 'temp_user_id', 'yes' );
+		learn_press_add_user_item_meta( $item->get_user_item_id(), 'temp_user_time', date( 'Y-m-d H:i:s', time() ) );
 	}
 }
 
