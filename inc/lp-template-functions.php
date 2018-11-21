@@ -1586,7 +1586,7 @@ if ( ! function_exists( 'learn_press_course_progress' ) ) {
 	 */
 	function learn_press_course_progress() {
 		if ( learn_press_use_vm() ) {
-			learn_press_get_template( 'single-course/progress.vm.php' );
+			learn_press_get_template( '_vm/single-course/progress.php' );
 
 			return;
 		}
@@ -2835,7 +2835,7 @@ if ( ! function_exists( 'learn_press_course_curriculum_tab' ) ) {
 	function learn_press_course_curriculum_tab() {
 
 		if ( learn_press_use_vm() ) {
-			learn_press_get_template( 'single-course/tabs/curriculum.vm.php' );
+			learn_press_get_template( '_vm/single-course/tabs/curriculum.php' );
 
 			return;
 		}
