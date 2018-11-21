@@ -683,6 +683,7 @@ class LP_Page_Controller {
 	 * @return string
 	 */
 	public function single_content( $content ) {
+		echo "[12345]";
 		// Should not effect if current post is not a LP Course
 		if ( LP_COURSE_CPT != get_post_type() ) {
 			return $content;
