@@ -47,8 +47,10 @@ class LP_Assets extends LP_Abstract_Assets {
 	}
 
 	public function _get_script_data() {
+		global $post;
+
 		return array(
-			'global'       => array(
+			'global'               => array(
 				'url'      => learn_press_get_current_url(),
 				'siteurl'  => site_url(),
 				'ajax'     => admin_url( 'admin-ajax.php' ),
@@ -60,7 +62,7 @@ class LP_Assets extends LP_Abstract_Assets {
 					'button_no'     => __( 'No', 'learnpress' )
 				)
 			),
-			'checkout'     => array(
+			'checkout'             => array(
 				'ajaxurl'              => home_url(),
 				'user_waiting_payment' => LP()->checkout()->get_user_waiting_payment(),
 				'user_checkout'        => LP()->checkout()->get_checkout_email(),
@@ -70,13 +72,14 @@ class LP_Assets extends LP_Abstract_Assets {
 				'i18n_unknown_error'   => __( 'Unknown error', 'learnpress' ),
 				'i18n_place_order'     => __( 'Place order', 'learnpress' )
 			),
-			'profile-user' => array(
+			'profile-user'         => array(
 				'processing'  => __( 'Processing', 'learnpress' ),
 				'redirecting' => __( 'Redirecting', 'learnpress' ),
 				'avatar_size' => learn_press_get_avatar_thumb_size()
 			),
-			'course'       => learn_press_single_course_args(),
-			'quiz'         => learn_press_single_quiz_args()
+			'course'               => learn_press_single_course_args(),
+			'quiz'                 => learn_press_single_quiz_args(),
+			'vm-course-curriculum' => learn_press_get_course_curriculum_for_js( $post->ID )
 		);
 
 	}
@@ -111,57 +114,56 @@ class LP_Assets extends LP_Abstract_Assets {
 				)
 			)
 			: array(
-				'watchjs'          => self::url( 'js/vendor/watch.js' ),
-				'jalerts'          => self::url( 'js/vendor/jquery.alert.js' ),
-				//'circle-bar'       => self::url( 'js/vendor/circle-bar.js' ),
-				'lp-vue'           => array(
+				'watchjs'              => self::url( 'js/vendor/watch.js' ),
+				'jalerts'              => self::url( 'js/vendor/jquery.alert.js' ),
+				'lp-vue'               => array(
 					'url'     => self::url( 'js/vendor/vue' . $suffix . '.js' ),
 					'ver'     => '2.5.16',
 					'enqueue' => false
 				),
-				'lp-vuex'          => array(
+				'lp-vuex'              => array(
 					'url'     => self::url( 'js/vendor/vuex.2.3.1.js' ),
 					'ver'     => '2.3.1',
 					'enqueue' => false,
 					'deps'    => array( 'lp-vue' )
 				),
-				'lp-vue-resource'  => array(
+				'lp-vue-resource'      => array(
 					'url'     => self::url( 'js/vendor/vue-resource.1.3.4.js' ),
 					'ver'     => '1.3.4',
 					'enqueue' => false,
 					'deps'    => array( 'lp-vue', 'lp-vuex' )
 				),
-				'global'           => array(
+				'global'               => array(
 					'url'  => self::url( 'js/global.js' ),
 					'deps' => array(
-						'jquery', /*'underscore',*/
+						'jquery',
 						'utils'
 					)
 				),
-				'jquery-scrollbar' => array(
+				'jquery-scrollbar'     => array(
 					'url'  => self::url( 'js/vendor/jquery-scrollbar/jquery.scrollbar.js' ),
 					'deps' => array( 'jquery' )
 				),
-				'learnpress'       => array(
+				'learnpress'           => array(
 					'url'  => self::url( 'js/frontend/learnpress.js' ),
 					'deps' => array( 'global' )
 				),
-				'checkout'         => array(
+				'checkout'             => array(
 					'url'     => self::url( 'js/frontend/checkout.js' ),
 					'deps'    => array( 'global' ),
 					'enqueue' => learn_press_is_checkout() || learn_press_is_course() && ! learn_press_is_learning_course()
 
 				),
-				'course'           => array(
+				'course'               => array(
 					'url'  => self::url( 'js/frontend/course.js' ),
 					'deps' => array( 'global', 'jquery-scrollbar', 'watchjs', 'jalerts' )
 				),
-				'quiz'             => array(
+				'quiz'                 => array(
 					'url'     => self::url( 'js/frontend/quiz.js' ),
 					'deps'    => array( 'global', 'jquery-scrollbar', 'watchjs' ),
 					'enqueue' => LP_Global::course_item_quiz() ? true : false
 				),
-				'profile-user'     => array(
+				'profile-user'         => array(
 					'url'     => self::url( 'js/frontend/profile.js' ),
 					'deps'    => array(
 						'global',
@@ -172,19 +174,27 @@ class LP_Assets extends LP_Abstract_Assets {
 					),
 					'enqueue' => learn_press_is_profile()
 				),
-				'jquery-scrollto'  => array(
+				'jquery-scrollto'      => array(
 					'url'  => self::url( 'js/vendor/jquery.scrollTo.js' ),
 					'deps' => array(
 						'jquery'
 					)
 				),
-				'become-a-teacher' => array(
+				'become-a-teacher'     => array(
 					'url'  => self::url( 'js/frontend/become-teacher.js' ),
 					'deps' => array(
 						'jquery'
 					)
 				),
-				'notifications'    => array(
+				'vm-course-curriculum' => array(
+					'url'  => self::url( 'js/frontend/vm/course-curriculum.js' ),
+					'deps' => array( 'jquery', 'lp-vue-resource' )
+				),
+				'vm-course-content'    => array(
+					'url'  => self::url( 'js/frontend/vm/course-content.js' ),
+					'deps' => array( 'jquery', 'lp-vue-resource' )
+				),
+				'notifications'        => array(
 					'url'  => self::url( 'js/frontend/notifications.js' ),
 					'deps' => array(
 						'jquery'

@@ -200,7 +200,7 @@ add_action( 'learn-press/single-item-summary', function () {
 		remove_action( 'learn-press/after-content-item-summary/lp_lesson', 'learn_press_course_finish_button', 15 );
 		remove_action( 'learn-press/single-item-summary', 'learn_press_single_course_content_item', 10 );
 
-		learn_press_get_template( 'single-course/content-items' );
+		learn_press_get_template( '_vm/single-course/content-items' );
 	}
 }, 0 );
 

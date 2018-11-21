@@ -683,10 +683,13 @@ class LP_Page_Controller {
 	 * @return string
 	 */
 	public function single_content( $content ) {
+		echo "XXXXXXXX";die();
+
 		// Should not effect if current post is not a LP Course
 		if ( LP_COURSE_CPT != get_post_type() ) {
 			return $content;
 		}
+
 
 		#@NOTE: make sure current page is not lesson or quiz before return cache content of single course page
 // 		if ( function_exists( 'learn_press_content_single_course' ) && false !== ( $_content = LP_Object_Cache::get( 'course-' . get_the_ID(), 'course-content' ) ) ) {
