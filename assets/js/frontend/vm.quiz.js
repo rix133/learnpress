@@ -24,8 +24,6 @@
             },
         }
     });
-
-
     Vue.component('lp-course-item-lp_quiz', {
         //template: '#tmpl-course-item-content-lp_quiz',
         props: ['item', 'isCurrent', 'currentItem', 'itemId'],

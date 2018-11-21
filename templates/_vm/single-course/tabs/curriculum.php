@@ -156,6 +156,7 @@ $context     = $course_item ? 'course-item' : 'course';
                         var cls = $(this.vmArray2Array(item.classes)).filter(function (a, b) {
                             return -1 === $.inArray(b, ['current']);
                         }).get();
+                        console.log(item)
 
                         cls.push('course-item-' + item.type);
                         cls.push('course-item-' + item.id);

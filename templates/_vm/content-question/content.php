@@ -15,7 +15,6 @@
 defined( 'ABSPATH' ) || exit();
 
 ?>
-
 <div v-show="hasAccessLevel(20, '=') || isReviewing" :id="'learn-press-quiz-'+item.id" :class="mainClass()" tabindex="0"
      @keypress="_questionsNav($event)">
     <div class="quiz-progress">

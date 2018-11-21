@@ -21,7 +21,8 @@ $course = LP_Global::course();
 
 ?>
 
-<div <?php learn_press_content_item_summary_class();?>>
+
+<div <?php learn_press_content_item_summary_class(); ?>>
 
 	<?php
 
@@ -32,7 +33,6 @@ $course = LP_Global::course();
 	do_action( 'learn-press/after-content-item-summary/' . $item->get_item_type() );
 
 	?>
-
 </div>
 
 <?php /*

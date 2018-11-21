@@ -1644,8 +1644,8 @@ if ( ! function_exists( 'learn_press_content_single_item' ) ) {
 
 		if ( $course_item = LP_Global::course_item() ) {
 			// remove course comment form on singler item
-			add_filter( 'comments_open', 'learn_press_course_comments_open', 10, 2 );
-			learn_press_get_template( 'content-single-item.php' );
+//			add_filter( 'comments_open', 'learn_press_course_comments_open', 10, 2 );
+//			learn_press_get_template( 'content-single-item.php' );
 		}
 	}
 }
@@ -2833,7 +2833,6 @@ if ( ! function_exists( 'learn_press_course_curriculum_tab' ) ) {
 	 * @since 1.1
 	 */
 	function learn_press_course_curriculum_tab() {
-
 		if ( learn_press_use_vm() ) {
 			learn_press_get_template( '_vm/single-course/tabs/curriculum.php' );
 

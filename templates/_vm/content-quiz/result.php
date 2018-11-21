@@ -13,7 +13,9 @@
  * Prevent loading this file directly
  */
 defined( 'ABSPATH' ) || exit();
+
 ?>
+
 
 <div class="quiz-result" :class="[results.grade || results.grade_text]"
      v-show="hasAccessLevel(30, '=') && !isReviewing">
