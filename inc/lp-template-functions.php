@@ -73,19 +73,22 @@ if ( ! function_exists( 'learn_press_course_enroll_button' ) ) {
 		$course = LP_Global::course();
 
 		if ( $course->get_external_link() ) {
-			learn_press_show_log('Course has external link');
+			learn_press_show_log( 'Course has external link' );
+
 			return;
 		}
 
 		// If course is not published
 		if ( ! $course->is_publish() ) {
-			learn_press_show_log('Course is not published');
+			learn_press_show_log( 'Course is not published' );
+
 			return;
 		}
 
 		// Locked course for user
 		if ( $user->is_locked_course( $course->get_id() ) ) {
-			learn_press_show_log('Course is locked');
+			learn_press_show_log( 'Course is locked' );
+
 			return;
 		}
 
@@ -543,7 +546,7 @@ if ( ! function_exists( 'learn_press_course_item_content' ) ) {
 		global $lp_course, $lp_course_item;
 
 		$item = LP_Global::course_item();
-		$vm   = learn_press_is_vm_hook() ? '_vm/' : '';
+		$vm   = '';//learn_press_is_vm_hook() ? '_vm/' : '';
 		if ( $item->is_blocked() ) {
 			learn_press_get_template( 'global/block-content.php' );
 
@@ -2200,7 +2203,7 @@ function learn_press_setup_object_data( $post ) {
 		if ( isset( $GLOBALS['course'] ) ) {
 			unset( $GLOBALS['course'] );
 		}
-		$object                = learn_press_get_course( $post );
+		$object = learn_press_get_course( $post );
 		$object->prepare();
 		LP()->global['course'] = $GLOBALS['course'] = $GLOBALS['lp_course'] = $object;
 	}
@@ -2634,7 +2637,8 @@ function learn_press_get_template_content( $template_name, $args = array(), $tem
  *        yourtheme        /    $template_name
  *        $default_path    /    $template_name
  *
- * @access public
+ * @access  public
+ * @updated 20181122 - Auto detect if template is called for vm then find vm template
  *
  * @param string $template_name
  * @param string $template_path (default: '')
@@ -2651,21 +2655,43 @@ function learn_press_locate_template( $template_name, $template_path = '', $defa
 		$default_path = LP_PLUGIN_PATH . 'templates/';
 	}
 
+
 	if ( false === strpos( $template_name, '.php' ) ) {
 		$template_name .= '.php';
 	}
 
+	$templates = array(
+		0 => '',
+		1 => trailingslashit( $template_path ) . $template_name,
+		2 => '',
+		3 => $template_name
+	);
+
+	// If need to load vm template?
+	$load_vm_template = learn_press_is_vm_hook() && ! preg_match( '~^(_vm\/)~', $template_name );
+	if ( $load_vm_template ) {
+		$templates[0] = trailingslashit( $template_path ) . '_vm/' . $template_name;
+		$templates[2] = '_vm/' . $template_name;
+	} else {
+		$templates = array_values( $templates );
+	}
+
 	// Look within passed path within the theme - this is priority
 	$template = locate_template(
-		array(
-			trailingslashit( $template_path ) . $template_name,
-			$template_name
-		)
+		$templates
 	);
 
 	// Get default template
 	if ( ! $template ) {
-		$template = trailingslashit( $default_path ) . $template_name;
+
+		// Find vm template first
+		if ( $load_vm_template ) {
+			$template = trailingslashit( $default_path ) . '_vm/' . $template_name;
+		}
+
+		if ( ! $template || ! file_exists( $template ) ) {
+			$template = trailingslashit( $default_path ) . $template_name;
+		}
 	}
 
 	// Return what we found
@@ -4084,7 +4110,8 @@ function learn_press_vm_content_item_summary_quiz_question() {
 
 function learn_press_vm_quiz_buttons() {
 	?>
-    <button v-show="canRetake() && status=='completed' && !isReviewing" @click="_retakeQuiz()"><?php esc_html_e( 'Retake', 'learnpress' ); ?></button>
+    <button v-show="canRetake() && status=='completed' && !isReviewing"
+            @click="_retakeQuiz()"><?php esc_html_e( 'Retake', 'learnpress' ); ?></button>
     <button v-show="status=='completed' && !isReviewing"
             @click="_reviewQuestions()"><?php esc_html_e( 'Review', 'learnpress' ); ?></button>
     <button v-show="status=='completed' && isReviewing"

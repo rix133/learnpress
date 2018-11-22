@@ -90,6 +90,11 @@ class LP_User_Item_Ajax {
 		learn_press_send_json( $_REQUEST );
 	}
 
+	/**
+	 * Mark a course item is completed/uncompleted.
+	 *
+	 * @since 3.x.x
+	 */
 	public static function complete_course_item() {
 
 		self::verify();
@@ -103,13 +108,24 @@ class LP_User_Item_Ajax {
 			$course = $course_data->get_course();
 			$it     = $course->get_item( $itemId );
 
-			if ( $item->is_completed() ) {
-				$item->set_status( 'started' );
+			if ( LP_Request::get( 'status' ) ) {
+				$status = LP_Request::get_bool( 'status' ) ? 'completed' : 'started';
+			} else if ( $item->is_completed() ) {
+				$status = 'started';
+			}
+
+			if ( isset( $status ) ) {
+				$item->set_status( $status );
 				$item->update();
 			} else {
 				$item->complete();
 			}
+
+			$curd = new LP_User_Item_CURD();
+			$curd->parse_items_classes( LP_Request::get_int( 'courseId' ) );
+
 			$response['completed'] = $item->is_completed();
+			$response['status']    = $item->get_status();
 			$response['classes']   = array_values( $it->get_class() );
 			$response['results']   = $course_data->get_percent_result();
 		}
@@ -167,6 +183,9 @@ class LP_User_Item_Ajax {
 		learn_press_send_json( $result );
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	public static function complete_quiz() {
 		self::verify();
 		$course_id = LP_Request::get_int( 'courseId' );

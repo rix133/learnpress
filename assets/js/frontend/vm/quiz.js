@@ -14,17 +14,22 @@
         return LP.l10n ? LP.l10n.translate(text, a, b, c, d, e, f) : text;
     };
 
-    Vue.component('lp-question-type-__default-answers', {
+    window.LP = window.LP || {};
+
+    LP.$vComponents = LP.$vComponents || {};
+
+    LP.$vComponents['lp-question-type-__default-answers'] = {
         props: ['question'],
         methods: {
             getAnswerClass: function (answer) {
                 return answer.classes || ['answer-option'];
             },
             _triggerEvent: function (e) {
-            },
+            }
         }
-    });
-    Vue.component('lp-course-item-lp_quiz', {
+    }
+
+    LP.$vComponents['lp-course-item-lp_quiz'] = {
         //template: '#tmpl-course-item-content-lp_quiz',
         props: ['item', 'isCurrent', 'currentItem', 'itemId'],
         data: function () {
@@ -56,7 +61,7 @@
                     h: '00', m: '00', s: '00'
                 },
                 xyz: Math.random()
-            }, lpQuizQuestions)
+            }, {})
         },
         watch: {
             questions: {
@@ -127,7 +132,6 @@
                 LP.$vms = {};
             }
 
-            LP.$vms[this._uid] = this;
         },
         methods: {
             timeWarningClass: function () {
@@ -272,13 +276,15 @@
                 if (this.item.quizData) {
                     _then(this.item.quizData);
                 } else {
-                    $vmCourse._$request(false, 'get-quiz', {itemId: this.item.id, xxx: 1}).then(_then);
+                    LP.$ajaxRequest(false, 'get-quiz', {itemId: this.item.id, xxx: 1}).then(_then);
                 }
+
+                LP.$vms['Quiz_' + this.item.id] = this;
             },
             complete: function () {
                 var $vm = this;
                 this.stopCounter();
-                $vmCourse._$request(false, 'complete-quiz', {
+                LP.$ajaxRequest(false, 'complete-quiz', {
                     itemId: this.item.id,
                     answers: this.answers,
                     timeSpend: this.timeSpend
@@ -435,7 +441,7 @@
             },
             getQuestionData: function (data, questionId) {
                 questionId = questionId || this.currentQuestion;
-                return $vmCourse._$request(false, 'get-question-data',
+                return LP.$ajaxRequest(false, 'get-question-data',
                     $.extend({}, data || {}, {
                         itemId: this.itemId,
                         question_id: questionId
@@ -532,7 +538,7 @@
                 }
             },
             updateCurrentQuestion: function () {
-                window.$request('', 'update-current-question', {
+                LP.$ajaxRequest('', 'update-current-question', {
                     itemId: this.item.id,
                     questionId: this.currentQuestion
                 }).then(function (r) {
@@ -606,7 +612,7 @@
                     answers = LP.listPluck(q.optionAnswers, 'value', {checked: true});
                 q.checked = true;
 
-                if(q.type !== 'multi_choice'){
+                if (q.type !== 'multi_choice') {
                     answers = answers[0];
                 }
 
@@ -634,7 +640,7 @@
             _startQuiz: function () {
 
                 var $vm = this;
-                window.$request('', 'start-quiz', {itemId: this.item.id}).then(function (r) {
+                LP.$ajaxRequest('', 'start-quiz', {itemId: this.item.id}).then(function (r) {
                     LP.$vms['notifications'].add(r.notifications);
 
                     var assignFields = this.getAjaxFields();
@@ -655,7 +661,7 @@
             _retakeQuiz: function () {
                 var $vm = this;
                 this.answers = {};
-                window.$request('', 'retake-quiz', {itemId: this.item.id}).then(function (r) {
+                LP.$ajaxRequest('', 'retake-quiz', {itemId: this.item.id}).then(function (r) {
                     LP.$vms['notifications'].add(r.notifications);
 
                     var assignFields = $vm.getAjaxFields()
@@ -675,5 +681,5 @@
 //                    console.log('enter', this.currentQuestion)
             }, 10)
         }
-    });
+    }
 })(jQuery);

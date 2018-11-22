@@ -1232,6 +1232,7 @@ function learn_press_get_course_curriculum_for_js( $course_id = 0 ) {
 		'currentItem'    => $course_data->get_meta( '_current_item' ),
 		'totalItems'     => $course->count_items(),
 		'completedItems' => 0,
+		'autoNextItem'   => array( 'delay' => 3000, 'onlyUncompleted' => true ),
 		'ready'          => false,
 		'results'        => $course_data->get_percent_result(),
 		'sections'       => array()
@@ -1260,6 +1261,7 @@ function learn_press_get_course_curriculum_for_js( $course_id = 0 ) {
 							'type'      => $it->get_post_type(),
 							'slug'      => '',
 							'completed' => $it_data ? $it_data->is_completed() : false,
+							'status'    => $it_data ? $it_data->get_status() : '',
 							'preview'   => $it->is_preview(),
 							'permalink' => $it->get_permalink(),
 							'classes'   => $it->get_class()
@@ -1329,7 +1331,7 @@ function learn_press_get_quiz_data_json( $quizId, $courseId ) {
 	// Load questions
 	$questions = $quiz->get_question_ids();
 
-	remove_filter( 'the_content', array( LP_Page_Controller::instance(), 'single_content' ), 10000 );
+	//remove_filter( 'the_content', array( LP_Page_Controller::instance(), 'single_content' ), 10000 );
 	foreach ( $questions as $question_id ) {
 		$question = learn_press_get_question( $question_id );
 		$checked  = $user->has_checked_answer( $question->get_id(), $quiz->get_id(), get_the_ID() );
@@ -1383,6 +1385,8 @@ function learn_press_get_quiz_data_json( $quizId, $courseId ) {
 	}
 
 	wp_reset_postdata();
+
+	//add_filter( 'the_content', array( LP_Page_Controller::instance(), 'single_content' ), 10000 );
 
 	return apply_filters( 'learn-press/quiz-data-json', $json, $quizId, $courseId, $user->get_id() );
 }

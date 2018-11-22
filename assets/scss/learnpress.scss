@@ -462,15 +462,54 @@ ul.list-table-nav {
         text-align: right;
     }
 }
+
 .content-item-wrap {
     #comments {
         margin-left: 0;
         margin-right: 0;
-        #comment{
+        #comment {
             @include box-sizing(border-box);
         }
     }
 }
+
+#learn-press-course {
+    &.vm {
+        #learn-press-content-item,
+        #learn-press-course-curriculum {
+            .learn-press-ajax {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                margin: -15px 0 0 -15px;
+            }
+        }
+
+        .content-item-wrap,
+        .course-curriculum {
+            visibility: hidden;
+        }
+
+        &.ready {
+            .learn-press-ajax {
+                display: none;
+            }
+            .content-item-wrap,
+            .course-curriculum {
+                visibility: visible;
+            }
+        }
+    }
+}
+
+.learn-press-ajax {
+    overflow: hidden;
+    z-index: 999999999;
+    position: relative;
+    width: 30px;
+    color: #03b7ff;
+}
+
 @media screen and (max-width: 768px) {
     ul.learn-press-courses {
         .course {

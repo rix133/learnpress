@@ -339,6 +339,7 @@ class LP_Page_Controller {
 
 				setup_postdata( $post );
 				add_filter( 'the_content', array( $this, 'single_content' ), $this->_filter_content_priority );
+
 			} elseif ( $this->_is_archive() ) {
 				$this->_load_archive_courses( $template );
 			}
@@ -683,7 +684,7 @@ class LP_Page_Controller {
 	 * @return string
 	 */
 	public function single_content( $content ) {
-		echo "XXXXXXXX";die();
+
 
 		// Should not effect if current post is not a LP Course
 		if ( LP_COURSE_CPT != get_post_type() ) {

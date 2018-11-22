@@ -13,19 +13,20 @@ $course      = LP_Global::course();
 $course_item = LP_Global::course_item();
 $context     = $course_item ? 'course-item' : 'course';
 ?>
-<style>
-    #learn-press-course-curriculum .curriculum-sections {
-        opacity: 0;
-    }
 
-    #learn-press-course-curriculum.ready .curriculum-sections {
-        opacity: 1;
-    }
-</style>
+<div id="learn-press-course-curriculum" class="curriculum-scrollable">
 
-<div class="curriculum-scrollable">
+    <?php
+
+    /**
+     * @since 3.x.x
+     *
+     * @see learn_press_ajax_loading_svg
+     */
+    do_action('learn-press/vm/before-course-curriculum');
+    ?>
+
     <ul class="course-curriculum curriculum-sections" :class="['course-curriculum', ready ? 'ready' : '']"
-        id="learn-press-course-curriculum"
         data-context="<?php echo $context; ?>">
         <li v-for="(section, sectionIndex) in $courseStore().sections" :class="sectionClass(section)"
             :id="sectionHtmlId(section)"

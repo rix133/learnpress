@@ -25,6 +25,15 @@ $sections   = array();
 ?>
 <div id="learn-press-content-item">
 
+	<?php
+	/**
+	 * @since 3.x.x
+	 *
+	 * @see   learn_press_ajax_loading_svg
+	 */
+	do_action( 'learn-press/vm/before-course-items' );
+	?>
+
     <div class="content-item-scrollable">
 
         <div class="content-item-wrap">
@@ -54,20 +63,22 @@ $sections   = array();
                                        :item="currentItem"
                                        :item-id="<?php echo $item->get_id(); ?>"
                                        :current-item="currentItem"
-                                       :is-current="currentItem.id==<?php echo $item->get_id(); ?>" inline-template>
+                                       :is-current="currentItem.id==<?php echo $item->get_id(); ?>"
+                                       :can-next-item="canNextItem" inline-template>
                                 <div class="content-item-content">
 									<?php do_action( 'learn-press/vm/course-item-content', $item->get_id(), $course->get_id() ); ?>
                                 </div>
                             </component>
                         </div>
 						<?php
-						$it_data = learn_press_get_user_item_data( $item->get_id(), '', $course->get_id() );//->get_item( $item->get_id() );
+						$it_data = learn_press_get_user_item_data( $item->get_id(), '', $course->get_id() );
 						$it      = array(
 							'id'        => $item->get_id(),
 							'name'      => $item->get_title(),
 							'type'      => $item->get_post_type(),
 							'slug'      => '',
 							'completed' => $it_data ? $it_data->is_completed() : false,
+							'status'    => $it_data ? $it_data->get_status() : '',
 							'preview'   => $item->is_preview(),
 							'permalink' => $item->get_permalink(),
 							'classes'   => $item->get_class()

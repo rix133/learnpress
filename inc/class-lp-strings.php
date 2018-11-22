@@ -118,6 +118,10 @@ class LP_L10n {
 			'Hinted'                  => __( 'Da Goi Y', 'learnpress' ),
 			'Check'                   => __( 'Kiem Tra', 'learnpress' ),
 			'Checked'                 => __( 'Da Kiem Tra', 'learnpress' ),
+			'Completed'               => __( 'Completed', 'learnpress' ),
+			'Uncompleted'             => __( 'Uncompleted', 'learnpress' ),
+			'Mark Complete'           => __( 'Mark Complete', 'learnpress' ),
+			'Mark Uncompleted'        => __( 'Mark Uncompleted', 'learnpress' )
 		);
 
 		add_action( 'admin_print_scripts', array( $this, 'output' ) );

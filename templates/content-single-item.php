@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit();
 do_action( 'learn-press/before-single-item' );
 
 ?>
-<div id="learn-press-course" class="course-summary item-summary content-single-item">
+<div id="learn-press-course" class="course-summary item-summary content-single-item vm">
 	<?php
 	/**
 	 * @since 3.0.0

@@ -73,7 +73,6 @@ $context     = $course_item ? 'course-item' : 'course';
         }
 
         window.LP_Event_Bus = new Vue();
-        console.log('XXXXXXXXXXX')
 
         function xxx() {
             var $request = null;

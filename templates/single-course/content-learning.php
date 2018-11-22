@@ -13,7 +13,7 @@
  * Prevent loading this file directly
  */
 defined( 'ABSPATH' ) || exit();
-
+echo "XXXXX=",__FILE__;
 ?>
 
 <?php

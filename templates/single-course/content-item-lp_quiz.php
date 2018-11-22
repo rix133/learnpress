@@ -20,6 +20,8 @@ $quiz = LP_Global::course_item_quiz();
 
 ?>
 
+OLD TEMPLATE
+
 <div id="content-item-quiz" class="content-item-summary">
 
 	<?php

@@ -547,7 +547,7 @@
             //$contentItem.appendTo($body);
             //$curriculum.appendTo($body);
 
-            $('.course-summary.item-summary').appendTo($body);
+            //$('.course-summary.item-summary').appendTo($body);
 
             if ($('#wpadminbar').length) {
                 //$body.addClass('wpadminbar');

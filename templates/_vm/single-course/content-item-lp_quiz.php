@@ -6,7 +6,7 @@
  *
  * @author   ThimPress
  * @package  Learnpress/Templates
- * @version  3.0.0
+ * @version  3.x.x
  */
 
 /**
@@ -17,7 +17,6 @@ defined( 'ABSPATH' ) || exit();
 $quiz = LP_Global::course_item_quiz();
 
 ?>
-
 <div class="content-item-summary">
 	<?php
 	/**

@@ -19,6 +19,15 @@ class LP_Assets extends LP_Abstract_Assets {
 	 */
 	public function __construct() {
 		parent::__construct();
+
+		add_action( 'wp_footer', array( $this, 'single_course_js' ) );
+	}
+
+	public function single_course_js() {
+		global $post;
+		$data = learn_press_get_course_curriculum_for_js( $post->ID );
+		?>
+        <script>console.time('x');var lpVmCourseData = <?php echo json_encode( $data );?>;console.timeEnd('x');</script><?php
 	}
 
 	/**
@@ -50,7 +59,7 @@ class LP_Assets extends LP_Abstract_Assets {
 		global $post;
 
 		return array(
-			'global'               => array(
+			'global'       => array(
 				'url'      => learn_press_get_current_url(),
 				'siteurl'  => site_url(),
 				'ajax'     => admin_url( 'admin-ajax.php' ),
@@ -62,7 +71,7 @@ class LP_Assets extends LP_Abstract_Assets {
 					'button_no'     => __( 'No', 'learnpress' )
 				)
 			),
-			'checkout'             => array(
+			'checkout'     => array(
 				'ajaxurl'              => home_url(),
 				'user_waiting_payment' => LP()->checkout()->get_user_waiting_payment(),
 				'user_checkout'        => LP()->checkout()->get_checkout_email(),
@@ -72,14 +81,14 @@ class LP_Assets extends LP_Abstract_Assets {
 				'i18n_unknown_error'   => __( 'Unknown error', 'learnpress' ),
 				'i18n_place_order'     => __( 'Place order', 'learnpress' )
 			),
-			'profile-user'         => array(
+			'profile-user' => array(
 				'processing'  => __( 'Processing', 'learnpress' ),
 				'redirecting' => __( 'Redirecting', 'learnpress' ),
 				'avatar_size' => learn_press_get_avatar_thumb_size()
 			),
-			'course'               => learn_press_single_course_args(),
-			'quiz'                 => learn_press_single_quiz_args(),
-			'vm-course-curriculum' => learn_press_get_course_curriculum_for_js( $post->ID )
+			'course'       => learn_press_single_course_args(),
+			'quiz'         => learn_press_single_quiz_args(),
+			//'vm-course-curriculum' => learn_press_get_course_curriculum_for_js( $post->ID )
 		);
 
 	}
@@ -186,13 +195,21 @@ class LP_Assets extends LP_Abstract_Assets {
 						'jquery'
 					)
 				),
+				'vm-course-store'      => array(
+					'url'  => self::url( 'js/frontend/vm/course-store.js' ),
+					'deps' => array( 'jquery', 'lp-vue-resource' )
+				),
 				'vm-course-curriculum' => array(
 					'url'  => self::url( 'js/frontend/vm/course-curriculum.js' ),
-					'deps' => array( 'jquery', 'lp-vue-resource' )
+					'deps' => array( 'vm-course-store' )
+				),
+				'vm-course-quiz'       => array(
+					'url'  => self::url( 'js/frontend/vm/quiz.js' ),
+					'deps' => array( 'vm-course-store' )
 				),
 				'vm-course-content'    => array(
 					'url'  => self::url( 'js/frontend/vm/course-content.js' ),
-					'deps' => array( 'jquery', 'lp-vue-resource' )
+					'deps' => array( 'vm-course-store' )
 				),
 				'notifications'        => array(
 					'url'  => self::url( 'js/frontend/notifications.js' ),

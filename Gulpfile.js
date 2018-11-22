@@ -30,8 +30,6 @@ gulp.task('scss', function () {
         .pipe(scss())
         .pipe(function (destPath, options) {
             function sourceMapWrite(file, encoding, callback) {
-                console.log('xxxxx', file)
-
                 this.push(file);
                 callback();
             }

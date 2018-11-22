@@ -6,7 +6,7 @@
  *
  * @author   ThimPress
  * @package  Learnpress/Templates
- * @version  3.0.0
+ * @version  3.x.x
  */
 
 /**
@@ -15,7 +15,6 @@
 defined( 'ABSPATH' ) || exit();
 
 ?>
-
 
 <div class="quiz-result" :class="[results.grade || results.grade_text]"
      v-show="hasAccessLevel(30, '=') && !isReviewing">
