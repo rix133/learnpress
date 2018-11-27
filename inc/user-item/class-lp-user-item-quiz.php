@@ -453,7 +453,7 @@ class LP_User_Item_Quiz extends LP_User_Item {
 	 * @return array
 	 */
 	public function get_checked_questions() {
-		$value = $this->get_meta( '_lp_question_checked', true );
+		$value = $this->get_meta( '_question_checked', true );
 		if ( $value ) {
 			$value = (array) $value;
 		} else {
@@ -486,7 +486,7 @@ class LP_User_Item_Quiz extends LP_User_Item {
 				$checked   = $this->get_checked_questions();
 				$checked[] = $question_id;
 				$this->read_meta();
-				$this->set_meta( '_lp_question_checked', $checked );
+				$this->set_meta( '_question_checked', $checked );
 				$this->update_meta();
 				$remain --;
 			} else {
@@ -627,5 +627,43 @@ class LP_User_Item_Quiz extends LP_User_Item {
 
 	public function can_retake_quiz() {
 		return $this->get_user()->can_retake_quiz( $this->get_id(), $this->get_course() );
+	}
+
+	/**
+	 * Get answer options with options are checked or not
+	 * and/or correct/wrong options
+	 *
+	 * @since 3.x.x
+	 *
+	 * @param int $question_id
+	 *
+	 * @return array
+	 */
+	public function get_answer_options( $question_id ) {
+		/**
+		 * @var LP_Question_Answers       $options
+		 * @var LP_Question_Answer_Option $option
+		 */
+		$question = learn_press_get_question( $question_id );
+		$question->setup_data( $this->get_item_id(), $this->get_course_id(), $this->get_user_id() );
+
+		$answered = $this->get_question_answer( $question_id );
+		$options  = $question->get_answers();
+		$return   = array();
+
+		if ( $options ) {
+			settype( $answered, 'array' );
+			foreach ( $options as $k => $option ) {
+				$return[ $k ] = $option->to_array();
+
+				$return[ $k ]['checked']    = $option->is_checked();
+				$return[ $k ]['is_correct'] = $option->is_correct();
+				$return[ $k ]['classes-x']    = $option->get_class();
+			}
+		}
+
+		print_r($question);
+
+		return $return;
 	}
 }

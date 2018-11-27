@@ -40,6 +40,15 @@ $sections   = array();
 
             <div :class="mainClass()"
                  data-classes="<?php echo join( ' ', learn_press_content_item_summary_main_classes() ); ?>">
+
+                <?php
+
+                /**
+                 * @since 3.0.0
+                 */
+                do_action( 'learn-press/vm/before-course-item-content' );
+
+                ?>
 				<?php
 				foreach ( $course->get_sections() as $section ) {
 
@@ -60,7 +69,7 @@ $sections   = array();
 
                              class="learn-press-content-item content-item-<?php echo $item->get_post_type(); ?>">
                             <component :is="getComponent('<?php echo $item->get_post_type(); ?>')"
-                                       :item="currentItem"
+                                       :item="getItem(<?php echo $item->get_id(); ?>)"
                                        :item-id="<?php echo $item->get_id(); ?>"
                                        :current-item="currentItem"
                                        :is-current="currentItem.id==<?php echo $item->get_id(); ?>"
@@ -85,7 +94,12 @@ $sections   = array();
 						);
 
 						if ( $item->get_post_type() === LP_QUIZ_CPT ) {
-							$it['quizData'] = learn_press_get_quiz_data_json( $item->get_id(), $course->get_id() );
+							//$it['quizData'] = learn_press_get_quiz_data_json( $item->get_id(), $course->get_id() );
+
+							$quizData = learn_press_get_quiz_data_json( $item->get_id(), $course->get_id() );
+							foreach ( $quizData as $k => $v ) {
+								$it[ $k ] = $v;
+							}
 						}
 
 						$sec['items'][] = apply_filters( 'learn-press/course-item-data-js', $it, $item->get_id() );
@@ -94,6 +108,15 @@ $sections   = array();
 					$sections[] = apply_filters( 'learn-press/course-section-data-js', $sec, $course->get_id() );
 				}
 				?>
+
+	            <?php
+
+	            /**
+	             * @since 3.0.0
+	             */
+	            do_action( 'learn-press/vm/after-course-item-content' );
+
+	            ?>
             </div>
 
         </div>

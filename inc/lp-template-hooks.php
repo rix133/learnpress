@@ -536,5 +536,12 @@ add_action( 'learn-press/vm/before-content-item-summary/lp_lesson', 'learn_press
 add_action( 'learn-press/vm/content-item-summary/lp_lesson', 'learn_press_content_item_lesson_content', 10 );
 add_action( 'learn-press/vm/content-item-summary/lp_lesson', 'learn_press_content_item_lesson_content_blocked', 15 );
 
+/**
+ * @see learn_press_content_item_nav
+ * @see learn_press_lesson_comment_form
+ */
+add_action( 'learn-press/vm/after-course-item-content', 'learn_press_content_item_nav', 5 );
+//add_action( 'learn-press/vm/after-course-item-content', 'learn_press_lesson_comment_form', 10 );
+
 //add_action( 'learn-press/vm/after-content-item-summary/lp_lesson', 'learn_press_content_item_lesson_complete_button', 10 );
 //add_action( 'learn-press/vm/after-content-item-summary/lp_lesson', 'learn_press_course_finish_button', 15 );

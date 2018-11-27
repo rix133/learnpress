@@ -16,6 +16,10 @@ defined( 'ABSPATH' ) || exit();
 
 isset( $question ) or die( __( 'Invalid question!', 'learnpress' ) );
 
+/**
+ * @var LP_Question_Answers       $answers
+ * @var LP_Question_Answer_Option $answer
+ */
 if ( ! $answers = $question->get_answers() ) {
 	return;
 }

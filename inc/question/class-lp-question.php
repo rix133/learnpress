@@ -701,7 +701,7 @@ if ( ! class_exists( 'LP_Question' ) ) {
 			if ( $user && $quiz && $course ) {
 				if ( $user_quiz = $user->get_quiz_data( $quiz->get_id(), $course->get_id() ) ) {
 					$has_checked  = $user->has_checked_answer( $this->get_id(), $quiz->get_id(), $course->get_id() );
-					$show_correct = $user_quiz->is_completed() && ( $has_checked || $quiz->get_show_result() ) ? 'yes' : false;
+					$show_correct = ( $user_quiz->is_completed() && $quiz->get_show_result() ) || $has_checked ? 'yes' : false;
 					$answered     = $user_quiz->get_question_answer( $this->get_id() );
 					$this->set_answered( $answered );
 				}

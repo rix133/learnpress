@@ -84,53 +84,7 @@
             inPopup = false,
             isRTL = $body.hasClass('rtl');
 
-        /**
-         * fire native event of a DOM
-         *
-         * @param node
-         * @param eventName
-         */
-        function fireNativeEvent(node, eventName) {
-            var doc, event;
-            if (node.ownerDocument) {
-                doc = node.ownerDocument;
-            } else if (node.nodeType == 9) {
-                doc = node;
-            } else {
-                throw new Error("Invalid node passed to fireEvent: " + node.id);
-            }
 
-            if (node.dispatchEvent) {
-                var eventClass = "";
-
-                switch (eventName) {
-                    case "click":
-                    case "mousedown":
-                    case "mouseup":
-                        eventClass = "MouseEvents";
-                        break;
-
-                    case "focus":
-                    case "change":
-                    case "blur":
-                    case "select":
-                        eventClass = "HTMLEvents";
-                        break;
-
-                    default:
-                        throw "fireEvent: Couldn't find an event class for event '" + eventName + "'.";
-                        break;
-                }
-                event = doc.createEvent(eventClass);
-                event.initEvent(eventName, true, true);
-                event.synthetic = true;
-                node.dispatchEvent(event, true);
-            } else if (node.fireEvent) {
-                event = doc.createEventObject();
-                event.synthetic = true;
-                node.fireEvent("on" + eventName, event);
-            }
-        }
 
         /**
          * Toggle answer option check/uncheck
@@ -152,7 +106,7 @@
                 return;
             }
 
-            fireNativeEvent($chk[0], 'click');
+            LP.fireNativeEvent($chk[0], 'click');
         }
 
         /**

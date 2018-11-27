@@ -1663,6 +1663,95 @@ if (Array.prototype.sum === undefined) {
         return r;
     }
 
+    /**
+     * fire native event of a DOM
+     *
+     * @param node
+     * @param eventName
+     */
+
+    LP.fireNativeEvent = function fireNativeEvent(node, eventName) {
+        var doc, event;
+        if (node.ownerDocument) {
+            doc = node.ownerDocument;
+        } else if (node.nodeType == 9) {
+            doc = node;
+        } else {
+            throw new Error("Invalid node passed to fireEvent: " + node.id);
+        }
+
+        if (node.dispatchEvent) {
+            var eventClass = "";
+
+            switch (eventName) {
+                case "click":
+                case "mousedown":
+                case "mouseup":
+                    eventClass = "MouseEvents";
+                    break;
+
+                case "focus":
+                case "change":
+                case "blur":
+                case "select":
+                    eventClass = "HTMLEvents";
+                    break;
+
+                default:
+                    throw "fireEvent: Couldn't find an event class for event '" + eventName + "'.";
+                    break;
+            }
+            event = doc.createEvent(eventClass);
+            event.initEvent(eventName, true, true);
+            event.synthetic = true;
+            node.dispatchEvent(event, true);
+        } else if (node.fireEvent) {
+            event = doc.createEventObject();
+            event.synthetic = true;
+            node.fireEvent("on" + eventName, event);
+        }
+    }
+
+    LP.assignObject = function (a, b) {
+        var i, j;
+        for (i in b) {
+            if (!b.hasOwnProperty(i)) {
+                continue;
+            }
+
+            if ($.isPlainObject(b[i])) {
+                if (!$.isPlainObject(a[i])) {
+                    a[i] = {};
+                }
+                for (j in b[i]) {
+                    if (!b[i].hasOwnProperty(j)) {
+                        continue;
+                    }
+
+                    a[i][j] = b[i][j];
+                }
+            } else if ($.isArray(b[i])) {
+                //if (!$.isArray(a[i])) {
+                    a[i] = [];
+                //}
+                for (j = 0; j < b[i].length; j++) {
+
+                    a[i].push(b[i][j]);
+                }
+            } else {
+                a[i] = b[i];
+            }
+        }
+    }
+
+    LP.log = function () {
+        console.log.apply(null, arguments);
+    }
+
+    LP.debugMode = function () {
+        return window['LP_DEBUG'];
+    }
+
 
     LearnPress = LP;
 

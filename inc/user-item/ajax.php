@@ -26,6 +26,7 @@ class LP_User_Item_Ajax {
 			'start-quiz',
 			'retake-quiz',
 			'complete-quiz',
+			'check-question',
 			'get-question-data',
 			'update-quiz-state',
 			'update-current-question',
@@ -184,6 +185,10 @@ class LP_User_Item_Ajax {
 	}
 
 	/**
+	 * Ajax callback to complete a quiz.
+	 *
+	 * @since 3.x.x
+	 *
 	 * @throws Exception
 	 */
 	public static function complete_quiz() {
@@ -248,6 +253,7 @@ class LP_User_Item_Ajax {
 		$user->retake_quiz( $quiz_id, $course_id );
 		$quizData = self::$course_data->get_item( $quiz_id );
 		$quizData->update_meta( '_time_spend', 0 );
+		$quizData->update_meta( '_question_checked', '' );
 		$quizData->update_meta( '_question_answers', 0 );
 		$quizData->update_meta( 'grade', '' );
 		$quizData->reset();
@@ -257,6 +263,14 @@ class LP_User_Item_Ajax {
 		//LP_Notifications::instance()->add( 'You have completed quiz' );
 		//LP_Debug::rollbackTransaction();
 		learn_press_send_json( $result );
+	}
+
+	public function send_error( $data = array() ) {
+		$error = array(
+			'result'  => 'error',
+			'message' => 'Request failed!'
+		);
+		learn_press_send_json( array_merge( $error, (array) $data ) );
 	}
 
 	public static function get_quiz_json_data( $quizId, $courseId ) {
@@ -282,6 +296,71 @@ class LP_User_Item_Ajax {
 		return $answers;
 	}
 
+	public static function check_question() {
+		self::verify();
+		$user       = learn_press_get_current_user();
+		$course     = self::get_course();
+		$quiz       = self::get_item();
+		$questionId = LP_Request::get_int( 'questionId' );
+		$question   = learn_press_get_question( $questionId );
+
+		if ( $quiz->get_show_check_answer() == 0 ) {
+			self::send_error();
+		}
+
+		if ( $user->has_checked_question( $questionId, $quiz->get_id(), $course->get_id() ) ) {
+			self::send_error();
+		}
+
+		$course_data = $user->get_course_data( $course->get_id() );
+		if ( ! $course_data || 'enrolled' !== $course_data->get_status() ) {
+			self::send_error();
+		}
+
+		$quiz_data = $course_data->get_item( $quiz->get_id() );
+		if ( ! $quiz_data || 'started' !== $quiz_data->get_status() ) {
+			self::send_error();
+		}
+
+		if ( ! $user->can_check_answer( $quiz->get_id(), $course->get_id() ) ) {
+			self::send_error();
+		}
+
+		$quiz_data->add_question_answer( array( $questionId => LP_Request::get( 'answers' ) ) );
+		$quiz_data->update();
+
+		$question->setup_data( $quiz->get_id() );
+		$user->check_question( $questionId, $quiz->get_id(), $course->get_id() );
+		$checked  = $user->has_checked_question( $questionId, $quiz->get_id(), $course->get_id() );
+		$response = array(
+			'checkCount' => $quiz_data->can_check_answer(),
+			'hintCount'  => $quiz_data->can_hint_answer(),
+			'questions'  => array(
+				$questionId => array(
+					'checked' => $checked,
+					'answers' => $quiz_data->get_question_answer( $questionId )
+				)
+			)
+		);
+
+		if ( $checked ) {
+
+			$response['questions'][ $questionId ] = array_merge( $response['questions'][ $questionId ], array(
+				'explanation'   => $question->get_explanation(),
+				'hint'          => $question->get_hint(),
+				'optionAnswers' => array_values( $quiz_data->get_answer_options( $questionId ) )
+			) );
+
+		}
+
+		learn_press_send_json( $response );
+	}
+
+	/**
+	 * Get data of a question, process some extra actions first.
+	 *
+	 * @throws Exception
+	 */
 	public static function get_question_data() {
 		self::verify();
 		/**
@@ -289,7 +368,7 @@ class LP_User_Item_Ajax {
 		 * @var LP_Question_Answers       $answers
 		 * @var LP_Question_Answer_Option $answer
 		 */
-		LP_Debug::startTransaction();
+		//LP_Debug::startTransaction();
 		$course = self::get_course();
 		$user   = learn_press_get_current_user();
 		$quiz   = self::get_item();
@@ -301,6 +380,15 @@ class LP_User_Item_Ajax {
 		$extraReturn = false;
 		$question    = learn_press_get_question( $question_id );
 		$checkResult = false;
+
+		//LP_Object_Cache::flush();
+		$checked = $user->has_checked_answer( $question_id, $quiz->get_id(), $course->get_id() );
+		$json    = array(
+			'explanation'  => $checked ? $question->get_explanation() : '',
+			'extra_result' => $extraReturn,
+			'userAnswers'  => array()
+		);
+
 		switch ( $extraAction ) {
 			case 'check-answer':
 				if ( $extraData && array_key_exists( 'answers', $extraData ) ) {
@@ -320,43 +408,44 @@ class LP_User_Item_Ajax {
 						$checkResult = true;
 					}
 
-					$extraReturn = array(
-						'quiz_id'       => $quiz->get_id(),
-						'course_id'     => $course->get_id(),
-						'prev_question' => $user->get_prev_question( $quiz->get_id(), $course->get_id() ),
-						'next_question' => $user->get_next_question( $quiz->get_id(), $course->get_id() )
-					);
+//					$extraReturn = array(
+//						'quiz_id'       => $quiz->get_id(),
+//						'course_id'     => $course->get_id(),
+//						'prev_question' => $user->get_prev_question( $quiz->get_id(), $course->get_id() ),
+//						'next_question' => $user->get_next_question( $quiz->get_id(), $course->get_id() )
+//					);
 				}
 				$r = $user->check_question( $question_id, $quiz->get_id(), $course->get_id() );
+
+				$json['quizData'] = array(
+					'answers' => $quiz_data->get_question_answer( $question_id )
+				);
+
 				break;
 			case 'do_hint':
 				$user->hint( $question_id, $quiz->get_id(), $course->get_id() );
 		}
-		LP_Object_Cache::flush();
-		$checked = $user->has_checked_answer( $question_id, $quiz->get_id(), $course->get_id() );
-		$json    = array(
-			'explanation'  => $checked ? $question->get_explanation() : '__NONE__',
-			'extra_result' => $extraReturn,
-			'userAnswers'  => array()
-		);
+
 
 		if ( $checkResult ) {
-			if ( $answers = $question->get_answers() ) {
-				foreach ( $answers as $answer ) {
+//			if ( $answers = $question->get_answers() ) {
+//				foreach ( $answers as $answer ) {
+//
+//
+//					$json['userAnswers'][] = array(
+//						'id'      => $answer->get_id(),
+//						'checked' => $answer->is_checked(),
+//						'is_true' => $answer->is_true()
+//					);
+//
+//
+//				}
+//			}
 
 
-					$json['userAnswers'][] = array(
-						'id'      => $answer->get_id(),
-						'checked' => $answer->is_checked(),
-						'is_true' => $answer->is_true()
-					);
-
-
-				}
-			}
 		}
 
-		LP_Debug::rollbackTransaction();
+		//LP_Debug::rollbackTransaction();
 		learn_press_send_json( $json );
 	}
 

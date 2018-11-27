@@ -38,6 +38,7 @@
             LP_Event_Bus.$on('complete-item', this._completeItem);
             LP_Event_Bus.$on('completed-item', this._onCompletedItem);
             LP_Event_Bus.$on('next-item', this._onNextItem);
+            LP_Event_Bus.$on('move-to-item', this._onMoveToItem);
         },
         methods: {
             /**
@@ -190,6 +191,9 @@
             },
             _onNextItem: function (data) {
                 this._nextItem(data.$event, 0);
+            },
+            _onMoveToItem: function (data) {
+                this.$courseStore().currentItem = data.item;
             },
             _nextItem: function (e, delay) {
                 var isNext = this.$courseStore().autoNextItem,

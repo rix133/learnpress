@@ -2217,6 +2217,9 @@ ul.list-table-nav {
 #learn-press-course.vm.ready .course-curriculum {
   visibility: visible; }
 
+.course-item-nav {
+  margin-bottom: 20px; }
+
 .learn-press-ajax {
   overflow: hidden;
   z-index: 999999999;

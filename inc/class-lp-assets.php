@@ -27,7 +27,7 @@ class LP_Assets extends LP_Abstract_Assets {
 		global $post;
 		$data = learn_press_get_course_curriculum_for_js( $post->ID );
 		?>
-        <script>console.time('x');var lpVmCourseData = <?php echo json_encode( $data );?>;console.timeEnd('x');</script><?php
+        <script>console.time('x');var lpVmCourseData = <?php echo json_encode( $data, learn_press_is_debug() ? JSON_PRETTY_PRINT : false );?>;console.timeEnd('x');</script><?php
 	}
 
 	/**

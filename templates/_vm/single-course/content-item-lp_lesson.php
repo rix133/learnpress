@@ -35,12 +35,4 @@ $item = LP_Global::course_item();
         <template v-if="currentItem.completed">{{'<?php esc_html_e( 'Completed', 'learnpress' ); ?>'}}</template>
         <template v-else>{{'<?php esc_html_e( 'Complete', 'learnpress' ); ?>'}}</template>
     </button>
-    {{itemId}}
-    <template v-if="canNextItem">
-        <button class="button-next" type="button" @click="_nextItem($event, 0)" v-if="countdownNextItem!==false">Next
-            ({{countdownNextItem}})
-        </button>
-        <button class="button-next" type="button" @click="_nextItem($event, 0)" v-if="countdownNextItem===false">Next
-        </button>
-    </template>
 </div>

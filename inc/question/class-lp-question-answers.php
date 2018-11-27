@@ -429,6 +429,7 @@ if ( ! class_exists( 'LP_Question_Answer_Option' ) ) {
 
 				$is_checked = $this->is_checked();
 				$is_true    = $this->is_true();
+				$is_correct = $this->is_correct();
 
 				if ( $is_true ) {
 					$classes[] = 'answer-correct';
@@ -438,20 +439,36 @@ if ( ! class_exists( 'LP_Question_Answer_Option' ) ) {
 					$classes[] = 'answer-selected';
 				}
 
-				if ( $is_checked && $is_true ) {
+				if ( $is_correct === true ) {
 					$classes[] = 'answered-correct';
-				} elseif ( $is_checked && ! $is_true ) {
-					$classes[] = 'answered-wrong';
-				} elseif ( ! $is_checked && $is_true ) {
+				} elseif ( $is_correct === false ) {
 					$classes[] = 'answered-wrong';
 				}
-
 			}
 
 			// sanitize unwanted classes
 			$classes = LP_Helper::sanitize_array( $classes );
 
 			return apply_filters( 'learn-press/question/answer-option/classes', $classes, $this );
+		}
+
+		public function is_correct() {
+			$is_checked = $this->is_checked();
+			$is_true    = $this->is_true();
+			$correct    = '';
+
+			//var_dump($is_true, $is_checked, $this->get_answered());echo "ID=" . $this->get_question_id();
+			//echo "\n\n";
+
+			if ( $is_checked && $is_true ) {
+				$correct = true;
+			} elseif ( $is_checked && ! $is_true ) {
+				$correct = false;
+			} elseif ( ! $is_checked && $is_true ) {
+				$correct = false;
+			}
+
+			return $correct;
 		}
 
 		/**

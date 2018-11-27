@@ -4109,12 +4109,5 @@ function learn_press_vm_content_item_summary_quiz_question() {
 }
 
 function learn_press_vm_quiz_buttons() {
-	?>
-    <button v-show="canRetake() && status=='completed' && !isReviewing"
-            @click="_retakeQuiz()"><?php esc_html_e( 'Retake', 'learnpress' ); ?></button>
-    <button v-show="status=='completed' && !isReviewing"
-            @click="_reviewQuestions()"><?php esc_html_e( 'Review', 'learnpress' ); ?></button>
-    <button v-show="status=='completed' && isReviewing"
-            @click="_reviewQuestions()"><?php esc_html_e( 'Results', 'learnpress' ); ?></button>
-	<?php
+	learn_press_get_template( '_vm/content-quiz/buttons.php' );
 }

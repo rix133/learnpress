@@ -18,14 +18,12 @@
                 courseLoaded: false,
                 currentItem: {},
                 canNextItem: true,
-                item: {a: 0}
+                item: {a: 0},
+                prevItem: {},
+                nextItem: {}
             }
         },
         computed: {
-//                    currentItem: function () {
-//                        console.log('currentItem')
-//                        return this.$courseStore() ? this.$courseStore().currentItem : {};
-//                    },
             abcx: function () {
                 return this.abc();
             }
@@ -37,10 +35,12 @@
                 return newValue;
             },
             'currentItem.id': function (a, b) {
-                if (a != b) {
+                if (a != b && this.currentItem) {
                     LP.setUrl(this.currentItem.permalink);
                     this.$('.content-item-scrollable').scrollTop(0);
                 }
+
+                this.getNavItems();
                 return a;
             }
         },
@@ -50,6 +50,11 @@
             LP_Event_Bus.$on('completed-item', function (item) {
                 $vm.canNextItem = true;
             });
+
+            LP_Event_Bus.$on('next-item', function () {
+                console.log($vm.currentItem)
+            });
+
 
             $(document).on('LP.click-curriculum-item', function (e, data) {
                 data.$event && data.$event.preventDefault();
@@ -63,7 +68,7 @@
 
             $(document).on('LP.loaded-components', function () {
                 $vm.courseLoaded = true;
-            })
+            });
 
         },
         methods: {
@@ -80,6 +85,7 @@
                 }
                 return component;
             },
+
             abc: function () {
                 return Math.random();
             },
@@ -105,6 +111,25 @@
             getItem: function (itemId) {
                 return this.$courseStore('getItem')(itemId) || {};
             },
+            getNavItems: function () {
+                var $vm = this,
+                    items = this.$courseStore('allItems'),
+                    currentAt = items.findIndex(function (it) {
+                        return it.id == $vm.currentItem.id;
+                    });
+
+                if (currentAt > 0) {
+                    this.prevItem = items[currentAt - 1];
+                } else {
+                    this.prevItem = false;
+                }
+
+                if (currentAt < items.length - 1) {
+                    this.nextItem = items[currentAt + 1];
+                } else {
+                    this.nextItem = false;
+                }
+            },
             /**
              * Complete lesson button
              *
@@ -114,6 +139,21 @@
             _completeItem: function (e) {
                 this.canNextItem = false;
                 LP_Event_Bus.$emit('complete-item', {$event: e, item: this.currentItem});
+            },
+            _nextItem: function (e) {
+
+            },
+            _prevItem: function (e) {
+
+            },
+            _moveToItem: function (e, itemId) {
+                e.preventDefault();
+                var items = this.$courseStore('allItems'),
+                    at = items.findIndex(function (it) {
+                        return it.id == itemId;
+                    });
+                this.currentItem = items[at];
+                LP_Event_Bus.$emit('move-to-item', {item: this.currentItem});
             },
             $: function (selector) {
                 return selector ? $(this.$el).find(selector) : $(this.$el);
@@ -126,22 +166,6 @@
                         $store.getters[prop] = value;
                     } else {
                         return $store.getters[prop];
-                    }
-                }
-
-                return $store.getters['all'];
-
-                var $store = window.$courseStore;
-
-                if (!$store) {
-                    return undefined;
-                }
-
-                if (prop) {
-                    if (arguments.length == 2) {
-                        $store.getters['all'][prop] = value;
-                    } else {
-                        return $store.getters['all'][prop]
                     }
                 }
 
@@ -172,25 +196,9 @@
                 }
 
                 return $store.getters['all'];
-
-                // var $store = window.$courseStore;
-                //
-                // if (!$store) {
-                //     return undefined;
-                // }
-                //
-                // if (prop) {
-                //     if (arguments.length == 2) {
-                //         $store.getters['all'][prop] = value;
-                //     } else {
-                //         return $store.getters['all'][prop]
-                //     }
-                // }
-                //
-                // return $store.getters['all'];
             }
         }
-    }
+    };
 
     LP.$vComponents['lp-course-item'] = $.extend({}, componentDefaults, {
         getComponent: function (type) {
@@ -254,8 +262,6 @@
             }
         }
     });
-
-    console.log(LP.$vComponents['lp-course-item-lp_lesson']);
 
     $(document).ready(function () {
         var c, $vms = LP.$vms, $vComponents = LP.$vComponents;

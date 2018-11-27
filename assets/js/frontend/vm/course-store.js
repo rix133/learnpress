@@ -63,7 +63,7 @@
                 return function (itemId) {
                     for (var i = 0, n = state.sections.length; i < n; i++) {
                         var item = state.sections[i].items.find(function (a) {
-                            return a.id == state.currentItem;
+                            return a.id == itemId;
                         });
 
                         if (item) {

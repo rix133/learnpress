@@ -16,20 +16,20 @@ defined( 'ABSPATH' ) || exit();
 
 ?>
 
-<div class="quiz-result" :class="[results.grade || results.grade_text]"
+<div class="quiz-result"
      v-show="hasAccessLevel(30, '=') && !isReviewing">
 
     <h3><?php _e( 'Your Result', 'learnpress' ); ?></h3>
     <div class="result-grade">
         <span class="result-achieved">{{getResultFormatted(2)}}%</span>
-        <span class="result-require">{{passingGrade}}</span>
+        <span class="result-require">{{item.passingGrade}}</span>
         <p class="result-message" v-html="getResultMessage()"></p>
     </div>
 
     <ul class="result-statistic">
         <li class="result-statistic-field">
             <label><?php echo _x( 'Time spend', 'quiz-result', 'learnpress' ); ?></label>
-            <p>{{results.time_spend}}</p>
+            <p>{{item.results.time_spend}}</p>
         </li>
         <li class="result-statistic-field">
             <label><?php echo _x( 'Questions', 'quiz-result', 'learnpress' ); ?></label>
@@ -37,15 +37,15 @@ defined( 'ABSPATH' ) || exit();
         </li>
         <li class="result-statistic-field">
             <label><?php echo _x( 'Correct', 'quiz-result', 'learnpress' ); ?></label>
-            <p>{{results.question_correct}}</p>
+            <p>{{item.results.question_correct}}</p>
         </li>
         <li class="result-statistic-field">
             <label><?php echo _x( 'Wrong', 'quiz-result', 'learnpress' ); ?></label>
-            <p>{{results.question_wrong}}</p>
+            <p>{{item.results.question_wrong}}</p>
         </li>
         <li class="result-statistic-field">
             <label><?php echo _x( 'Skipped', 'quiz-result', 'learnpress' ); ?></label>
-            <p>{{results.question_empty}}</p>
+            <p>{{item.results.question_empty}}</p>
         </li>
     </ul>
 

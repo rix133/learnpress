@@ -5,6 +5,19 @@
  * @version 3.2.0
  */
 ;(function ($) {
+
+    /**
+     * Shortcut function for translating texts
+     *
+     * @param text
+     * @param a
+     * @param b
+     * @param c
+     * @param d
+     * @param e
+     * @param f
+     * @returns {*}
+     */
     var translate = function (text, a, b, c, d, e, f) {
         var args = [];
 
@@ -18,50 +31,87 @@
 
     LP.$vComponents = LP.$vComponents || {};
 
+    /**
+     * Default type of question
+     */
     LP.$vComponents['lp-question-type-__default-answers'] = {
-        props: ['question'],
+        props: ['question', 'answers'],
+        data: function () {
+            return {
+                answersX: []
+            }
+        },
+        computed: {
+            myAnswers: {
+                set: function (answer) {
+                    this.$emit('update-answer', {id: this.question.id, answer: answer}, 100, 200);
+                },
+                get: function () {
+                    return this.answers[this.question.id] || [];
+                }
+            }
+        },
         methods: {
             getAnswerClass: function (answer) {
-                return answer.classes || ['answer-option'];
+                var classes = answer.classes || ['answer-option'];
+
+                return classes;
             },
             _triggerEvent: function (e) {
+            },
+            disableOption: function () {
+                if (this.$parent.status === 'completed') {
+                    return true;
+                }
+
+                if (this.question.checked) {
+                    return true;
+                }
+
+                return false;
             }
         }
-    }
+    };
 
+    /**
+     * Vue Quiz
+     *
+     * @version 3.x.x
+     */
     LP.$vComponents['lp-course-item-lp_quiz'] = {
-        //template: '#tmpl-course-item-content-lp_quiz',
-        props: ['item', 'isCurrent', 'currentItem', 'itemId'],
+        props: ['isCurrent', 'currentItem', 'itemId', 'item'],
         data: function () {
             return $.extend({}, {
-                status: '',
-                currentQuestion: 0,
+                // status: '',
+                // currentQuestion: 0,
+                // childAnswers: {},
+                // questions: [],
+                // hintCount: 0,
+                // checkCount: 0,
+                // totalTime: 0,
+                // timeRemaining: 0,
+                // passingGrade: 0,
+                // quizData: '',
+                // results: {
+                //     result: 0,
+                //     time_spend: 0,
+                //     question_correct: 0,
+                //     question_wrong: 0,
+                //     question_empty: 0,
+                //     grade_text: ''
+                // },
+
+                ///////
                 isLoading: true,
                 questionIds: [],
-                answers: {},
                 isFirst: false,
                 isLast: false,
-                questions: [],
-                hintCount: 0,
-                checkCount: 0,
-                totalTime: 0,
-                timeRemaining: 0,
                 isReviewing: false,
-                passingGrade: 0,
-                quizData: '',
-                results: {
-                    result: 0,
-                    time_spend: 0,
-                    question_correct: 0,
-                    question_wrong: 0,
-                    question_empty: 0,
-                    grade_text: ''
-                },
+                //answers: {},
                 clock: {
                     h: '00', m: '00', s: '00'
-                },
-                xyz: Math.random()
-            }, {})
+                }
+            })
         },
         watch: {
             questions: {
@@ -72,7 +122,7 @@
             },
             isCurrent: function (a, b) {
                 if (a) {
-                    if (this.status === '') {
+                    if (this.item.status === '') {
                         this.load();
                     }
 
@@ -83,40 +133,36 @@
 
                 return a;
             },
-            status: function (a, b) {
-                if (a) {
-                    //this.$().closest('.learn-press-content-item').find('.content-item-content').hide();
-
-                    if (a == 'completed') {
-                        this.$('.answer-option').find('input, textarea, select').attr('disabled', 'disabled');
-                    }
-                }
-                return a;
-            },
-            timeRemaining: function (v) {
+            'item.timeRemaining': function (v) {
                 this.clock = this.secondsToTime(v);
                 return v;
             },
             currentQuestion: function (v, p) {
-                if (this.status === 'completed') {
+                if (this.item.status === 'completed') {
                     this.checkAnswers(v);
                 }
 
                 this.updateCurrentQuestion();
-            },
-            answers: {
-                handler: function (v) {
-                    var $vm = this;
-                    $.each(this.$('.quiz-question'), function () {
-                        //$vm.fillAnswers($(this));
-                    });
-                },
-                deep: true
             }
         },
         computed: {
+            currentQuestion: {
+                set: function (v) {
+                    this.item.currentQuestion = v;
+                },
+                get: function () {
+                    return this.item.currentQuestion;
+                }
+            },
+            answers: {
+                set: function (v) {
+                    this.item.answers = v;
+                },
+                get: function () {
+                    return this.item.answers;
+                }
+            },
             isActive: function () {
-
                 return v;
             },
             questionContent: function () {
@@ -132,10 +178,14 @@
                 LP.$vms = {};
             }
 
+            LP.$vms['Quiz_' + this.item.id] = this;
         },
         methods: {
             timeWarningClass: function () {
-                return [this.timeRemaining <= 5 ? 'timeover' : ''];
+                return [this.item.timeRemaining <= 5 ? 'timeover' : ''];
+            },
+            getItem: function () {
+
             },
             secondsToTime: function (seconds) {
                 var MINUTE_IN_SECONDS = 60,
@@ -192,8 +242,9 @@
                 return $.inArray(type, ['single_choice', 'true_or_false', 'multi_choice']) !== -1;
             },
             init: function () {
+
                 var $vm = this;
-                this.questionIds = $(this.questions).map(function () {
+                this.questionIds = $(this.item.questions).map(function () {
                     return this.id;
                 }).get();
 
@@ -217,8 +268,8 @@
                     });
 
                     if ($.isEmptyObject($vm.answers)) {
-                        $inputs.filter('input[type="radio"], input[type="checkbox"]').prop('disabled', false).prop('checked', false);
-                        $inputs.filter(':not(input[type="radio"]), :not(input[type="checkbox"])').prop('disabled', false).val('');
+                        //$inputs.filter('input[type="radio"], input[type="checkbox"]').prop('disabled', false).prop('checked', false);
+                        //$inputs.filter(':not(input[type="radio"]), :not(input[type="checkbox"])').prop('disabled', false).val('');
                     }
 
                     var scripts = [];
@@ -239,27 +290,13 @@
 
                 }, 300));
 
-                if (this.status === 'started') {
+                if (this.item.status === 'started') {
                     this.startCounter();
-                    // !this.heartbeat && (this.heartbeat = new LP.Heartbeat({
-                    //     period: 10000
-                    // }).run(function (next) {
-                    //     if (this.isActivate() && this.status === 'started') {
-                    //         $vmCourse._$request(false, 'update-quiz-state', {
-                    //             itemId: this.item.id,
-                    //             answers: this.answers,
-                    //             timeSpend: this.timeSpend || 0
-                    //         }).then(function (r) {
-                    //             console.log(this, r);
-                    //             next();
-                    //         }.bind(this));
-                    //     } else {
-                    //         next();
-                    //     }
-                    // }, this));
                 }
             },
-
+            isShowQuestion: function (question) {
+                return this.isLoading || this.currentQuestion == question.id;
+            },
             load: function () {
                 var $vm = this,
                     _then = function (r) {
@@ -273,33 +310,34 @@
                         $vm.init();
                     };
 
-                if (this.item.quizData) {
-                    _then(this.item.quizData);
-                } else {
-                    LP.$ajaxRequest(false, 'get-quiz', {itemId: this.item.id, xxx: 1}).then(_then);
-                }
+                // if (this.item.quizData) {
+                //     _then(this.item.quizData);
+                // } else {
+                //     LP.$ajaxRequest(false, 'get-quiz', {itemId: this.item.id, xxx: 1}).then(_then);
+                // }
 
-                LP.$vms['Quiz_' + this.item.id] = this;
+                $vm.init();
             },
             complete: function () {
                 var $vm = this;
                 this.stopCounter();
+
                 LP.$ajaxRequest(false, 'complete-quiz', {
                     itemId: this.item.id,
                     answers: this.answers,
                     timeSpend: this.timeSpend
                 }).then(function (r) {
                     if (r.status) {
-                        $vm.status = r.status;
-                        $vm.results = r.results;
+                        $vm.item.status = r.status;
+                        $vm.item.results = r.results;
                     }
                 })
             },
             startCounter: function () {
                 this.timer && clearInterval(this.timer);
                 this.timer = setInterval(function () {
-                    this.timeRemaining > 0 ? this.timeRemaining-- : this.complete();
-                    this.timeSpend++;
+                    this.item.timeRemaining > 0 ? this.item.timeRemaining-- : this.complete();
+                    this.item.timeSpend++;
 
                     //console.log('Counting #', this.itemId, '...', this.timeRemaining, ':', this.timeSpend)
                 }.bind(this), 1000);
@@ -312,16 +350,16 @@
                 if (!LP.l10n) {
                     return '';
                 }
-                return translate('Your grade is <strong>%s</strong>', !this.results.grade_text ? translate('Ungraded') : this.results.grade_text);
+                return '';//translate('Your grade is <strong>%s</strong>', !this.results.grade_text ? translate('Ungraded') : this.results.grade_text);
             },
             isActivate: function () {
                 return this.item.id === this.itemId;
             },
             hasQuestions: function () {
-                return this.questions && this.questions.length;
+                return this.item.questions && this.item.questions.length;
             },
             isShowContent: function () {
-                return this.item.quiz ? !this.item.quiz.status : true;
+                return false;//this.item.quiz ? !this.item.quiz.status : true;
             },
             applyFilters: function (action, args) {
                 var filteredArgs = $(document).triggerHandler(action, args);
@@ -350,7 +388,7 @@
                     answers.push($(this).val());
                 });
 
-                Vue.set($vm.answers, id, answers);
+                //Vue.set($vm.answers, id, answers);
             },
             toggleButtons: function () {
                 var $vm = this;
@@ -372,12 +410,12 @@
                 })(this.questionIds, id || this.currentQuestion);
             },
             getQuestion: function (id) {
-                return this.questions.find(function (a) {
+                return this.item.questions.find(function (a) {
                     return a.id == id
                 })
             },
             getResultFormatted: function (decimal) {
-                return this.results.result.toFixed(2);
+                return this.item.results ? this.item.results.result.toFixed(2) : 0;
             },
             $: function (selector) {
                 return selector ? $(this.$el).find(selector) : $(this.$el)
@@ -408,9 +446,30 @@
                 return this.hintCount && (q && !q.hinted && q.hasHint);
             },
             canCheckQuestion: function (questionId) {
+
                 questionId = questionId || this.currentQuestion;
+
+                // Option is turn of in quiz
+                if (this.item.showCheckAnswer !== 'yes') {
+                    LP.log('showCheckAnswer is disabled');
+                    return false;
+                }
+
+                // There is no more checks
+                if (!this.item.checkCount) {
+                    LP.log('checkCount = 0');
+                    return false;
+                }
+
+                // Did not check any option
+                if (!this.answers[questionId]) {
+                    LP.log('No option selected');
+                    return false;
+                }
+
                 var q = this.getQuestionById(questionId);
-                return this.checkCount && (this.answers[questionId] && this.answers[questionId].length) && (q && !q.checked /*&& q.hasExplanation*/);
+
+                return this.item.checkCount && (this.answers[questionId] && this.answers[questionId].length) && (q && !q.checked /*&& q.hasExplanation*/);
             },
             canRetake: function () {
                 return true;
@@ -490,10 +549,10 @@
             getQuestionById: function (questionId) {
                 questionId = questionId || this.currentQuestion;
                 var at = this.getQuestionIndex(questionId);
-                return this.questions ? this.questions[at] : false;
+                return this.item.questions ? this.item.questions[at] : false;
             },
             getAccessLevel: function () {
-                switch (this.status) {
+                switch (this.item.status) {
                     case 'completed':
                         return 30;
                     case 'started':
@@ -528,12 +587,12 @@
                 return this.applyFilters('LP.quiz-ajax-fields', fields);
             },
             onActivate: function () {
-                if (this.status === 'started') {
+                if (this.item.status === 'started') {
                     this.startCounter();
                 }
             },
             onDeactivate: function () {
-                if (this.status === 'started') {
+                if (this.item.status === 'started') {
                     this.stopCounter();
                 }
             },
@@ -543,6 +602,45 @@
                     questionId: this.currentQuestion
                 }).then(function (r) {
                 })
+            },
+            /**
+             * Set data from ajax response to item of this quiz.
+             *
+             * @since 3.x.x
+             *
+             * @param {Object} response     Response data to assigns.
+             * @param {Array} excludeProps  Properties will ignore.
+             */
+            setResponseData: function (response, excludeProps) {
+                var prop, i, n, id, newQuestion;
+
+                for (prop in response) {
+
+                    if (!response.hasOwnProperty(prop)) {
+                        continue;
+                    }
+
+                    // Exclude the prop in list
+                    if ($.isArray(excludeProps) && -1 !== $.inArray(prop, excludeProps)) {
+                        continue;
+                    }
+
+                    if (prop === 'questions') {
+                        for (i = 0, n = this.item.questions.length; i < n; i++) {
+                            id = this.item.questions[i].id;
+                            newQuestion = response.questions[id];
+
+                            if (newQuestion) {
+                                LP.assignObject(this.item.questions[i], newQuestion);
+                            }
+                        }
+                    } else {
+                        this.item[prop] = response[prop];
+                    }
+                }
+            },
+            _updateQuestionAnswer: function (data) {
+                Vue.set(this.item.answers, data.id, data.answer);
             },
             _questionsNav: function ($event) {
                 switch ($event.keyCode) {
@@ -572,10 +670,11 @@
                 this._moveToQuestion(null, at)
             },
             _moveToQuestion: function ($e, at) {
+
                 this.currentQuestion = this.questionIds[at];
                 this.toggleButtons();
 
-                var q = this.questions[at];
+                var q = this.item.questions[at];
 
                 if (q && q.permalink) {
                     LP.setUrl(q.permalink)
@@ -586,6 +685,7 @@
             },
             _complete: function () {
                 var $vm = this;
+
                 jConfirm(translate('Do you want to finish quiz %s?', this.item.name), '', $.proxy(function (confirm) {
                     $vm.complete();
                 }, this));
@@ -606,15 +706,29 @@
 
 
             },
+            /**
+             * Event handler for button 'Check Answer'
+             *
+             * @since 3.x.x
+             * @private
+             */
             _doCheckAnswer: function () {
                 var $vm = this,
-                    q = this.questions[this.getQuestionIndex()],
-                    answers = LP.listPluck(q.optionAnswers, 'value', {checked: true});
+                    q = this.item.questions[this.getQuestionIndex()],
+                    answers = this.answers[q.id] || false;/// LP.listPluck(q.optionAnswers, 'value', {checked: true});
                 q.checked = true;
 
-                if (q.type !== 'multi_choice') {
+                if (q.type !== 'multi_choice' && $.isArray(answers)) {
                     answers = answers[0];
                 }
+
+                return LP.$ajaxRequest(false, 'check-question', {
+                    itemId: this.itemId,
+                    questionId: this.item.currentQuestion,
+                    answers: answers
+                }).then(function (response) {
+                    $vm.setResponseData(response);
+                })
 
                 this.getQuestionData({
                     extraAction: 'check-answer',
@@ -622,13 +736,13 @@
                 }).then(function (r) {
                     var response = r || {};
                     q.explanation = response.explanation;
-                    $vm.checkAnswers(q, response.userAnswers)
+                    $vm.checkAnswers(q, response.userAnswers);
                     $vm.checkCount--;
                 });
 
             },
             _doHintAnswer: function () {
-                var q = this.questions[this.getQuestionIndex()];
+                var q = this.item.questions[this.getQuestionIndex()];
                 q.hinted = true;
                 q.hint = 'Hint: ' + Math.random();
                 this.hintCount--;
@@ -641,7 +755,7 @@
 
                 var $vm = this;
                 LP.$ajaxRequest('', 'start-quiz', {itemId: this.item.id}).then(function (r) {
-                    LP.$vms['notifications'].add(r.notifications);
+                    //LP.$vms['notifications'].add(r.notifications);
 
                     var assignFields = this.getAjaxFields();
                     $vm.$set($vm.item, 'quizData', r.quizData);
@@ -662,13 +776,12 @@
                 var $vm = this;
                 this.answers = {};
                 LP.$ajaxRequest('', 'retake-quiz', {itemId: this.item.id}).then(function (r) {
-                    LP.$vms['notifications'].add(r.notifications);
+                    //LP.$vms['notifications'].add(r.notifications);
 
-                    var assignFields = $vm.getAjaxFields()
-                    $vm.$set($vm.item, 'quizData', r.quizData);
+                    var assignFields = $vm.getAjaxFields();
 
                     $.each(assignFields, function (a, b) {
-                        $vm[b] = r.quizData[b];
+                        $vm.item[b] = r.quizData[b];
                     });
 
                     $vm.answers = {};

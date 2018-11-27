@@ -813,6 +813,55 @@ if ( ! class_exists( 'LP_Quiz' ) ) {
 			return apply_filters( 'learn-press/quiz/post-object', $the_quiz );
 		}
 
+		/**
+		 * Quiz editor get questions.
+		 *
+		 * @return mixed
+		 */
+		public function quiz_editor_get_questions() {
+			// list questions
+			$questions = $this->get_questions();
+			// order questions in quiz
+			$question_order = learn_press_quiz_get_questions_order( $questions );
+
+			$result = array();
+			if ( is_array( $questions ) ) {
+				foreach ( $questions as $index => $id ) {
+
+					$question = LP_Question::get_question( $id );
+
+					$answers = array();
+					// handle question answer
+					if ( is_array( $question->get_data( 'answer_options' ) ) ) {
+						foreach ( $question->get_data( 'answer_options' ) as $answer ) {
+							$answers[] = $answer;
+						}
+					}
+
+					$post     = get_post( $id );
+					$result[] = apply_filters( 'learn-press/quiz-editor/question-data', array(
+						'id'       => $id,
+						'open'     => false,
+						'title'    => $post->post_title,
+						'type'     => array(
+							'key'   => $question->get_type(),
+							'label' => $question->get_type_label()
+						),
+						'answers'  => apply_filters( 'learn-press/quiz-editor/question-answers-data', $answers, $id, $this->get_id() ),
+						'settings' => array(
+							'content'     => $post->post_content,
+							'mark'        => get_post_meta( $id, '_lp_mark', true ),
+							'explanation' => get_post_meta( $id, '_lp_explanation', true ),
+							'hint'        => get_post_meta( $id, '_lp_hint', true )
+						),
+						'order'    => $question_order[ $index ]
+					), $id, $this->get_id() );
+				}
+			}
+
+			return apply_filters( 'learn-press/quiz/quiz_editor_questions', $result, $this->get_id() );
+		}
+
 		public function set_show_hide_question( $show_or_hide ) {
 			$this->_set_data( 'show_hide_question', $show_or_hide );
 		}
