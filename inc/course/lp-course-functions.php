@@ -1232,6 +1232,8 @@ function learn_press_get_course_curriculum_for_js( $course_id = 0, $user_id = 0 
 	$course_data = $user->get_course_data( $course_id );
 	$curriculum  = array(
 		'rootUrl'        => trailingslashit( site_url() ),
+		'apiUrl'         => trailingslashit( site_url() ) . 'wp-json/learnpress/v1/',
+		'apiNonce'       => wp_create_nonce( 'wp_rest' ),
 		'identify'       => wp_create_nonce( 'lp-' . $user->get_id() . '-' . $course_id ),
 		'courseId'       => $course_id,
 		'userId'         => $user_id,

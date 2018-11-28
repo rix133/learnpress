@@ -96,6 +96,13 @@ if ( ! class_exists( 'LearnPress' ) ) {
 		public $global = array();
 
 		/**
+		 * Beta
+		 *
+		 * @var LP_API
+		 */
+		public $api = null;
+
+		/**
 		 * Manage all processes run in background.
 		 *
 		 * @var LP_Abstract_Background_Process[]
@@ -347,11 +354,16 @@ if ( ! class_exists( 'LearnPress' ) ) {
 
 			require_once 'inc/class-lp-widget.php';
 
+			require_once 'inc/class-lp-api.php';
+
 			if ( file_exists( LP_PLUGIN_PATH . '/local-debug.php' ) ) {
 				include_once 'local-debug.php';
 			}
 
 			$GLOBALS['lp_query'] = $this->query = new LP_Query();
+
+			// Did not release
+			$this->api = new LP_API();
 		}
 
 		/**

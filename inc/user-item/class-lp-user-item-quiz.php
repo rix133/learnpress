@@ -662,8 +662,6 @@ class LP_User_Item_Quiz extends LP_User_Item {
 			}
 		}
 
-		print_r($question);
-
 		return $return;
 	}
 }

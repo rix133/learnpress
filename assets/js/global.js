@@ -860,9 +860,10 @@ if (Array.prototype.sum === undefined) {
             };
         },
 
-        Request: function ($store, defaultData) {
+        Request: function ($store, defaultData, url) {
 
-            var identify = $store.getters.identify || 'lp_' + LP.uniqueId();
+            var identify = $store.getters.identify || 'lp_' + LP.uniqueId(),
+                rootUrl = url || $store.getters.rootUrl;
 
             Vue.http.interceptors.push(function (request, next) {
                 if (request.params['namespace'] !== identify) {
@@ -878,9 +879,24 @@ if (Array.prototype.sum === undefined) {
                     var result = true;
                     if (request.params.dataType !== 'raw') {
 
-                        if (!jQuery.isPlainObject(response.body)) {
-                            response.body = LP.parseJSON(response.body) || {};
+                        var responseData = response.body || response.bodyText;
+
+                        if (!jQuery.isPlainObject(responseData)) {
+                            var restSignature = '<!-- LP_REST_API_RESPONSE -->',
+                                at = responseData.indexOf(restSignature);
+
+                            if (at !== -1) {
+                                responseData = responseData.substr(at + restSignature.length);
+                                try {
+                                    response.body = JSON.parse(responseData);
+                                } catch (e) {
+                                    response.body = {};
+                                }
+                            } else {
+                                response.body = LP.parseJSON(responseData);
+                            }
                         }
+
 
                         var body = response.body;
 
@@ -898,9 +914,10 @@ if (Array.prototype.sum === undefined) {
             });
 
             return function (url, action, data, params, context) {
+
                 data = $.extend({}, defaultData, data);
 
-                url = url ? url : (url !== false ? url : $store.getters.rootUrl || '');
+                url = url ? url : (url !== false ? url : rootUrl || '');
 
                 return new Promise(function (resolve, reject) {
                     Vue.http.post(
@@ -910,8 +927,12 @@ if (Array.prototype.sum === undefined) {
                             emulateJSON: true,
                             params: $.extend({
                                 namespace: identify,
-                                'lp-ajax': action
-                            }, params || {})
+                                'lp-ajax': action ? action : undefined
+                            }, params || {}),
+                            headers: {
+                                'X-WP-Nonce': window.$courseStore.getters['all'].apiNonce,
+                                'X-LearnPress': '1'
+                            }
                         }
                     ).then(function (response) {
                         resolve(response.body);
@@ -1732,7 +1753,7 @@ if (Array.prototype.sum === undefined) {
                 }
             } else if ($.isArray(b[i])) {
                 //if (!$.isArray(a[i])) {
-                    a[i] = [];
+                a[i] = [];
                 //}
                 for (j = 0; j < b[i].length; j++) {
 

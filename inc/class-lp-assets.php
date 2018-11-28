@@ -23,11 +23,23 @@ class LP_Assets extends LP_Abstract_Assets {
 		add_action( 'wp_footer', array( $this, 'single_course_js' ) );
 	}
 
+	/**
+	 * Get course data into js json for frontend course.
+	 *
+	 * @since 3.x.x
+	 */
 	public function single_course_js() {
 		global $post;
+
+		if ( LP_COURSE_CPT !== get_post_type( $post ) ) {
+			return;
+		}
+
 		$data = learn_press_get_course_curriculum_for_js( $post->ID );
 		?>
-        <script>console.time('x');var lpVmCourseData = <?php echo json_encode( $data, learn_press_is_debug() ? JSON_PRETTY_PRINT : false );?>;console.timeEnd('x');</script><?php
+        <script>
+            var lpVmCourseData = <?php echo json_encode( $data, learn_press_is_debug() ? JSON_PRETTY_PRINT : false );?>;
+        </script><?php
 	}
 
 	/**

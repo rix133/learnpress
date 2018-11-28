@@ -471,7 +471,8 @@ if ( ! class_exists( 'LP_Abstract_User' ) ) {
 				do_action( 'learn_press_user_finish_quiz', $quiz_id, $this->get_id() );
 
 				do_action( 'learn-press/user/quiz-finished', $quiz_id, $course_id, $this->get_id() );
-			} catch ( Exception $ex ) {
+			}
+			catch ( Exception $ex ) {
 				$return = $wp_error ? new WP_Error( $ex->getCode(), $ex->getMessage() ) : false;
 			}
 
@@ -552,6 +553,15 @@ if ( ! class_exists( 'LP_Abstract_User' ) ) {
 					$course_data->set_item( $quiz_data );
 				}
 
+				/**
+				 * Update meta-data
+				 *
+				 * @since 3.x.x
+				 */
+				$quiz_data->update_meta( '_time_spend', 0 );
+				$quiz_data->update_meta( '_question_checked', '' );
+				$quiz_data->update_meta( '_question_answers', 0 );
+				$quiz_data->update_meta( 'grade', '' );
 
 				if ( $questions = $quiz->get_questions() ) {
 					$question_id = reset( $questions );
@@ -562,7 +572,8 @@ if ( ! class_exists( 'LP_Abstract_User' ) ) {
 				 * @since 3.0.0
 				 */
 				do_action( 'learn-press/user/quiz-redone', $quiz_id, $course_id, $this->get_id() );
-			} catch ( Exception $ex ) {
+			}
+			catch ( Exception $ex ) {
 				$return = $wp_error ? new WP_Error( $ex->getCode(), $ex->getMessage() ) : false;
 				do_action( 'learn-press/user/retake-quiz-failure', $quiz_id, $course_id, $this->get_id() );
 			}
@@ -2425,7 +2436,8 @@ if ( ! class_exists( 'LP_Abstract_User' ) ) {
 				do_action( 'learn_press_user_enrolled_course', $course_id, $user_id, $user_course );
 
 				return $return;
-			} catch ( Exception $ex ) {
+			}
+			catch ( Exception $ex ) {
 				return new WP_Error( $ex->getCode(), $ex->getMessage() );
 			}
 		}

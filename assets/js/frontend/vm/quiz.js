@@ -327,6 +327,7 @@
                     answers: this.answers,
                     timeSpend: this.timeSpend
                 }).then(function (r) {
+                    console.log(r);
                     if (r.status) {
                         $vm.item.status = r.status;
                         $vm.item.results = r.results;
@@ -722,24 +723,13 @@
                     answers = answers[0];
                 }
 
-                return LP.$ajaxRequest(false, 'check-question', {
+                return apiRequest('question/check', '', {
                     itemId: this.itemId,
                     questionId: this.item.currentQuestion,
                     answers: answers
                 }).then(function (response) {
                     $vm.setResponseData(response);
-                })
-
-                this.getQuestionData({
-                    extraAction: 'check-answer',
-                    extraData: $.extend({}, {answers: answers})
-                }).then(function (r) {
-                    var response = r || {};
-                    q.explanation = response.explanation;
-                    $vm.checkAnswers(q, response.userAnswers);
-                    $vm.checkCount--;
                 });
-
             },
             _doHintAnswer: function () {
                 var q = this.item.questions[this.getQuestionIndex()];
@@ -752,8 +742,16 @@
              * @private
              */
             _startQuiz: function () {
-
                 var $vm = this;
+
+                return apiRequest('quiz/start', '', {
+                    itemId: this.itemId,
+                    questionId: this.item.currentQuestion,
+                    answers: answers
+                }).then(function (response) {
+                    $vm.setResponseData(response);
+                });
+
                 LP.$ajaxRequest('', 'start-quiz', {itemId: this.item.id}).then(function (r) {
                     //LP.$vms['notifications'].add(r.notifications);
 
@@ -769,24 +767,27 @@
                 })
             },
             /**
-             * Retake quiz action when user clicking on button
+             * Retake quiz action when user clicking on button.
+             *
+             * @since 3.x.x
              * @private
              */
             _retakeQuiz: function () {
                 var $vm = this;
                 this.answers = {};
-                LP.$ajaxRequest('', 'retake-quiz', {itemId: this.item.id}).then(function (r) {
-                    //LP.$vms['notifications'].add(r.notifications);
 
+                return apiRequest('quiz/retake', '', {
+                    itemId: this.itemId
+                }).then(function (response) {
                     var assignFields = $vm.getAjaxFields();
 
                     $.each(assignFields, function (a, b) {
-                        $vm.item[b] = r.quizData[b];
+                        $vm.item[b] = response.quizData[b];
                     });
 
                     $vm.answers = {};
                     $vm.init();
-                })
+                });
             },
             _transitionEnter: LP.debounce(function () {
 //                    var $el = this.$('.quiz-question:visible');
@@ -794,5 +795,21 @@
 //                    console.log('enter', this.currentQuestion)
             }, 10)
         }
+    };
+
+    /**
+     * Shortcut function to call ajax using REST API url
+     * @returns {*}
+     */
+    var apiRequest = function() {
+        var args = [], i, n = arguments.length;
+        for (i = 0; i < n; i++) {
+            args.push(arguments[i]);
+        }
+        args[0] = window.$courseStore.getters['all'].apiUrl + args[0];
+        return LP.$ajaxRequest.apply(null, args);
     }
+
+    LP.apiRequest = apiRequest;
+
 })(jQuery);

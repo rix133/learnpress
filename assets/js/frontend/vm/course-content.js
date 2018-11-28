@@ -263,12 +263,17 @@
         }
     });
 
+    function apiRequest() {
+        //localhost/learnpress/dev/wp-json/learnpress/v1/question/
+    }
+
     $(document).ready(function () {
         var c, $vms = LP.$vms, $vComponents = LP.$vComponents;
 
         window.$courseStore = new LP.Course_Store(lpVmCourseData);
 
         LP.$ajaxRequest = new LP.Request($courseStore, {courseId: $courseStore.getters['all'].courseId});
+        //LP.$apiRequest = new LP.Request($courseStore, {courseId: $courseStore.getters['all'].courseId}, $courseStore.getters['all'].apiUrl);
 
         for (c in $vComponents) {
             if (!$vComponents.hasOwnProperty(c)) {
