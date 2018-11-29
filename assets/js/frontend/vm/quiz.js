@@ -792,11 +792,7 @@
                 return apiRequest('quiz/retake', '', {
                     itemId: this.itemId
                 }).then(function (response) {
-                    var assignFields = $vm.getAjaxFields();
-
-                    $.each(assignFields, function (a, b) {
-                        $vm.item[b] = response.quizData[b];
-                    });
+                    LP.assignObject($vm.item, response.quiz);
 
                     $vm.answers = {};
                     $vm.init();

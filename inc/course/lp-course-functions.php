@@ -1305,10 +1305,15 @@ function learn_press_get_course_curriculum_for_js( $course_id = 0, $user_id = 0 
  *
  * @return array
  */
-function learn_press_get_quiz_data_json( $quizId, $courseId ) {
+function learn_press_get_quiz_data_json( $quizId, $courseId, $userId = 0 ) {
 	global $post, $wp_query, $lp_course_item;
 
-	$user           = learn_press_get_current_user();
+	if ( ! $userId ) {
+		$user = learn_press_get_current_user();
+	} else {
+		$user = learn_press_get_user( $userId );
+	}
+
 	$itemId         = $quizId;//LP_Request::get_int( 'itemId' );
 	$course         = learn_press_get_course( $courseId );
 	$courseData     = $user->get_course_data( $courseId );
@@ -1336,7 +1341,7 @@ function learn_press_get_quiz_data_json( $quizId, $courseId ) {
 		'timeSpend'       => $quizData->get_meta( '_time_spend' ),
 		'passingGrade'    => $quiz->get_passing_grade(),
 		'results'         => $quizData->calculate_results(),
-		'classes'         => $quiz->get_class()
+		'classes'         => array_values( $quiz->get_class( '', $courseId, $userId ) )
 	);
 
 	if ( $quiz->get_show_check_answer() ) {

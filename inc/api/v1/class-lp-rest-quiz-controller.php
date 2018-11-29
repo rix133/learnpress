@@ -220,6 +220,10 @@ class LP_REST_Quiz_V1_Controller extends LP_REST_Course_V1_Controller {
 		$quizData   = $courseData->get_item( $quiz_id );
 		$quizData->reset();
 
+		// Prevent caching...
+		$user_item_curd = new LP_User_Item_CURD();
+		$user_item_curd->parse_items_classes( $course_id, $this->user->get_id() );
+
 		/**
 		 * Allows modify response data.
 		 *
@@ -227,7 +231,7 @@ class LP_REST_Quiz_V1_Controller extends LP_REST_Course_V1_Controller {
 		 */
 		$result = apply_filters( 'learn-press/rest/retake-quiz-data', learn_press_get_quiz_data_json( $quiz_id, $course_id ) );
 
-		return rest_ensure_response( array( 'quizData' => $result ) );
+		return rest_ensure_response( array( 'quiz' => $result, 'results' => $courseData->calculate_results() ) );
 	}
 
 	/**

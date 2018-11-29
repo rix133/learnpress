@@ -898,7 +898,7 @@ if (Array.prototype.sum === undefined) {
                         }
 
 
-                        var body = response.body;
+                        var body = response.body || {};
 
                         result = body.success || false;
                     }
