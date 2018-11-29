@@ -17,6 +17,7 @@ defined( 'ABSPATH' ) || exit();
 ?>
 
 <div class="quiz-result"
+     :class="[item.results.grade]"
      v-show="hasAccessLevel(30, '=') && !isReviewing">
 
     <h3><?php _e( 'Your Result', 'learnpress' ); ?></h3>

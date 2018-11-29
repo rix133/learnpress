@@ -844,7 +844,7 @@ if ( ! class_exists( 'LP_Course_CURD' ) ) {
 						ORDER BY p.ID, `section_order`, `section_id` ASC
 					", $cid );
 
-					if ( ! $course_sections = $wpdb->get_results( $query ) ) {
+					if ( ! $course_sections = $wpdb->get_results( $query, OBJECT_K ) ) {
 						$course_sections = array();
 					}
 

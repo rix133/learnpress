@@ -59,4 +59,21 @@ class LP_REST_Course_V1_Controller extends LP_REST_Base_V1_Controller {
 	public function general_permission_check( $request ) {
 		return $this->rest_permission_check() === true && $this->course_exists_permission_check( $request ) === true;
 	}
+
+	/**
+	 * Checks if user is enrolled course.
+	 *
+	 * @since 3.x.x
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return bool|WP_Error
+	 */
+	public function course_enrolled_permission_check( $request ) {
+		if ( true !== ( $permission = $this->general_permission_check( $request ) ) ) {
+			return $permission;
+		}
+
+		return $this->user->get_course_status( $this->course->get_id() ) === 'enrolled';
+	}
 }

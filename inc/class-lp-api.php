@@ -144,17 +144,41 @@ class LP_API {
 		}
 	}
 
+	/**
+	 * Get REST files by version numbers.
+	 *
+	 * @since 3.x.x
+	 *
+	 * @param string $version
+	 *
+	 * @return array
+	 */
 	protected function get_rest_controllers( $version ) {
 		$root = dirname( __FILE__ );
 
-		return array(
-			$root . "/api/{$version}/abstract-lp-rest-base-controller.php",
-			$root . "/api/{$version}/class-lp-rest-course-controller.php",
-			$root . "/api/{$version}/class-lp-rest-quiz-controller.php",
-			$root . "/api/{$version}/class-lp-rest-question-controller.php",
-		);
+		switch ( $version ) {
+			case 'v1':
+				$controllers = array(
+					$root . "/api/{$version}/abstract-lp-rest-base-controller.php",
+					$root . "/api/{$version}/class-lp-rest-course-controller.php",
+					$root . "/api/{$version}/class-lp-rest-quiz-controller.php",
+					$root . "/api/{$version}/class-lp-rest-question-controller.php",
+				);
+				break;
+			default:
+				$controllers = array();
+		}
+
+		return $controllers;
 	}
 
+	/**
+	 * Include REST files by requested version number.
+	 *
+	 * @since 3.x.x
+	 *
+	 * @param string $version
+	 */
 	protected function include_version( $version ) {
 
 		if ( ! $rest_controllers = $this->get_rest_controllers( $version ) ) {
@@ -177,8 +201,6 @@ class LP_API {
 			$this->$controller = new $controller;
 			$this->$controller->register_routes();
 		}
-
-		var_dump( $this );
 	}
 
 	/**

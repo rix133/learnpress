@@ -28,3 +28,33 @@ body.course-item-popup {
     width: 0; }
   body.course-item-popup.distraction-on #learn-press-content-item {
     left: 0; }
+
+@media screen and (max-width: 768px) {
+  body.course-item-popup #learn-press-single-item {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000000;
+    background: #FFF;
+    overflow: auto; }
+  body.course-item-popup #course-item-content-header {
+    top: 0; }
+  body.course-item-popup #learn-press-content-item,
+  body.course-item-popup #learn-press-course-curriculum {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    width: 100%; }
+  body.course-item-popup.distraction-on #learn-press-content-item,
+  body.course-item-popup.distraction-on #learn-press-course-curriculum {
+    left: 0; }
+  body.course-item-popup.wpadminbar #course-item-content-header {
+    top: 0; }
+  body.course-item-popup.wpadminbar #learn-press-content-item {
+    top: auto; }
+  ul.learn-press-courses .course {
+    width: 48%; } }

@@ -85,7 +85,6 @@
             isRTL = $body.hasClass('rtl');
 
 
-
         /**
          * Toggle answer option check/uncheck
          */
@@ -508,12 +507,14 @@
                 contentTop = 32;
             }
 
-            initScrollbar();
+            if ($(window).width() > 768) {
+                initScrollbar();
+            }
             fitVideo();
 
             fullScreen = $body.hasClass('distraction-on');// window.localStorage && 'yes' === window.localStorage.getItem('lp-full-screen');
 
-            if($(window).width()<=768){
+            if ($(window).width() <= 768) {
                 fullScreen = true;
             }
 
@@ -627,9 +628,51 @@
         var $forms = $('form[data-confirm]').on('submit.learn-press-confirm', confirmHandle);
     }
 
+    function loadComponents() {
+        var c, $vms = LP.$vms, $vComponents = LP.$vComponents;
+
+        window.$courseStore = new LP.Course_Store(lpVmCourseData);
+
+        LP.$ajaxRequest = new LP.Request($courseStore, {courseId: $courseStore.getters['all'].courseId});
+        //LP.$apiRequest = new LP.Request($courseStore, {courseId: $courseStore.getters['all'].courseId}, $courseStore.getters['all'].apiUrl);
+
+        for (c in $vComponents) {
+            if (!$vComponents.hasOwnProperty(c)) {
+                continue;
+            }
+
+            Vue.component(c, $vComponents[c]);
+        }
+
+        for (c in $vms) {
+            if (!$vms.hasOwnProperty(c)) {
+                continue;
+            }
+
+            $vms[c] = new Vue($vms[c]);
+        }
+
+        $(document).trigger('LP.loaded-components');
+    }
+
+    $(document).on('LP.loaded-components', function () {
+        $('#learn-press-course').addClass('ready vm');
+    });
+
+    // $(window).on('resize.course-item-popup', LP.debounce(function () {
+    //     var $scrolls = $('#learn-press-course-curriculum .curriculum-scrollable, #learn-press-content-item .content-item-scrollable').scrollbar('destroy');
+    //     if ($(window).width() > 768) {
+    //         $scrolls.each(function () {
+    //             $(this).scrollbar()
+    //         });
+    //     }
+    // }, 300)).trigger('resize.course-item-popup');
 
     $(document).ready(function () {
         $(document).ready(function () {
+
+            loadComponents();
+
             new LP_Course({});
 
             $(this).on('submit', 'form[name="course-external-link"]', function () {
@@ -638,7 +681,8 @@
                     window.location.href = redirect;
                     return false;
                 }
-            })
+            });
+
         });
     });
 })

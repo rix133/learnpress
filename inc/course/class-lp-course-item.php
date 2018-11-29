@@ -158,35 +158,42 @@ if ( ! class_exists( 'LP_Course_Item' ) ) {
 		 * Get class of item.
 		 *
 		 * @param string $more
+		 * @param int    $course_id Added from 3.x.x
 		 * @param int    $user_id
 		 *
 		 * @return array
 		 */
-		public function get_class( $more = '', $user_id = 0 ) {
+		public function get_class( $more = '', $course_id = 0, $user_id = 0 ) {
 			/**
 			 * @var LP_Course_Item $lp_course_item
 			 */
 			global $lp_course_item;
-			$course_id = get_the_ID();
+
+			if ( ! $course_id ) {
+				$course_id = get_the_ID();
+			}
 
 			if ( empty( $GLOBALS['get_class'] ) ) {
 				$GLOBALS['get_class'] = 0;
 			}
 
-			$user_id = $user_id || get_current_user_id();
+			if ( ! $user_id ) {
+				$user_id = get_current_user_id();
+			}
 
 			$t = microtime( true );
 
-			if ( false === ( $classes = LP_Object_Cache::get( 'item-' . $user_id . '-' . $this->get_id(), 'learn-press/post-classes' ) ) ) {
+			if ( false === ( $classes = LP_Object_Cache::get( 'item-' . $user_id . '-' . $course_id . '-' . $this->get_id(), 'learn-press/post-classes' ) ) ) {
 
 				$curd      = new LP_User_Item_CURD();
 				$all_items = $curd->parse_items_classes( $course_id, $user_id, $more );
 
-				$classes = ! empty( $all_items[ $this->get_id() ] ) ? $all_items[ $this->get_id() ] : $defaults = array(
+				$classes = ! empty( $all_items[ $this->get_id() ] ) ? $all_items[ $this->get_id() ] : array(
 					'course-item',
 					'course-item-' . $this->get_item_type(),
 					'course-item-' . $this->get_id()
 				);
+
 			}
 			$GLOBALS['get_class'] += microtime( true ) - $t;
 
@@ -560,7 +567,7 @@ if ( ! class_exists( 'LP_Course_Item' ) ) {
 
 			foreach ( $course_items as $course_item ) {
 				if ( $item = $course->get_item( $course_item ) ) {
-					if ( $item->is_preview() /*|| get_post_meta( $item->get_id(), '_lp_preview', true ) */) {
+					if ( $item->is_preview() /*|| get_post_meta( $item->get_id(), '_lp_preview', true ) */ ) {
 						$blocked_items[ $course_item ] = 'no';
 					} elseif ( ! $block_item_types || is_array( $block_item_types ) && ! in_array( $item->get_post_type(), $block_item_types ) ) {
 						$blocked_items[ $course_item ] = 'no';

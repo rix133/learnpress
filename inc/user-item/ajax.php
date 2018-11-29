@@ -201,7 +201,7 @@ class LP_User_Item_Ajax {
 		$quiz->set_course( $course_id );
 		$course_data = $user->get_course_data( $course->get_id() );
 		$questions   = LP_Request::get( 'answers' );
-		$result      = array();
+		$response    = array();
 
 		if ( $quiz_data = $course_data->get_item_quiz( $quiz->get_id() ) ) {
 
@@ -214,15 +214,26 @@ class LP_User_Item_Ajax {
 			$r = $quiz_data->update();
 			$quiz_data->complete();
 
-			$result['results'] = $quiz_data->calculate_results();
+			// Prevent caching...
+			$user_item_curd = new LP_User_Item_CURD();
+			$user_item_curd->parse_items_classes( $course_id, $user->get_id() );
 		}
 
-		$result['result'] = 'success';
-		$result['status'] = 'completed';
+		$quizDataResults = array(
+			'completed' => $quiz_data->is_completed(),
+			'status'    => $quiz_data->get_status(),
+			'results'   => $quiz_data->calculate_results(),
+			'classes'   => array_values( $quiz->get_class( '', $course_id, $user->get_id() ) )
+		);
+
+		$response['quiz']   = $quizDataResults;
+		$response['course'] = array( 'results' => $course_data->get_percent_result() );
+
+		$response = apply_filters( 'learn-press/complete-quiz-data', $response, $quiz_id, $course_id, $user->get_id() );
 
 		LP_Notifications::instance()->add( 'You have completed quiz' );
 
-		learn_press_send_json( $result );
+		learn_press_send_json( $response );
 	}
 
 	public static function retake_quiz() {

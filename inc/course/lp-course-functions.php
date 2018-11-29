@@ -1335,7 +1335,8 @@ function learn_press_get_quiz_data_json( $quizId, $courseId ) {
 		'timeRemaining'   => $remainingTime ? $remainingTime->get() : $totalTime,
 		'timeSpend'       => $quizData->get_meta( '_time_spend' ),
 		'passingGrade'    => $quiz->get_passing_grade(),
-		'results'         => $quizData->calculate_results()
+		'results'         => $quizData->calculate_results(),
+		'classes'         => $quiz->get_class()
 	);
 
 	if ( $quiz->get_show_check_answer() ) {

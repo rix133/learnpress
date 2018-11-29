@@ -84,7 +84,7 @@ $passing_condition = $course->get_passing_condition();
 </div>
 <script>
     jQuery(document).on('course-ready', function (e, data) {
-
+        var $ = jQuery;
         window.$vmCourseProgress = new Vue({
             el: '#learn-press-course-progress',
             data: function () {
@@ -117,6 +117,9 @@ $passing_condition = $course->get_passing_condition();
 
                     return $store.getters['all'];
                 }
+            },
+            mounted: function () {
+                $(this.$el).addClass('ready');
             }
         });
     })

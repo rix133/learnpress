@@ -569,6 +569,7 @@ class LP_User_Item_CURD implements LP_Interface_CURD {
 					$defaults[] = 'item-locked';
 				}
 			}
+
 			$classes = apply_filters( 'learn-press/course-item-class', $defaults, $item->get_item_type(), $item_id, $course_id );
 
 			// Filter unwanted values
@@ -576,7 +577,7 @@ class LP_User_Item_CURD implements LP_Interface_CURD {
 			$classes = array_filter( $classes );
 			$classes = array_unique( $classes );
 
-			LP_Object_Cache::set( 'item-' . $user_id . '-' . $item_id, $classes, 'learn-press/post-classes' );
+			LP_Object_Cache::set( 'item-' . $user_id . '-' . $course_id . '-' . $item_id, $classes, 'learn-press/post-classes' );
 			$items[ $item_id ] = $classes;
 		}
 

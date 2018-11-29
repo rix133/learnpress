@@ -17,11 +17,7 @@ global $lp_course_item;
 
 $course             = LP_Global::course();
 $global_course_item = $lp_course_item;
-
-$item_types = learn_press_course_get_support_item_types();
-$tabindex   = 0;
-$sections   = array();
-
+$sections           = array();
 ?>
 <div id="learn-press-content-item">
 
@@ -41,14 +37,14 @@ $sections   = array();
             <div :class="mainClass()"
                  data-classes="<?php echo join( ' ', learn_press_content_item_summary_main_classes() ); ?>">
 
-                <?php
+				<?php
 
-                /**
-                 * @since 3.0.0
-                 */
-                do_action( 'learn-press/vm/before-course-item-content' );
+				/**
+				 * @since 3.0.0
+				 */
+				do_action( 'learn-press/vm/before-course-item-content' );
 
-                ?>
+				?>
 				<?php
 				foreach ( $course->get_sections() as $section ) {
 
@@ -109,14 +105,14 @@ $sections   = array();
 				}
 				?>
 
-	            <?php
+				<?php
 
-	            /**
-	             * @since 3.0.0
-	             */
-	            do_action( 'learn-press/vm/after-course-item-content' );
+				/**
+				 * @since 3.0.0
+				 */
+				do_action( 'learn-press/vm/after-course-item-content' );
 
-	            ?>
+				?>
             </div>
 
         </div>

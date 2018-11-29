@@ -52,7 +52,7 @@ defined( 'ABSPATH' ) || exit();
 				do_action( 'learn-press/question-content-summary' );
 				?>
                 <div v-html="question.content"></div>
-                <component :is="getQuestionTypeAnswers(question.type)" :question="question" :answers="item.answers"
+                <component :is="getQuestionTypeAnswers(question.type)" :question="question" :answers="item.answers" :item="item"
                            @update-answer="_updateQuestionAnswer" inline-template>
                     <div>
                         <ul v-show="$parent.isDefaultQuestionType(question.type)" :id="'answer-options-'+question.id"

@@ -668,6 +668,7 @@ if ( ! function_exists( 'learn_press_content_item_quiz_title' ) ) {
 	}
 }
 
+
 if ( ! function_exists( 'learn_press_content_item_quiz_intro' ) ) {
 	function learn_press_content_item_quiz_intro() {
 		$course = LP_Global::course();
@@ -1110,7 +1111,6 @@ if ( ! function_exists( 'learn_press_content_item_body_class' ) ) {
 	 */
 	function learn_press_content_item_body_class( $classes ) {
 		global $lp_course_item;
-
 		if ( $lp_course_item ) {
 			$classes[] = 'course-item-popup';
 			$classes[] = 'viewing-course-item';
@@ -1121,6 +1121,25 @@ if ( ! function_exists( 'learn_press_content_item_body_class' ) ) {
 		return $classes;
 	}
 
+}
+
+if ( ! function_exists( 'learn_press_is_course_item' ) ) {
+	/**
+	 * Checks if user is viewing course item (aka course popup).
+	 *
+	 * @since 3.x.x
+	 *
+	 * @return bool|string Return string is name of post-type, false otherwise.
+	 */
+	function learn_press_is_course_item() {
+		/**
+		 * @var LP_Course_Item $lp_course_item
+		 */
+		global $lp_course_item;
+		$is_item = $lp_course_item ? $lp_course_item->get_post_type() : false;
+
+		return apply_filters( 'learn-press/is-course-item', $is_item );
+	}
 }
 
 if ( ! function_exists( 'learn_press_content_item_script' ) ) {
@@ -1266,24 +1285,24 @@ if ( ! function_exists( 'learn_press_control_displaying_course_item' ) ) {
 	 * that item.
 	 */
 	function learn_press_control_displaying_course_item() {
-		global $wp_filter;
-
-		// Remove all hooks added to content of whole course.
-		$hooks = array( 'content-learning-summary', 'content-landing-summary' );
-
-		if ( empty( $wp_filter['learn-press-backup-hooks'] ) ) {
-			$wp_filter['learn-press-backup-hooks'] = array();
-		}
-
-		foreach ( $hooks as $hook ) {
-			if ( isset( $wp_filter["learn-press/{$hook}"] ) ) {
-				// Move to backup to restore it if needed.
-				$wp_filter['learn-press-backup-hooks']["learn-press/{$hook}"] = $wp_filter["learn-press/{$hook}"];
-
-				// Remove the origin hook
-				unset( $wp_filter["learn-press/{$hook}"] );
-			}
-		}
+//		global $wp_filter;
+//
+//		// Remove all hooks added to content of whole course.
+//		$hooks = array( 'content-learning-summary', 'content-landing-summary' );
+//
+//		if ( empty( $wp_filter['learn-press-backup-hooks'] ) ) {
+//			$wp_filter['learn-press-backup-hooks'] = array();
+//		}
+//
+//		foreach ( $hooks as $hook ) {
+//			if ( isset( $wp_filter["learn-press/{$hook}"] ) ) {
+//				// Move to backup to restore it if needed.
+//				$wp_filter['learn-press-backup-hooks']["learn-press/{$hook}"] = $wp_filter["learn-press/{$hook}"];
+//
+//				// Remove the origin hook
+//				unset( $wp_filter["learn-press/{$hook}"] );
+//			}
+//		}
 
 		// Add more assets into page that displaying content of an item
 		add_filter( 'body_class', 'learn_press_content_item_body_class', 10 );
@@ -1656,11 +1675,13 @@ if ( ! function_exists( 'learn_press_content_single_item' ) ) {
 if ( ! function_exists( 'learn_press_content_single_course' ) ) {
 	function learn_press_content_single_course() {
 
-		if ( ! $course_item = LP_Global::course_item() ) {
-			learn_press_get_template( 'content-single-course.php' );
-		} else {
-			learn_press_get_template( 'content-single-item.php' );
-		}
+		learn_press_get_template( 'content-single-course.php' );
+
+//		if ( ! $course_item = LP_Global::course_item() ) {
+//			learn_press_get_template( 'content-single-course.php' );
+//		} else {
+//			learn_press_get_template( 'content-single-item.php' );
+//		}
 	}
 }
 
@@ -2668,7 +2689,8 @@ function learn_press_locate_template( $template_name, $template_path = '', $defa
 	);
 
 	// If need to load vm template?
-	$load_vm_template = learn_press_is_vm_hook() && ! preg_match( '~^(_vm\/)~', $template_name );
+	$load_vm_template = /*learn_press_is_vm_hook() &&*/ ! preg_match( '~^(_vm\/)~', $template_name );
+
 	if ( $load_vm_template ) {
 		$templates[0] = trailingslashit( $template_path ) . '_vm/' . $template_name;
 		$templates[2] = '_vm/' . $template_name;
@@ -4068,6 +4090,119 @@ function learn_press_content_item_footer_button_finish_course() {
 
 	if ( $user->can_finish_course( $course->get_id() ) ) {
 		learn_press_get_template( 'single-course/buttons/finish.php' );
+	}
+}
+
+if ( ! function_exists( 'learn_press_content_item_summary' ) ) {
+	/**
+	 * Load content single item if user is viewing course item
+	 * instead of whole course.
+	 *
+	 * @since 3.x.x
+	 */
+	function learn_press_content_item_summary() {
+		learn_press_get_template( 'content-single-item' );
+	}
+}
+
+if ( ! function_exists( 'learn_press_before_course_content' ) ) {
+
+	/**
+	 * Hook to before content of course to remove some unwanted
+	 * hooks in the main content and/or add new hooks to display
+	 * content of course item instead of whole course.
+	 *
+	 * @since 3.x.x
+	 */
+	function learn_press_before_course_content() {
+
+		if ( ! learn_press_is_course_item() ) {
+			return;
+		}
+
+		global $wp_filter;
+
+		// Remove all hooks added to content of whole course.
+		$hooks = array( 'content-learning-summary', 'content-landing-summary' );
+
+		if ( empty( $wp_filter['learn-press-backup-hooks'] ) ) {
+			$wp_filter['learn-press-backup-hooks'] = array();
+		}
+
+		foreach ( $hooks as $hook ) {
+			if ( isset( $wp_filter["learn-press/{$hook}"] ) ) {
+				// Move to backup to restore it if needed.
+				$wp_filter['learn-press-backup-hooks']["learn-press/{$hook}"] = $wp_filter["learn-press/{$hook}"];
+
+				// Remove the origin hook
+				unset( $wp_filter["learn-press/{$hook}"] );
+			}
+		}
+
+		//@see learn_press_content_item_summary
+		add_action( 'learn-press/content-landing-summary', 'learn_press_content_item_summary', 10 );
+		add_action( 'learn-press/content-learning-summary', 'learn_press_content_item_summary', 10 );
+	}
+}
+
+if ( ! function_exists( 'learn_press_single_course_items' ) ) {
+	/**
+	 * Load template to display all items instead of single item.
+	 *
+	 * @since 3.x.x
+	 */
+	function learn_press_single_course_items() {
+		// TODO: read from settings
+		$preload_items = true;
+
+		if ( $preload_items ) {
+			//remove_action( 'learn-press/course-item-content', 'learn_press_course_item_content', 5 );
+			remove_action( 'learn-press/after-content-item-summary/lp_lesson', 'learn_press_content_item_lesson_complete_button', 10 );
+			remove_action( 'learn-press/after-content-item-summary/lp_lesson', 'learn_press_course_finish_button', 15 );
+			remove_action( 'learn-press/single-item-summary', 'learn_press_single_course_content_item', 10 );
+			learn_press_get_template( '_vm/single-course/content-items' );
+		}
+	}
+}
+
+if ( ! function_exists( 'learn_press_single_content_item_quiz_buttons' ) ) {
+	/**
+	 * @since 3.x.x
+	 */
+	function learn_press_single_content_item_quiz_buttons() {
+		?>
+        <button v-show="hasAccessLevel(10, '=')"
+                @click="_startQuiz"><?php esc_html_e( 'Start', 'learnpress' ); ?></button>
+		<?php
+	}
+}
+
+if ( ! function_exists( 'learn_press_ajax_loading_svg' ) ) {
+	/**
+	 * Ajax loading svg
+	 *
+	 * @since 3.x.x
+	 */
+	function learn_press_ajax_loading_svg() {
+		?>
+        <svg aria-hidden="true" data-prefix="fas" data-icon="spinner" role="img" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 512 512" class="svg-inline--fa fa-spinner fa-w-16 fa-spin fa-lg learn-press-ajax">
+            <path fill="currentColor"
+                  d="M304 48c0 26.51-21.49 48-48 48s-48-21.49-48-48 21.49-48 48-48 48 21.49 48 48zm-48 368c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zm208-208c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zM96 256c0-26.51-21.49-48-48-48S0 229.49 0 256s21.49 48 48 48 48-21.49 48-48zm12.922 99.078c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.491-48-48-48zm294.156 0c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.49-48-48-48zM108.922 60.922c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.491-48-48-48z"
+                  class=""></path>
+        </svg>
+		<?php
+	}
+}
+
+if ( ! function_exists( 'learn_press_single_content_item_head' ) ) {
+	/**
+	 * Popup header
+	 *
+	 * @since 3.x.x
+	 */
+	function learn_press_single_content_item_head() {
+		learn_press_get_template( 'single-course/content-item/header' );
 	}
 }
 

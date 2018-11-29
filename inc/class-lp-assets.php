@@ -220,8 +220,9 @@ class LP_Assets extends LP_Abstract_Assets {
 					'deps' => array( 'vm-course-store' )
 				),
 				'vm-course-content'    => array(
-					'url'  => self::url( 'js/frontend/vm/course-content.js' ),
-					'deps' => array( 'vm-course-store' )
+					'url'     => self::url( 'js/frontend/vm/course-content.js' ),
+					'deps'    => array( 'vm-course-store' ),
+					'enqueue' => 'learn_press_is_course_item'
 				),
 				'notifications'        => array(
 					'url'  => self::url( 'js/frontend/notifications.js' ),
@@ -249,6 +250,16 @@ class LP_Assets extends LP_Abstract_Assets {
 		if ( $scripts = $this->_get_scripts() ) {
 			foreach ( $scripts as $handle => $data ) {
 				$enqueue = is_array( $data ) && array_key_exists( 'enqueue', $data ) ? $data['enqueue'] : true;
+
+				/**
+				 * Support enqueue is a callback.
+				 *
+				 * @since 3.x.x
+				 */
+				if ( is_callable( $enqueue ) ) {
+					$enqueue = call_user_func( $enqueue );
+				}
+
 				$enqueue = apply_filters( 'learn-press/enqueue-script', $enqueue, $handle );
 				if ( $handle == 'font-awesome' || $enqueue ) {
 					wp_enqueue_script( $handle );

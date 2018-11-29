@@ -140,6 +140,7 @@
         display: table;
         border-bottom: 1px solid #00adff;
         width: 100%;
+        padding: 10px 0;
         @include box-sizing(border-box);
         .section-left {
             display: table-cell;
@@ -155,10 +156,20 @@
             margin-bottom: 0;
             font-size: 18px;
             padding: 10px 0;
+            .toggle-desc {
+                text-decoration: none;
+                box-shadow: none;
+                margin: -5px 0 0 10px;
+                display: inline-block;
+                position: relative;
+                line-height: 1;
+                vertical-align: middle;
+            }
         }
         .section-desc {
             font-size: 14px;
-            font-style: italic;;
+            font-style: italic;
+            display: none;
         }
         .section-meta {
             display: table-cell;
@@ -178,7 +189,7 @@
     }
     .section-content {
         list-style: none;
-        margin: 0 0 15px 0;
+        margin: 0;
         padding: 0;
         .course-item {
             position: relative;
@@ -436,10 +447,7 @@ body {
             overflow: auto;
             z-index: 9999;
             .section-header {
-                padding: 0 15px;
-                .section-desc {
-                    margin: -10px 0 5px;
-                }
+                padding: 15px;
             }
             .course-item {
                 padding-left: 15px;
@@ -462,7 +470,7 @@ body {
             overflow: hidden;
             transition: left 0.25s;
             .content-item-wrap {
-                margin: 10px auto;
+                margin: 50px auto;
                 max-width: 900px;
             }
             .course-item-title {

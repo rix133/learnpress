@@ -13,14 +13,16 @@
  * Prevent loading this file directly
  */
 defined( 'ABSPATH' ) || exit();
-echo "XXXXX=",__FILE__;
-?>
 
-<?php
 /**
  * @deprecated
  */
 do_action( 'learn_press_before_content_learning' );
+
+/**
+ * @since 3.x.x
+ */
+do_action( 'learn-press/before-content-learning' );
 ?>
 
 <div class="course-learning-summary">
@@ -51,6 +53,11 @@ do_action( 'learn_press_before_content_learning' );
 </div>
 
 <?php
+/**
+ * @since 3.x.x
+ */
+do_action( 'learn-press/after-content-learning' );
+
 /**
  * @deprecated
  */

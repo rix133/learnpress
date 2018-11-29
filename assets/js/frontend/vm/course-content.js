@@ -38,6 +38,7 @@
                 if (a != b && this.currentItem) {
                     LP.setUrl(this.currentItem.permalink);
                     this.$('.content-item-scrollable').scrollTop(0);
+                    console.log('Why?')
                 }
 
                 this.getNavItems();
@@ -266,37 +267,6 @@
     function apiRequest() {
         //localhost/learnpress/dev/wp-json/learnpress/v1/question/
     }
-
-    $(document).ready(function () {
-        var c, $vms = LP.$vms, $vComponents = LP.$vComponents;
-
-        window.$courseStore = new LP.Course_Store(lpVmCourseData);
-
-        LP.$ajaxRequest = new LP.Request($courseStore, {courseId: $courseStore.getters['all'].courseId});
-        //LP.$apiRequest = new LP.Request($courseStore, {courseId: $courseStore.getters['all'].courseId}, $courseStore.getters['all'].apiUrl);
-
-        for (c in $vComponents) {
-            if (!$vComponents.hasOwnProperty(c)) {
-                continue;
-            }
-
-            Vue.component(c, $vComponents[c]);
-        }
-
-        for (c in $vms) {
-            if (!$vms.hasOwnProperty(c)) {
-                continue;
-            }
-
-            $vms[c] = new Vue($vms[c]);
-        }
-
-        $(document).trigger('LP.loaded-components');
-    });
-
-    $(document).on('LP.loaded-components', function () {
-        $('#learn-press-course').addClass('ready');
-    });
 
 
     if (!window.$) {

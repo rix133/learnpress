@@ -35,7 +35,7 @@
      * Default type of question
      */
     LP.$vComponents['lp-question-type-__default-answers'] = {
-        props: ['question', 'answers'],
+        props: ['question', 'answers', 'item'],
         data: function () {
             return {
                 answersX: []
@@ -60,7 +60,7 @@
             _triggerEvent: function (e) {
             },
             disableOption: function () {
-                if (this.$parent.status === 'completed') {
+                if (this.item.status === 'completed') {
                     return true;
                 }
 
@@ -322,17 +322,22 @@
                 var $vm = this;
                 this.stopCounter();
 
-                LP.$ajaxRequest(false, 'complete-quiz', {
+                return apiRequest('quiz/complete', '', {
                     itemId: this.item.id,
                     answers: this.answers,
                     timeSpend: this.timeSpend
-                }).then(function (r) {
-                    console.log(r);
-                    if (r.status) {
-                        $vm.item.status = r.status;
-                        $vm.item.results = r.results;
-                    }
-                })
+                }).then(function (response) {
+                    $vm.setResponseData(response.quiz);
+                });
+
+                // LP.$ajaxRequest(false, 'complete-quiz', {
+                //     itemId: this.item.id,
+                //     answers: this.answers,
+                //     timeSpend: this.timeSpend
+                // }).then(function (response) {
+                //     $vm.setResponseData(response.quiz);
+                //     $vm.init();
+                // })
             },
             startCounter: function () {
                 this.timer && clearInterval(this.timer);
@@ -351,7 +356,7 @@
                 if (!LP.l10n) {
                     return '';
                 }
-                return '';//translate('Your grade is <strong>%s</strong>', !this.results.grade_text ? translate('Ungraded') : this.results.grade_text);
+                return translate('Your grade is <strong>%s</strong>', !this.item.results.grade_text ? translate('Ungraded') : this.item.results.grade_text);
             },
             isActivate: function () {
                 return this.item.id === this.itemId;
@@ -746,25 +751,33 @@
 
                 return apiRequest('quiz/start', '', {
                     itemId: this.itemId,
-                    questionId: this.item.currentQuestion,
-                    answers: answers
                 }).then(function (response) {
-                    $vm.setResponseData(response);
-                });
-
-                LP.$ajaxRequest('', 'start-quiz', {itemId: this.item.id}).then(function (r) {
-                    //LP.$vms['notifications'].add(r.notifications);
-
-                    var assignFields = this.getAjaxFields();
-                    $vm.$set($vm.item, 'quizData', r.quizData);
+                    var assignFields = $vm.getAjaxFields();
 
                     $.each(assignFields, function (a, b) {
-                        $vm[b] = r.quizData[b];
+                        if (typeof response.quizData[b] === 'undefined') {
+                            return;
+                        }
+
+                        $vm.item[b] = response.quizData[b];
                     });
-
+                    $vm.answers = {};
                     $vm.init();
+                });
 
-                })
+                // LP.$ajaxRequest('', 'start-quiz', {itemId: this.item.id}).then(function (r) {
+                //     //LP.$vms['notifications'].add(r.notifications);
+                //
+                //     var assignFields = this.getAjaxFields();
+                //     $vm.$set($vm.item, 'quizData', r.quizData);
+                //
+                //     $.each(assignFields, function (a, b) {
+                //         $vm[b] = r.quizData[b];
+                //     });
+                //
+                //     $vm.init();
+                //
+                // })
             },
             /**
              * Retake quiz action when user clicking on button.
@@ -801,7 +814,7 @@
      * Shortcut function to call ajax using REST API url
      * @returns {*}
      */
-    var apiRequest = function() {
+    var apiRequest = function () {
         var args = [], i, n = arguments.length;
         for (i = 0; i < n; i++) {
             args.push(arguments[i]);

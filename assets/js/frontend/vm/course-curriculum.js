@@ -35,6 +35,8 @@
             this.totalItems = $.map(this.sections, function (a) {
                 return a.items.length;
             }).sum();
+
+
             LP_Event_Bus.$on('complete-item', this._completeItem);
             LP_Event_Bus.$on('completed-item', this._onCompletedItem);
             LP_Event_Bus.$on('next-item', this._onNextItem);
@@ -109,8 +111,6 @@
 
                 if (this.currentItem && this.currentItem.id == item.id) {
                     cls.push('current');
-                } else {
-
                 }
 
                 return cls;
@@ -233,7 +233,19 @@
                     this.delayNextItem = setTimeout(x, delay, this, onlyUncompleted);
                 }
             },
+            _toggleSectionDesc: function (e, section) {
+                var $section = $(e.target).closest('.section-header'),
+                    $desc = $section.find('.section-desc');
 
+                $desc.slideToggle();
+                Vue.set(section, 'showDesc', !section.showDesc);
+
+                e.preventDefault();
+                e.stopPropagation();
+            },
+            $: function (selector) {
+                return selector ? $(this.$el).find(selector) : $(this.$el);
+            },
             $courseStore: function (prop, value) {
                 var $store = window.$courseStore;
                 if (prop) {
