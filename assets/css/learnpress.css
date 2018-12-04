@@ -929,6 +929,8 @@
         content: '';
         width: 3px;
         transition: height linear 0.15s, top linear 0.15s; }
+      .course-curriculum .section-content .course-item:after {
+        content: ''; }
       .course-curriculum .section-content .course-item.current {
         padding-left: 10px;
         background: #F9F9F9; }
@@ -2251,6 +2253,38 @@ ul.list-table-nav {
   position: relative;
   width: 30px;
   color: #03b7ff; }
+
+#learn-press-course-curriculum .curriculum-sections .header-fixed {
+  position: absolute;
+  width: 100%;
+  display: none; }
+  #learn-press-course-curriculum .curriculum-sections .header-fixed.active {
+    display: block;
+    top: 60px;
+    z-index: 99;
+    background: #FFF;
+    width: 399px; }
+
+#course-item-login-register-form {
+  display: none;
+  width: 200%;
+  -webkit-transition: margin-left 0.25s;
+  -moz-transition: margin-left 0.25s;
+  -ms-transition: margin-left 0.25s;
+  -o-transition: margin-left 0.25s;
+  transition: margin-left 0.25s; }
+  #course-item-login-register-form #content-item-login-form,
+  #course-item-login-register-form #content-item-register-form {
+    flex: 0 0 50%;
+    padding: 0 10%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+
+.item-login-register-form {
+  overflow: hidden; }
+  .item-login-register-form #course-item-login-register-form {
+    display: flex; }
 
 @media screen and (max-width: 600px) {
   ul.learn-press-courses {

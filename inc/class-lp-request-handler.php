@@ -62,7 +62,8 @@ class LP_Request {
 		add_filter( 'learn-press/purchase-course-id', array( __CLASS__, 'maybe_enroll_course' ), 10, 2 );
 		add_action( 'learn-press/add-to-cart-order-total-empty', array( __CLASS__, 'maybe_redirect_enroll' ), 10, 3 );
 
-		add_action( 'init', array( 'LP_Forms_Handler', 'init' ), 10 );
+		// Uses parse_request instead of init to prevent conflict with wp-json requests
+		add_action( 'parse_request', array( 'LP_Forms_Handler', 'init' ), 100 );
 	}
 
 	public static function maybe_redirect_checkout( $result, $order_id ) {

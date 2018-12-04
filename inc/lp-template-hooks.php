@@ -516,7 +516,8 @@ add_action( 'learn-press/vm/after-content-item-summary/lp_quiz', 'learn_press_co
 /**
  * @see learn_press_ajax_loading_svg
  */
-add_action( 'learn-press/vm/before-course-items', 'learn_press_ajax_loading_svg' );
+add_action( 'learn-press/vm/before-course-items', 'learn_press_ajax_loading_svg', 10 );
+add_action( 'learn-press/vm/before-course-items', 'learn_press_vm_before_content_items', 15 );
 add_action( 'learn-press/vm/before-course-curriculum', 'learn_press_ajax_loading_svg' );
 
 /**
@@ -532,6 +533,7 @@ add_action( 'learn-press/vm/content-item-summary/lp_lesson', 'learn_press_conten
  * @see learn_press_content_item_nav
  * @see learn_press_lesson_comment_form
  */
+add_action( 'learn-press/vm/after-course-item-content', 'learn_press_content_item_nav', 5 );
 add_action( 'learn-press/vm/after-course-item-content', 'learn_press_content_item_nav', 5 );
 //add_action( 'learn-press/vm/after-course-item-content', 'learn_press_lesson_comment_form', 10 );
 

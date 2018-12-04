@@ -589,12 +589,13 @@ class LP_User_Item_CURD implements LP_Interface_CURD {
 	 *
 	 * @since 3.x.x
 	 *
-	 * @param int $course_id
-	 * @param int $user_id
+	 * @param int    $course_id
+	 * @param int    $user_id
+	 * @param string $context Added from 3.x.x
 	 *
 	 * @return array
 	 */
-	public function parse_items_preview( $course_id, $user_id = 0 ) {
+	public function parse_items_preview( $course_id, $user_id = 0, $context = 'display' ) {
 
 		$items = array();
 
@@ -607,21 +608,20 @@ class LP_User_Item_CURD implements LP_Interface_CURD {
 		}
 
 		$user         = learn_press_get_user( $user_id, false );
-		$current_item = LP_Global::course_item();
 		$get_item_ids = $course->get_item_ids();
 		$enrolled     = $user ? $user->has_enrolled_course( $course_id ) : false;
 
 		if ( $get_item_ids ) {
 			foreach ( $get_item_ids as $item_id ) {
-				$is_preview = get_post_meta( $item_id, '_lp_preview', true ) == 'yes';
+				$is_preview = get_post_meta( $item_id, '_lp_preview', true );
 
-				if ( false === ( $cached = LP_Object_Cache::get( 'item-' . $user_id . '-' . $course_id . '-' . $item_id, 'learn-press/preview-items' ) ) ) {
+				if ( false === ( $cached = LP_Object_Cache::get( 'item-' . $user_id . '-' . $course_id . '-' . $item_id, 'learn-press/preview-items' . "/{$context}" ) ) ) {
 
-					if ( $enrolled ) {
+					if ( $context !== 'edit' && $enrolled ) {
 						$is_preview = 'no';
 					}
 
-					LP_Object_Cache::set( 'item-' . $user_id . '-' . $course->get_id() . '-' . $item_id, $is_preview, 'learn-press/preview-items' );
+					LP_Object_Cache::set( 'item-' . $user_id . '-' . $course->get_id() . '-' . $item_id, $is_preview, 'learn-press/preview-items' . "/{$context}" );
 				} else {
 					///$is_preview = $cached === 'yes' ? true : false;
 				}

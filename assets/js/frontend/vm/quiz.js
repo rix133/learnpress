@@ -322,7 +322,7 @@
                 var $vm = this;
                 this.stopCounter();
 
-                return apiRequest('quiz/complete', '', {
+                return LP.apiRequest('quiz/complete', '', {
                     itemId: this.item.id,
                     answers: this.answers,
                     timeSpend: this.timeSpend
@@ -728,7 +728,7 @@
                     answers = answers[0];
                 }
 
-                return apiRequest('question/check', '', {
+                return LP.apiRequest('question/check', '', {
                     itemId: this.itemId,
                     questionId: this.item.currentQuestion,
                     answers: answers
@@ -749,7 +749,7 @@
             _startQuiz: function () {
                 var $vm = this;
 
-                return apiRequest('quiz/start', '', {
+                return LP.apiRequest('quiz/start', '', {
                     itemId: this.itemId,
                 }).then(function (response) {
                     var assignFields = $vm.getAjaxFields();
@@ -789,7 +789,7 @@
                 var $vm = this;
                 this.answers = {};
 
-                return apiRequest('quiz/retake', '', {
+                return LP.apiRequest('quiz/retake', '', {
                     itemId: this.itemId
                 }).then(function (response) {
                     LP.assignObject($vm.item, response.quiz);
@@ -805,20 +805,5 @@
             }, 10)
         }
     };
-
-    /**
-     * Shortcut function to call ajax using REST API url
-     * @returns {*}
-     */
-    var apiRequest = function () {
-        var args = [], i, n = arguments.length;
-        for (i = 0; i < n; i++) {
-            args.push(arguments[i]);
-        }
-        args[0] = window.$courseStore.getters['all'].apiUrl + args[0];
-        return LP.$ajaxRequest.apply(null, args);
-    }
-
-    LP.apiRequest = apiRequest;
 
 })(jQuery);

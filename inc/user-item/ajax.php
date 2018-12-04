@@ -127,7 +127,7 @@ class LP_User_Item_Ajax {
 
 			$response['completed'] = $item->is_completed();
 			$response['status']    = $item->get_status();
-			$response['classes']   = array_values( $it->get_class() );
+			$response['classes']   = array_values( $it->get_class( '', $course->get_id(), $course_data->get_user_id() ) );
 			$response['results']   = $course_data->get_percent_result();
 		}
 		//LP_Debug::rollbackTransaction();

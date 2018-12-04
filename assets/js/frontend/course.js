@@ -391,8 +391,14 @@
             $curriculumScrollable = $curriculum.find('.curriculum-scrollable')
             $curriculumScrollable.addClass('scrollbar-light')
                 .scrollbar({
-                    scrollx: false
-                });
+                    scrollx: false,
+                    onScroll: function (args) {
+                    }
+                })
+            //     .scrollTopFix({
+            //     section: '.section',
+            //     header: '.section-header'
+            // });
 
             $curriculumScrollable.parent().css({
                 position: 'absolute',
@@ -667,6 +673,21 @@
     //         });
     //     }
     // }, 300)).trigger('resize.course-item-popup');
+
+    /**
+     * Shortcut function to call ajax using REST API url
+     * @returns {*}
+     */
+    var apiRequest = function () {
+        var args = [], i, n = arguments.length;
+        for (i = 0; i < n; i++) {
+            args.push(arguments[i]);
+        }
+        args[0] = window.$courseStore.getters['all'].apiUrl + args[0];
+        return LP.$ajaxRequest.apply(null, args);
+    }
+
+    LP.apiRequest = apiRequest;
 
     $(document).ready(function () {
         $(document).ready(function () {

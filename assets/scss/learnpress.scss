@@ -537,6 +537,49 @@ ul.list-table-nav {
     color: #03b7ff;
 }
 
+#learn-press-course-curriculum {
+    .curriculum-sections {
+        .header-fixed {
+            position: absolute;
+            width: 100%;
+            display: none;
+            &.active {
+                display: block;
+                top: 60px;
+                z-index: 99;
+                background: #FFF;
+                width: 399px;
+            }
+        }
+    }
+}
+
+#course-item-login-register-form {
+    display: none;
+    width: 100%;
+    -webkit-transition: margin-left 0.25s;
+    -moz-transition: margin-left 0.25s;
+    -ms-transition: margin-left 0.25s;
+    -o-transition: margin-left 0.25s;
+    transition: margin-left 0.25s;
+    #content-item-login-form,
+    #content-item-register-form {
+        flex: 0 0 50%;
+        padding: 0 10%;
+        @include box-sizing();
+    }
+    #content-item-login-form {
+
+    }
+}
+
+.item-login-register-form {
+    overflow: hidden;
+    #course-item-login-register-form {
+        display: flex;
+    }
+}
+
 @media screen and (max-width: 600px) {
     ul.learn-press-courses {
         margin-right: 0;

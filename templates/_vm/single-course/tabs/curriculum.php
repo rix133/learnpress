@@ -55,13 +55,22 @@ $context     = $course_item ? 'course-item' : 'course';
                     </div>
                 </div>
                 <ul class="section-content">
-                    <li v-for="(item, itemIndex) in section.items" :class="sectionItemClass(item, section)">
+                    <li v-for="(item, itemIndex) in section.items" :class="sectionItemClass(item, section)" :item="item">
                         <a class="section-item-link" :href="item.permalink" @click="_openItem($event, item)">
                             <span class="item-name">{{item.name}}</span>
+
                             <div class="course-item-meta">
-                                <i class="fa item-meta course-item-status trans"
-                                   @click.prevent="_completeItem(item)"></i>
+
+								<?php do_action( 'learn-press/course-section-item/before-item-meta' ); ?>
+
+                                <i v-if="isItemPreview(item)" class="item-meta course-item-status"
+                                   data-preview="<?php esc_html_e( 'Preview', 'learnpress' ); ?>"></i>
+
+                                <i v-else class="fa item-meta course-item-status trans"></i>
+
+								<?php do_action( 'learn-press/course-section-item/after-item-meta' ); ?>
                             </div>
+
                         </a>
                         {{endTime(sectionIndex, itemIndex)}}
                     </li>

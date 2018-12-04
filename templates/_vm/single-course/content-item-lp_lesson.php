@@ -31,7 +31,7 @@ $item = LP_Global::course_item();
 
 	?>
 
-    <button class="button-complete" type="button" @click="_completeItem($event)" :disabledx="currentItem.completed">
+    <button v-if="canCompleteItem(item)" class="button-complete" type="button" @click="_completeItem($event)" :disabledx="currentItem.completed">
         <template v-if="currentItem.completed">{{'<?php esc_html_e( 'Completed', 'learnpress' ); ?>'}}</template>
         <template v-else>{{'<?php esc_html_e( 'Complete', 'learnpress' ); ?>'}}</template>
     </button>

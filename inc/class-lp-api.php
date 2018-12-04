@@ -32,6 +32,15 @@ class LP_API {
 
 		add_filter( 'rest_pre_echo_response', array( $this, 'pre_echo_response' ), 10, 3 );
 
+		add_filter('rest_authentication_errors', function ($errors){
+			/**
+			 * @var WP_REST_Server $wp_rest_server
+			 */
+			global $wp_rest_server;
+
+			return $errors;
+		}, 0);
+
 		$this->init();
 	}
 
@@ -163,6 +172,7 @@ class LP_API {
 					$root . "/api/{$version}/class-lp-rest-course-controller.php",
 					$root . "/api/{$version}/class-lp-rest-quiz-controller.php",
 					$root . "/api/{$version}/class-lp-rest-question-controller.php",
+					$root . "/api/{$version}/class-lp-rest-user-controller.php",
 				);
 				break;
 			default:
@@ -195,6 +205,7 @@ class LP_API {
 			"LP_REST_Course_{$v}_Controller",
 			"LP_REST_Quiz_{$v}_Controller",
 			"LP_REST_Question_{$v}_Controller",
+			"LP_REST_User_{$v}_Controller",
 		);
 
 		foreach ( $controllers as $controller ) {

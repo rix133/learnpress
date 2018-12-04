@@ -122,7 +122,7 @@ class LP_User_Item_Course extends LP_User_Item implements ArrayAccess {
 				$this->_items_by_item_ids[ $course_item->get_user_item_id() ] = $item_id;
 				$this->_items_by_order[]                                      = $item_id;
 
-				$items[ $item_id ]                                            = $course_item;
+				$items[ $item_id ] = $course_item;
 			}
 		}
 		LP_Object_Cache::set( $this->get_user_id() . '-' . $this->get_id(), $items, 'learn-press/user-course-item-objects' );
@@ -765,8 +765,14 @@ class LP_User_Item_Course extends LP_User_Item implements ArrayAccess {
 	 *
 	 * @return LP_User_Item|LP_User_Item_Quiz|bool
 	 */
-	public function get_item( $item_id ) {
-		return $this->offsetGet( $item_id );
+	public function get_item( $item_id, $object = false ) {
+		$item = $this->offsetGet( $item_id );
+
+		if ( ! $item && $object ) {
+			$item = LP_User_Item::get_item_object( array( 'item_id' => $item_id ) );
+		}
+
+		return $item;
 	}
 
 	/**

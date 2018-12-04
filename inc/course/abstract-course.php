@@ -433,7 +433,7 @@ if ( ! function_exists( 'LP_Abstract_Course' ) ) {
 			$sections_data = array();
 			if ( is_array( $sections ) ) {
 				foreach ( $sections as $section ) {
-					$sections_data[] = $section->to_array();
+					$sections_data[] = $section->to_array( 'edit' );
 				}
 			}
 

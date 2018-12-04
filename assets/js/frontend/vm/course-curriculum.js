@@ -30,12 +30,17 @@
                 return this.$courseStore('currentItem');
             }
         },
-        watch: {},
+        watch: {
+            currentItem: function (item) {
+                this.scrollToElement(item);
+            }
+        },
         mounted: function () {
             this.totalItems = $.map(this.sections, function (a) {
                 return a.items.length;
             }).sum();
 
+            LP.debounce(this.scrollToElement, 1000, this)();
 
             LP_Event_Bus.$on('complete-item', this._completeItem);
             LP_Event_Bus.$on('completed-item', this._onCompletedItem);
@@ -43,6 +48,40 @@
             LP_Event_Bus.$on('move-to-item', this._onMoveToItem);
         },
         methods: {
+            scrollToElement: function (item) {
+
+                var $cs = this.$('.curriculum-scrollable').eq(1);
+
+                if (!item) {
+                    item = $cs.find('.course-item.current');
+                } else if (!isNaN(item)) {
+                    item = this.$('.course-item.course-item-' + item);
+                } else if ($.isPlainObject(item) && item.id) {
+                    item = this.$('.course-item.course-item-' + item.id);
+                }
+
+                if (!item) {
+                    return;
+                }
+
+                var position = item.position(),
+                    scrollTop = $cs.scrollTop(),
+                    viewHeight = $cs.outerHeight(),
+                    n = parseInt(viewHeight / item.outerHeight() / 2);
+
+                if (position.top > scrollTop && position.top < scrollTop + viewHeight - item.height()) {
+                    return;
+                }
+
+                // for (var i = 0; i < n; i++) {
+                //     if (item.prev().length) {
+                //         item = item.prev();
+                //     }
+                // }
+
+
+                $cs.scrollTo(item, 100);
+            },
             /**
              * Mark item is completed or remark is un-completed
              *
@@ -167,6 +206,16 @@
 
                 return r;
             },
+            isItemPreview: function (item) {
+                if (item.preview) {
+                    //if(course is required enroll){
+                    return true;
+                    //}
+                }
+
+                return false;
+            },
+
             _openItem: function (e, item) {
                 this.cancelNextItem();
                 this.$courseStore().currentItem = item;
@@ -179,14 +228,15 @@
                     })) {
                     e && e.preventDefault();
                 }
+
+                this.scrollToElement();
             },
             _completeItem: LP.debounce(function (data) {
                 this.completeItem(data.item || this.currentItem);
             }, 300),
             _onCompletedItem: function (item) {
-                console.log(item, this.$courseStore().autoNextItem)
                 if (item.status === 'completed') {
-                    this._nextItem();
+                    //this._nextItem();
                 }
             },
             _onNextItem: function (data) {
@@ -200,7 +250,7 @@
                     onlyUncompleted;
 
                 if (isNext) {
-                    function x($vm, onlyUncompleted) {
+                    function _move($vm, onlyUncompleted) {
                         var nextItem = $vm.getNextItem(false, onlyUncompleted);
                         if (nextItem) {
                             $vm._openItem(null, nextItem);
@@ -230,7 +280,7 @@
                     }
 
                     this.cancelNextItem();
-                    this.delayNextItem = setTimeout(x, delay, this, onlyUncompleted);
+                    this.delayNextItem = setTimeout(_move, delay, this, onlyUncompleted);
                 }
             },
             _toggleSectionDesc: function (e, section) {
@@ -267,5 +317,63 @@
             }
         }
     };
+    var scrollTopFix = function (el, opts) {
+        var $el = $(el),
+            $sections = $el.find('.sections'),
+            $headers = $el.find(opts.header),
+            $fixedHeaders = $(),
+            $currentHeader,
+            $nextHeader, $currentSection;
+
+        $headers.each(function () {
+            $fixedHeaders.add($(this).clone().insertAfter(this).addClass('header-fixed'))
+        });
+
+        $el.on('scroll', function () {
+            var scrollTop = $el.scrollTop(),
+                $fixedHeader;
+            $headers.each(function (i) {
+                var $header = $(this), offset;
+
+                $currentSection = $header.parent();
+                offset = $currentSection.position();
+
+                if (scrollTop < offset.top) {
+                    $nextHeader = $($headers[i]).siblings('.header-fixed');
+                    $fixedHeader = $($headers[i > 0 ? i - 1 : i]).siblings('.header-fixed');
+                    return false;
+                }
+            });
+
+            if ($fixedHeader && !$fixedHeader.is($currentHeader)) {
+                if ($currentHeader) {
+                    $currentHeader.removeClass('active');
+                }
+
+                $currentHeader = $fixedHeader;
+                $currentHeader.addClass('active')
+            }
+
+            if ($currentHeader) {
+                if (scrollTop > $currentSection.position().top - $currentHeader.height()) {
+                    $currentHeader.css('top', ($currentSection.position().top - scrollTop));
+                } else {
+                    $currentHeader.css('top', scrollTop);
+                }
+            }
+        })
+    }
+    $.fn.scrollTopFix = function (opts) {
+        return this.each(function () {
+            var $el = $(this),
+                $scrollTopFix = $el.data('$scrollTopFix');
+
+            if (!$scrollTopFix) {
+                $scrollTopFix = new scrollTopFix(this, opts);
+
+                $el.data('$scrollTopFix', $scrollTopFix);
+            }
+        })
+    }
 
 })(jQuery);

@@ -13,6 +13,9 @@
  * Prevent loading this file directly
  */
 defined( 'ABSPATH' ) || exit();
+$course = LP_Global::course();
+
+
 ?>
 <div class="learn-press-content-protected-message content-item-block">
 	<?php esc_html_e( 'Content of this item has blocked because the course has exceeded duration.', 'learnpress' ); ?>

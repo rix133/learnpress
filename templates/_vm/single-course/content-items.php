@@ -121,6 +121,7 @@ $sections           = array();
 
 </div>
 
+
 <?php
 LP_Object_Cache::set( 'course-curriculum', $sections );
 // Reset global course item

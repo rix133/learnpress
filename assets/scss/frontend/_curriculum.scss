@@ -409,6 +409,10 @@
                 transition: height linear 0.15s, top linear 0.15s;
             }
 
+            &:after{
+                content: '';
+            }
+
             &.current {
                 padding-left: 10px;
                 background: #F9F9F9;

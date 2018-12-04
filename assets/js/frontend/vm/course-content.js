@@ -36,9 +36,17 @@
             },
             'currentItem.id': function (a, b) {
                 if (a != b && this.currentItem) {
+
+                    //LP.debounce(function () {
+                    var $target = $('#content-item-' + a + ' .item-login-register-form');
+                    if ($target.length) {
+                        $('#course-item-login-register-form').appendTo($target);
+                    }
+                    //}, 10, this)()
+
+
                     LP.setUrl(this.currentItem.permalink);
                     this.$('.content-item-scrollable').scrollTop(0);
-                    console.log('Why?')
                 }
 
                 this.getNavItems();
@@ -82,7 +90,7 @@
                 }
                 if (!Vue.options.components[component]) {
                     component = 'lp-course-item';
-                    console.log('Vue component ' + component + ' does not exist.');
+                    console.log('Please implement the Vue component ' + component + '.');
                 }
                 return component;
             },
@@ -105,7 +113,7 @@
                     cls.push('ready');
                 }
 
-                cls.push(this.currentItem.type)
+                cls.push(this.currentItem.type);
 
                 return cls;
             },
@@ -130,6 +138,9 @@
                 } else {
                     this.nextItem = false;
                 }
+            },
+            canCompleteItem: function (item) {
+                console.log(item);
             },
             /**
              * Complete lesson button
@@ -223,6 +234,14 @@
                 countdownNextItem: false
             }
         },
+        watch: {
+            'item.id': function (id) {
+                console.log(id)
+            },
+            itemId: function (id) {
+                console.log(id)
+            }
+        },
         mounted: function () {
             var $vm = this;
 
@@ -242,32 +261,84 @@
                 $vm.countdownNextItem = false;
             });
 
-            this.$('.button-completex').hover(function () {
-                if ($vm.item.status === 'completed') {
-                    $(this).html(LP.l10n.translate('Mark Uncompleted'));
-                } else {
-                    //$(this).html(LP.l10n.translate('Mark Completed'));
-                }
+            LP.$vComponents['course-item-' + this.item.id] = this;
 
-            }, function () {
-                if ($vm.item.status === 'completed') {
-                    $(this).html(LP.l10n.translate('Completed'));
-                } else {
-                    $(this).html(LP.l10n.translate('Complete'));
-                }
-            })
+            // this.$('.button-completex').hover(function () {
+            //     if ($vm.item.status === 'completed') {
+            //         $(this).html(LP.l10n.translate('Mark Uncompleted'));
+            //     } else {
+            //         //$(this).html(LP.l10n.translate('Mark Completed'));
+            //     }
+            //
+            // }, function () {
+            //     if ($vm.item.status === 'completed') {
+            //         $(this).html(LP.l10n.translate('Completed'));
+            //     } else {
+            //         $(this).html(LP.l10n.translate('Complete'));
+            //     }
+            // })
         },
         methods: {
             isShowContent: function () {
                 return true;
+            },
+            canCompleteItem: function (item) {
+                return !item.preview;
             }
         }
     });
 
-    function apiRequest() {
-        //localhost/learnpress/dev/wp-json/learnpress/v1/question/
-    }
+    LP.$vComponents['course-item-login-register-form'] = $.extend(true, {}, componentDefaults, {
+        data: function () {
+            return {
+                message: '',
+                error: false
+            }
+        },
+        mounted: function () {
+            this.$('form').on('submit', this.submit);
+        },
+        methods: {
+            submit: function (e) {
+                e.preventDefault();
+                var $vm = this,
+                    data = $(e.target).serializeJSON();
 
+                this.message = '';
+                this.error = false;
+
+                return LP.apiRequest(data.api, '', $.extend({}, data)).then(function (response) {
+                    if (response.result === 'success') {
+                        $vm.message = response.message || 'Logged in';
+                        $vm.error = false;
+
+                        LP.reload();
+                    } else {
+                        $vm.message = response.message || 'Error';
+                        $vm.error = true;
+                    }
+                }, function (response) {
+                    $vm.message = response.message || 'Error';
+                    $vm.error = true;
+                });
+
+            },
+            getMessage: function () {
+                return this.message;
+            },
+            _showForm: function (e, form) {
+                e.preventDefault();
+                switch (form) {
+                    case 'login':
+                        this.$().css('margin-left', 0);
+                        break;
+                    default:
+                        this.$().css('margin-left', '-100%');
+                        break;
+                }
+            }
+        }
+    });
 
     if (!window.$) {
         window.$ = jQuery;

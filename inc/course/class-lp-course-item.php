@@ -95,25 +95,26 @@ if ( ! class_exists( 'LP_Course_Item' ) ) {
 		 * @return bool
 		 */
 		public function is_preview( $context = 'display' ) {
-			if ( $this->get_post_type() === LP_LESSON_CPT && '' === $this->_preview ) {
-				$is_preview = get_post_meta( $this->get_id(), '_lp_preview', true ) == 'yes';
-			}
+
 			$user_id = get_current_user_id();
-			if ( $this->get_post_type() === LP_LESSON_CPT && '' === $this->_preview ) {
-				$course_id = $this->get_course_id();
-				$item_id   = $this->get_id();
 
-				if ( false === ( $is_preview = LP_Object_Cache::get( 'item-' . $user_id . '-' . $course_id . '-' . $item_id, 'learn-press/preview-items' ) ) ) {
-					$api   = new LP_User_Item_CURD();
-					$items = $api->parse_items_preview( $course_id, $user_id );
-
-					$is_preview = isset( $items[ $item_id ] ) ? $items[ $item_id ] : 'no';
-				}
-
-				$this->_preview = $is_preview === 'yes';
+			if ( ! $context ) {
+				$context = 'display';
 			}
 
-			return $context === 'display' ? apply_filters( 'learn-press/course-item-preview', $this->_preview, $this->get_id() ) : $this->_preview;
+			$course_id = $this->get_course_id();
+			$item_id   = $this->get_id();
+
+			if ( false === ( $is_preview = LP_Object_Cache::get( 'item-' . $user_id . '-' . $course_id . '-' . $item_id, 'learn-press/preview-items' . "/{$context}" ) ) ) {
+				$api   = new LP_User_Item_CURD();
+				$items = $api->parse_items_preview( $course_id, $user_id, $context );
+
+				$is_preview = isset( $items[ $item_id ] ) ? $items[ $item_id ] : 'no';
+			}
+
+			$is_preview = $is_preview === 'yes';
+
+			return $context === 'display' ? apply_filters( 'learn-press/course-item-preview', $is_preview, $this->get_id() ) : $is_preview;
 		}
 
 		/**
@@ -335,16 +336,18 @@ if ( ! class_exists( 'LP_Course_Item' ) ) {
 		 *
 		 * @since 3.0.0
 		 *
+		 * @param string $context Added from 3.x.x
+		 *
 		 * @return array
 		 */
-		public function to_array() {
+		public function to_array( $context = 'display' ) {
 			$post = get_post( $this->get_id() );
 
 			return array(
 				'id'      => $this->get_id(),
 				'type'    => $this->get_item_type(),
 				'title'   => $post->post_title,
-				'preview' => $this->is_preview()
+				'preview' => $this->is_preview( $context )
 			);
 		}
 

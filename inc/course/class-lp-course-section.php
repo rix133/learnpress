@@ -86,7 +86,7 @@ class LP_Course_Section extends LP_Abstract_Object_Data {
 		if ( false === ( $items = LP_Object_Cache::get( 'section-' . $this->get_id(), 'learn-press/section-items' ) ) ) {
 			$items = $this->_curd->read_items( $this->get_id() );
 			LP_Object_Cache::set( 'section-' . $this->get_id(), $items, 'learn-press/section-items' );
-		}else{
+		} else {
 		}
 
 		LP_Helper_CURD::cache_posts( $items );
@@ -129,15 +129,17 @@ class LP_Course_Section extends LP_Abstract_Object_Data {
 	 *
 	 * @since 3.0.0
 	 *
+	 * @param string $context Added from 3.x.x
+	 *
 	 * @return array
 	 */
-	public function to_array() {
+	public function to_array( $context = 'display' ) {
 		$data = array(
 			'id'          => $this->get_id(),
 			'title'       => $this->get_title(),
 			'course_id'   => $this->get_course_id(),
 			'description' => $this->get_description(),
-			'items'       => $this->get_items_array(),
+			'items'       => $this->get_items_array( $context ),
 			'order'       => $this->get_order(),
 		);
 
@@ -252,14 +254,20 @@ class LP_Course_Section extends LP_Abstract_Object_Data {
 	 *
 	 * @since 3.0.0
 	 *
+	 * @param string $context Added from 3.x.x
+	 *
 	 * @return array
 	 */
-	public function get_items_array() {
+	public function get_items_array( $context = 'display' ) {
+		/**
+		 * @var LP_Course_Item[] $items
+		 * @var LP_Course_Item   $item
+		 */
 		$items = $this->get_items();
 
 		$data = array();
 		foreach ( $items as $item ) {
-			$data[] = $item->to_array();
+			$data[] = $item->to_array( $context );
 		}
 
 		return $data;

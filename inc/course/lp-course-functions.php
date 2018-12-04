@@ -1237,7 +1237,7 @@ function learn_press_get_course_curriculum_for_js( $course_id = 0, $user_id = 0 
 		'identify'       => wp_create_nonce( 'lp-' . $user->get_id() . '-' . $course_id ),
 		'courseId'       => $course_id,
 		'userId'         => $user_id,
-		'currentItem'    => $course_data->get_meta( '_current_item' ),
+		'currentItem'    => learn_press_get_current_course_item( $course_data->get_meta( '_current_item' ) ),
 		'totalItems'     => $course->count_items(),
 		'completedItems' => 0,
 		'autoNextItem'   => array( 'delay' => 3000, 'onlyUncompleted' => true ),
@@ -1318,7 +1318,7 @@ function learn_press_get_quiz_data_json( $quizId, $courseId, $userId = 0 ) {
 	$course         = learn_press_get_course( $courseId );
 	$courseData     = $user->get_course_data( $courseId );
 	$quiz           = $course->get_item( $itemId );
-	$quizData       = $courseData->get_item( $itemId );
+	$quizData       = $courseData->get_item( $itemId, true );
 	$lp_course_item = $quiz;
 
 	if ( $quizData ) {
@@ -1331,8 +1331,6 @@ function learn_press_get_quiz_data_json( $quizId, $courseId, $userId = 0 ) {
 
 	$json = array(
 		'historyId'       => $quizData->get_user_item_id(),
-		//'checkCount'      => $quizData->can_check_answer( $quiz->get_id() ),
-		//'hintCount'       => $quizData->can_hint_answer( $quiz->get_id() ),
 		'currentQuestion' => $quizData->get_current_question( $quiz->get_id(), $courseId ),
 		'status'          => $quizData->get_status(),
 		'answers'         => (object) $quizData->get_meta( '_question_answers' ),
@@ -1453,4 +1451,15 @@ function learn_press_get_user_answers( $questionId, $quizId, $courseId ) {
 	return $answers;
 }
 
-//echo sprintf('This is %s %3$s and %d and %1$s and %1$d and %2$s', 12, 14, 13);die();
+/**
+ * Get current item from request.
+ *
+ * @since 3.x.x
+ *
+ * @return bool|LP_Course_Item
+ */
+function learn_press_get_current_course_item( $defaultItem ) {
+	global $lp_course_item;
+
+	return $lp_course_item ? $lp_course_item->get_id() : $defaultItem;
+}
