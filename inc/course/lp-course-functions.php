@@ -1215,6 +1215,16 @@ function learn_press_get_custom_thumbnail_sizes() {
 	return apply_filters( 'learn-press/custom-thumbnail-sizes', array( 'archive_course_thumbnail' => 'course_thumbnail' ) );
 }
 
+/**
+ * Get json data for course.
+ *
+ * @since 3.x.x
+ *
+ * @param int $course_id
+ * @param int $user_id
+ *
+ * @return array
+ */
 function learn_press_get_course_curriculum_for_js( $course_id = 0, $user_id = 0 ) {
 	/**
 	 * @var LP_Course_Section[] $sections
@@ -1289,8 +1299,6 @@ function learn_press_get_course_curriculum_for_js( $course_id = 0, $user_id = 0 
 			}
 		}
 	}
-
-	//LP_Debug::timeEnd( __FUNCTION__ );
 
 	return apply_filters( 'learn-press/course-data-js', $curriculum, $course_id );
 }

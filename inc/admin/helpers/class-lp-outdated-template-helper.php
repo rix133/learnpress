@@ -62,7 +62,7 @@ class LP_Outdated_Template_Helper {
 				$core_version  = self::get_file_version( $template_path . $file );
 				$theme_version = self::get_file_version( $theme_file );
 				// If core-template define version number then compare with it.
-				if ( $core_version && ( empty( $theme_version ) || version_compare( $theme_version, $core_version, '<' ) ) ) {
+				if ( $core_version && ( empty( $theme_version ) || version_compare( $theme_version, $core_version, '<' ) ) || preg_match('~[x]+~', $core_version)) {
 					if ( ! $outdated_templates ) {
 						$outdated_templates = true;
 					}

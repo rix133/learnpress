@@ -469,7 +469,6 @@
 
                 // Did not check any option
                 if (!this.answers[questionId]) {
-                    LP.log('No option selected');
                     return false;
                 }
 
