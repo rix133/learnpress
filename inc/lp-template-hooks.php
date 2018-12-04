@@ -98,9 +98,11 @@ add_action( 'learn-press/profile/order-details', 'learn_press_profile_order_mess
 /**
  * @see learn_press_profile_dashboard_logged_in
  * @see learn_press_profile_dashboard_user_bio
+ * @see learn_press_profile_dashboard_user_stats
  */
 add_action( 'learn-press/profile/dashboard-summary', 'learn_press_profile_dashboard_logged_in', 5 );
 add_action( 'learn-press/profile/dashboard-summary', 'learn_press_profile_dashboard_user_bio', 10 );
+add_action( 'learn-press/profile/dashboard-summary', 'learn_press_profile_dashboard_user_stats', 15 );
 
 /**
  * @see learn_press_profile_dashboard_not_logged_in

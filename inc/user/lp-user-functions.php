@@ -1820,3 +1820,84 @@ function learn_press_get_user_role( $user_id ) {
 
 	return false;
 }
+
+/**
+ * Get all courses owned of an instructors.
+ *
+ * @since 3.x.x
+ *
+ * @param int          $author
+ * @param array|string $args
+ *
+ * @return WP_Query|array
+ */
+function learn_press_get_instructor_courses( $author, $args = '' ) {
+
+	$args = wp_parse_args( $args, array( 'author' => $author ) );
+
+	$map_args = array(
+		'numberposts'    => 'limit',
+		'post_status'    => 'status',
+		'post_parent'    => 'parent',
+		'posts_per_page' => 'limit',
+		'paged'          => 'page',
+	);
+
+	foreach ( $map_args as $to => $from ) {
+		if ( isset( $args[ $from ] ) ) {
+			$args[ $to ] = $args[ $from ];
+		}
+	}
+
+	$query = new LP_Course_Query( $args );
+
+	return $query->get_courses();
+}
+
+/**
+ * Count all published courses of an instructor.
+ *
+ * @since 3.x.x
+ *
+ * @param int    $author
+ * @param string $args
+ *
+ * @return int
+ */
+function learn_press_count_instructor_courses( $author, $args = '' ) {
+	$query = learn_press_get_instructor_courses( $author, $args );
+
+	return $query->found_posts;
+}
+
+/**
+ * Get students enrolled the courses owned by an instructor.
+ *
+ * @since 3.x.x
+ *
+ * @param int $author
+ *
+ * @return int
+ */
+function learn_press_count_instructor_students( $author ) {
+	$query_courses = learn_press_get_instructor_courses( $author, array( 'limit' => - 1 ) );
+	$count         = 0;
+
+	if ( $course_ids = wp_list_pluck( $query_courses->posts, 'ID' ) ) {
+		foreach ( $course_ids as $course_id ) {
+			if ( ! $course = learn_press_get_course( $course_id ) ) {
+				continue;
+			}
+
+			$count += $course->count_students( array( 'count_in_order' => true ) );
+		}
+	}
+
+	return $count;
+}
+//
+//function learn_press_count_instructor_students( $author ) {
+//	$query = learn_press_get_instructor_students( $author );
+//
+//	return sizeof( $query );
+//}

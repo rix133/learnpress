@@ -73,19 +73,22 @@ if ( ! function_exists( 'learn_press_course_enroll_button' ) ) {
 		$course = LP_Global::course();
 
 		if ( $course->get_external_link() ) {
-			learn_press_show_log('Course has external link');
+			learn_press_show_log( 'Course has external link' );
+
 			return;
 		}
 
 		// If course is not published
 		if ( ! $course->is_publish() ) {
-			learn_press_show_log('Course is not published');
+			learn_press_show_log( 'Course is not published' );
+
 			return;
 		}
 
 		// Locked course for user
 		if ( $user->is_locked_course( $course->get_id() ) ) {
-			learn_press_show_log('Course is locked');
+			learn_press_show_log( 'Course is locked' );
+
 			return;
 		}
 
@@ -583,7 +586,7 @@ if ( ! function_exists( 'learn_press_get_course_tabs' ) ) {
 				if ( $request_tab === $v['id'] ) {
 					$v['active'] = true;
 					$has_active  = $k;
-				} elseif(isset($v['active']) && $v['active'] ){
+				} elseif ( isset( $v['active'] ) && $v['active'] ) {
 					$has_active = true;
 				}
 				$tabs[ $k ] = $v;
@@ -1941,10 +1944,10 @@ if ( ! function_exists( 'learn_press_course_lesson_class' ) ) {
 	/**
 	 * The class of lesson in course curriculum
 	 *
-	 * @param int $lesson_id
-	 * @param int $course_id
+	 * @param int          $lesson_id
+	 * @param int          $course_id
 	 * @param array|string $class
-	 * @param boolean $echo
+	 * @param boolean      $echo
 	 *
 	 * @return mixed
 	 */
@@ -2004,10 +2007,10 @@ if ( ! function_exists( 'learn_press_course_quiz_class' ) ) {
 	/**
 	 * The class of lesson in course curriculum
 	 *
-	 * @param int $quiz_id
-	 * @param int $course_id
+	 * @param int          $quiz_id
+	 * @param int          $course_id
 	 * @param string|array $class
-	 * @param boolean $echo
+	 * @param boolean      $echo
 	 *
 	 * @return mixed
 	 */
@@ -2125,7 +2128,7 @@ function learn_press_setup_object_data( $post ) {
 		if ( isset( $GLOBALS['course'] ) ) {
 			unset( $GLOBALS['course'] );
 		}
-		$object                = learn_press_get_course( $post );
+		$object = learn_press_get_course( $post );
 		$object->prepare();
 		LP()->global['course'] = $GLOBALS['course'] = $GLOBALS['lp_course'] = $object;
 	}
@@ -2182,9 +2185,9 @@ function learn_press_get_messages( $clear = false ) {
 /**
  * Add new message into queue for displaying.
  *
- * @param string $message
- * @param string $type
- * @param array $options
+ * @param string   $message
+ * @param string   $type
+ * @param array    $options
  * @param int|bool $current_user . @since 3.0.9 - add for current user only
  */
 function learn_press_add_message( $message, $type = 'success', $options = array(), $current_user = true ) {
@@ -2232,7 +2235,7 @@ function learn_press_get_message( $message, $type = 'success' ) {
  *
  * @since 3.0.0
  *
- * @param string $id
+ * @param string       $id
  * @param string|array $type
  */
 function learn_press_remove_message( $id = '', $type = '' ) {
@@ -2481,9 +2484,9 @@ function learn_press_get_template_part( $slug, $name = '' ) {
  * Get other templates passing attributes and including the file.
  *
  * @param string $template_name
- * @param array $args (default: array())
+ * @param array  $args          (default: array())
  * @param string $template_path (default: '')
- * @param string $default_path (default: '')
+ * @param string $default_path  (default: '')
  *
  * @return void
  */
@@ -2520,7 +2523,7 @@ function learn_press_get_template( $template_name, $args = array(), $template_pa
  * @uses learn_press_get_template();
  *
  * @param        $template_name
- * @param array $args
+ * @param array  $args
  * @param string $template_path
  * @param string $default_path
  *
@@ -2546,7 +2549,7 @@ function learn_press_get_template_content( $template_name, $args = array(), $tem
  *
  * @param string $template_name
  * @param string $template_path (default: '')
- * @param string $default_path (default: '')
+ * @param string $default_path  (default: '')
  *
  * @return string
  */
@@ -2822,6 +2825,31 @@ if ( ! function_exists( 'learn_press_profile_dashboard_not_logged_in' ) ) {
 
 		learn_press_get_template( 'profile/not-logged-in.php' );
 	}
+}
+
+if ( ! function_exists( 'learn_press_profile_dashboard_user_stats' ) ) {
+	/**
+	 * Displays basic stats for user in their profile dashboard.
+	 *
+	 * @since 3.x.x
+	 */
+	function learn_press_profile_dashboard_user_stats() {
+		$profile = LP_Profile::instance();
+
+		if ( ! $user = $profile->get_user() ) {
+			return;
+		}
+
+		if ( ! $user->is_instructor() ) {
+			return;
+		}
+
+		learn_press_get_template( 'profile/general-stats.php' );
+	}
+}
+
+function learn_press_maybe_auto_p( $pee, $br = true ) {
+	return wpautop( $pee, $br );
 }
 
 if ( ! function_exists( 'learn_press_profile_login_form' ) ) {

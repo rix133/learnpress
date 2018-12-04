@@ -519,6 +519,23 @@
     }
 }
 
+.instructor-stats{
+    margin: 0;
+    display: flex;
+    li{
+        list-style: none;
+        border-left: 1px solid #DDD;
+        padding: 0 20px;
+        label{
+            font-size: 16px;
+        }
+        p{
+            font-size: 24px;
+            margin: 0;
+        }
+    }
+}
+
 @media screen and (max-width: 768px) {
     #learn-press-user-profile,
     #learn-press-user-profile.enable-login-register {

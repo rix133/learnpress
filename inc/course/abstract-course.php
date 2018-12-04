@@ -820,9 +820,15 @@ if ( ! function_exists( 'LP_Abstract_Course' ) ) {
 		 * Check global settings `enrolled_students_number`
 		 * and add the fake value if both are set.
 		 *
+		 * @param array $args Added since 3.x.x
+		 *
 		 * @return int
 		 */
-		public function count_students() {
+		public function count_students( $args = array() ) {
+
+			if ( is_array( $args ) && array_key_exists( 'count_in_order', $args ) ) {
+				$append_students = $args['count_in_order'] ? 'no' : 'yes';
+			}
 
 			if ( metadata_exists( 'post', $this->get_id(), 'count_enrolled_users' ) ) {
 				$count_in_order = get_post_meta( $this->get_id(), 'count_enrolled_users', true );
@@ -830,7 +836,9 @@ if ( ! function_exists( 'LP_Abstract_Course' ) ) {
 				$count_in_order = $this->count_in_order( array( 'completed', 'processing' ) );
 			}
 
-			$append_students = LP()->settings()->get( 'enrolled_students_number' );
+			if ( ! isset( $append_students ) ) {
+				$append_students = LP()->settings()->get( 'enrolled_students_number' );
+			}
 
 			if ( ( 'yes' == $append_students ) || ! in_array( $append_students, array( 'yes', 'no' ) ) ) {
 				$count_in_order += $this->get_fake_students();

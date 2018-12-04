@@ -1628,13 +1628,17 @@ if ( ! class_exists( 'LP_Abstract_User' ) ) {
 		/**
 		 * Check user instructor.
 		 *
+		 * Add condition if user is admin that mean they also is instructor.
+		 *
+		 * @updated 3.x.x
+		 *
 		 * @return bool
 		 */
 		public function is_instructor() {
 
 			$roles = $this->get_data( 'roles' ) ? $this->get_data( 'roles' ) : array();
 
-			return in_array( LP_TEACHER_ROLE, $roles );
+			return in_array( LP_TEACHER_ROLE, $roles ) || $this->is_admin();
 		}
 
 		/**

@@ -637,6 +637,19 @@
   padding: 20px 20px 0 20px;
   margin-bottom: 20px; }
 
+.instructor-stats {
+  margin: 0;
+  display: flex; }
+  .instructor-stats li {
+    list-style: none;
+    border-left: 1px solid #DDD;
+    padding: 0 20px; }
+    .instructor-stats li label {
+      font-size: 16px; }
+    .instructor-stats li p {
+      font-size: 24px;
+      margin: 0; }
+
 #learn-press-course-tabs .course-tab-panel {
   display: none; }
   #learn-press-course-tabs .course-tab-panel.active {
