@@ -27,3 +27,5 @@ if ( ! $profile->get_user() ) {
         <p><?php echo learn_press_count_instructor_courses( $profile->get_user_id() ); ?></p>
     </li>
 </ul>
+
+<h3><?php printf( __( 'Courses by %s', 'learnpress' ), learn_press_get_profile_display_name( $profile->get_user() ) ); ?></h3>
