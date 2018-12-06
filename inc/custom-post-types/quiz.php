@@ -42,12 +42,35 @@ if ( ! class_exists( 'LP_Quiz_Post_Type' ) ) {
 			// hide View Quiz link if not assigned to Course
 			add_action( 'admin_footer', array( $this, 'hide_view_quiz_link' ) );
 			add_action( 'learn-press/admin/after-enqueue-scripts', array( $this, 'data_quiz_editor' ) );
-			add_action( 'edit_form_after_editor', array( $this, 'template_quiz_editor' ) );
 
 			add_filter( 'views_edit-' . LP_QUIZ_CPT, array( $this, 'views_pages' ), 10 );
 			add_filter( 'posts_where_paged', array( $this, 'posts_where_paged' ), 10 );
 
+			add_action( 'replace_editor', array( $this, 'load_editor' ) );
 			parent::__construct( $post_type, $args );
+		}
+
+		public function load_editor( $r ) {
+			global $post;
+			if ( use_block_editor_for_post( $post ) ) {
+				add_action( 'add_meta_boxes',array($this, 'adding_custom_meta_boxes'), 10, 2 );
+
+			} else {
+				add_action( 'edit_form_after_editor', array( $this, 'template_quiz_editor' ) );
+			}
+
+			return $r;
+		}
+
+		function adding_custom_meta_boxes( $post_type, $post ) {
+			add_meta_box(
+				'my-meta-box',
+				__( 'My Meta Box' ),
+				array($this, 'template_quiz_editor'),
+				LP_QUIZ_CPT,
+				'normal',
+				'default'
+			);
 		}
 
 		/**
@@ -114,6 +137,7 @@ if ( ! class_exists( 'LP_Quiz_Post_Type' ) ) {
 							'editor',
 							'revisions',
 						),
+						'show_in_rest'       => true,
 						'hierarchical'       => true,
 						'rewrite'            => array(
 							'slug'         => 'quizzes',

@@ -155,6 +155,7 @@ if ( ! class_exists( 'LP_Course_Post_Type' ) ) {
 				'show_in_nav_menus'  => true,
 				'taxonomies'         => array( 'course_category', 'course_tag' ),
 				'supports'           => array( 'title', 'editor', 'thumbnail', 'revisions', 'comments', 'excerpt' ),
+				'show_in_rest'       => true,
 				'hierarchical'       => false,
 				'rewrite'            => $course_permalink ? array(
 					'slug'       => untrailingslashit( $course_permalink ),
@@ -900,7 +901,7 @@ if ( ! class_exists( 'LP_Course_Post_Type' ) ) {
 		 */
 		public static function author_meta_box() {
 
-			$course_id = LP_Request::get_int('post');
+			$course_id = LP_Request::get_int( 'post' );
 			$post      = get_post( $course_id );
 			$author    = $post ? $post->post_author : get_current_user_id();
 

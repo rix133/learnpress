@@ -76,9 +76,15 @@ class LP_Assets extends LP_Abstract_Assets {
 		return apply_filters(
 			'learn-press/frontend-default-scripts',
 			array(
-				'watchjs'          => self::url( 'js/vendor/watch.js' ),
-				'jalerts'          => self::url( 'js/vendor/jquery.alert.js' ),
-				'circle-bar'       => self::url( 'js/vendor/circle-bar.js' ),
+				'watchjs'          => array( 'url' => self::url( 'js/vendor/watch.js' ), 'deps' => array( 'jquery' ) ),
+				'jalerts'          => array(
+					'url'  => self::url( 'js/vendor/jquery.alert.js' ),
+					'deps' => array( 'jquery' )
+				),
+				'circle-bar'       => array(
+					'url'  => self::url( 'js/vendor/circle-bar.js' ),
+					'deps' => array( 'jquery' )
+				),
 				'lp-vue'           => array(
 					'url'     => self::url( 'js/vendor/vue.min.js' ),
 					'ver'     => '2.5.16',
