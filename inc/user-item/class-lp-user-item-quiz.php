@@ -230,7 +230,7 @@ class LP_User_Item_Quiz extends LP_User_Item {
 				$answered          = $this->get_question_answer( $question_id );
 				$check             = apply_filters( 'learn-press/quiz/check-question-result', $question->check( $answered ), $question_id, $this );
 				$check['type']     = ! isset( $check['type'] ) || ! $check['type'] ? $question->get_type() : $check['type'];
-				$check['answered'] = ! isset( $check['answered'] ) ? $answered !== false : $check['answered'];
+				$check['answered'] = ! isset( $check['answered'] ) ? ( $answered !== false && ! $this->is_skipped( $question_id ) ) : $check['answered'];
 
 				if ( false !== $check['answered'] && $check['correct'] ) {
 					$result['question_correct'] ++;
