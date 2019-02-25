@@ -236,6 +236,7 @@ if ( ! function_exists( 'LP_Quiz_CURD' ) ) {
 				SELECT question_id
 				FROM {$wpdb->posts} p 
 				INNER JOIN {$wpdb->learnpress_quiz_questions} qq ON qq.quiz_id = p.ID 
+				INNER JOIN {$wpdb->posts} q ON qq.question_id = q.ID 
 				AND p.ID = %d
 				AND p.post_status = %s
 				ORDER BY question_order
