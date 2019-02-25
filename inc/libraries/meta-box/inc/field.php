@@ -88,7 +88,7 @@ abstract class RWMB_Field {
 			$html
 		);
 		$outer_html = self::filter( 'outer_html', $outer_html, $field, $meta );
-
+//
 		echo $outer_html; // WPCS: XSS OK.
 	}
 
