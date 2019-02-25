@@ -109,7 +109,7 @@ if ( ! function_exists( 'learn_press_course_enroll_button' ) ) {
 
 		$purchased = $user->has_purchased_course( $course->get_id() );
 
-		// For free course and user does not purchased
+		// For free course and user does not purchased //them cai gi do
 		if ( $course->is_free() && ! $purchased ) {
 			learn_press_get_template( 'single-course/buttons/enroll.php' );
 		} elseif ( $purchased && $course_data = $user->get_course_data( $course->get_id() ) ) {
