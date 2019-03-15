@@ -637,9 +637,11 @@ if ( ! function_exists( 'learn_press_is_ajax' ) ) {
  */
 function learn_press_get_page_id( $name ) {
 	$page_id = LP_Settings::instance()->get( "{$name}_page_id", false );
-	if(function_exists('icl_object_id')){
-		$page_id = icl_object_id($page_id,'page', false,ICL_LANGUAGE_CODE);
+
+	if ( function_exists( 'icl_object_id' ) ) {
+		$page_id = icl_object_id( $page_id, 'page', true );
 	}
+
 	return apply_filters( 'learn_press_get_page_id', $page_id, $name );
 }
 
@@ -1542,7 +1544,7 @@ function learn_press_user_maybe_is_a_teacher( $user = null ) {
 function learn_press_get_become_a_teacher_form_fields() {
 	$user   = learn_press_get_current_user();
 	$fields = array(
-		'bat_name'  => array(
+		'bat_name'    => array(
 			'title'       => __( 'Name', 'learnpress' ),
 			'type'        => 'text',
 			'placeholder' => __( 'Your name', 'learnpress' ),
@@ -1550,7 +1552,7 @@ function learn_press_get_become_a_teacher_form_fields() {
 			'id'          => 'bat_name',
 			'required'    => true
 		),
-		'bat_email' => array(
+		'bat_email'   => array(
 			'title'       => __( 'Email', 'learnpress' ),
 			'type'        => 'email',
 			'placeholder' => __( 'Your email address', 'learnpress' ),
@@ -1558,18 +1560,18 @@ function learn_press_get_become_a_teacher_form_fields() {
 			'id'          => 'bat_email',
 			'required'    => true
 		),
-		'bat_phone' => array(
+		'bat_phone'   => array(
 			'title'       => __( 'Phone', 'learnpress' ),
 			'type'        => 'text',
 			'placeholder' => __( 'Your phone number', 'learnpress' ),
 			'id'          => 'bat_phone'
 		),
-        'bat_message' => array(
-            'title'       => __( 'Message', 'learnpress' ),
-            'type'        => 'textarea',
-            'placeholder' => __( 'Your message', 'learnpress' ),
-            'id'          => 'bat_message'
-        )
+		'bat_message' => array(
+			'title'       => __( 'Message', 'learnpress' ),
+			'type'        => 'textarea',
+			'placeholder' => __( 'Your message', 'learnpress' ),
+			'id'          => 'bat_message'
+		)
 	);
 	$fields = apply_filters( 'learn_press_become_teacher_form_fields', $fields );
 
@@ -1588,9 +1590,9 @@ function learn_press_process_become_a_teacher_form( $args = null ) {
 		$args = wp_parse_args(
 			$args,
 			array(
-				'name'  => null,
-				'email' => null,
-				'phone' => null,
+				'name'    => null,
+				'email'   => null,
+				'phone'   => null,
 				'message' => null,
 			)
 		);
@@ -2425,8 +2427,8 @@ function learn_press_auto_enroll_user_to_courses( $order_id ) {
 	if ( LP()->settings->get( 'auto_enroll' ) == 'no' ) {
 		return false;
 	}
-	wp_cache_delete('order-' . $order_id , 'lp-order-items');
-	LP_Object_Cache::delete( 'order-' . $order_id , 'lp-order-items' );
+	wp_cache_delete( 'order-' . $order_id, 'lp-order-items' );
+	LP_Object_Cache::delete( 'order-' . $order_id, 'lp-order-items' );
 	if ( ! $order = learn_press_get_order( $order_id ) ) {
 		return false;
 	}
