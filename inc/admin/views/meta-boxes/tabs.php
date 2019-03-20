@@ -83,7 +83,7 @@ $current_tab = !empty( $_REQUEST['tab'] ) ? $_REQUEST['tab'] : '';
 				echo sprintf( '<li class="%s">', join( ' ', $classes ) );
 				?>
                 <a <?php echo ! empty( $tab['icon'] ) ? 'class="' . $tab['icon'] . '"' : ''; ?>
-                        href="<?php echo add_query_arg( 'tab', $tab['id'] ); ?>"><?php echo esc_html( $tab['title'] ); ?></a>
+                        href="<?php echo add_query_arg( 'tab', $tab['id'] ); ?>"><?php echo esc_html( $tab['title'] ) . ( ! empty($tab['subtitle'] ) ? ' ' . $tab['subtitle'] : ''); ?></a>
                 <?php
 				echo '</li>';
 				$tabs[ $k ] = $tab;

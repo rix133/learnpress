@@ -23,7 +23,12 @@
             $currentContent.siblings('li.active').fadeOut(0, function () {
                 $currentContent.addClass('active').siblings('li.active').removeClass('active');
             });
-
+            if ($tab.hasClass('lp-virtual-functions-adv-tab')) {
+                $tab.parent().find('.lp-virtual-functions-li').show();
+                $('.lp-first-in-list').addClass('active');
+            } else if (!$tab.hasClass('lp-virtual-functions-li')) {
+                $tab.parent().find('.lp-virtual-functions-li').hide();
+            }
             LP.setUrl(url);
         }
 
@@ -45,7 +50,14 @@
             if (!$currentTab.length) {
                 $currentTab = $tabs.first();
             }
+            console.log($currentTab);
             $currentTab.find('a').trigger('click');
+            if ($currentTab.hasClass('lp-virtual-functions-adv-tab')) {
+                $('.lp-first-in-list').addClass('active');
+            }
+            if ($currentTab.hasClass('lp-virtual-functions-adv-tab') || $currentTab.hasClass('lp-virtual-functions-li')) {
+                $currentTab.parent().find('.lp-virtual-functions-li').show();
+            }
         }
 
         function initEvents() {

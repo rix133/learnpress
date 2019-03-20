@@ -3153,6 +3153,33 @@ body.lp-item-moving {
   left: 0;
   right: unset; }
 
+.lp-virtual-function {
+  position: relative; }
+  .lp-virtual-function img {
+    opacity: 0.5;
+    width: 100%;
+    height: auto;
+    margin-top: 50px; }
+  .lp-virtual-function .lp-virtual-functions-notice {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: #fff568;
+    font-weight: bold;
+    padding: 5px;
+    border: dotted 1px;
+    border-radius: 5px; }
+
+.lp-premium-subtitle {
+  font-size: 10px; }
+
+.lp-virtual-functions-li {
+  padding-left: 20px;
+  margin-bottom: -5px !important;
+  display: none; }
+  .lp-virtual-functions-li a {
+    width: 200px !important; }
+
 .button.disabled {
   pointer-events: none; }
 

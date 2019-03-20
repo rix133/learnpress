@@ -350,7 +350,9 @@ abstract class LP_Abstract_Submenu {
 			$callback = array( $this, sprintf( 'page_content_%s', $tab ) );
 			if ( is_callable( $callback ) ) {
 				call_user_func_array( $callback, array() );
-			} else {
+			} elseif (strpos($tab, 'premium') !== false) {
+				do_action( 'learn-press/admin/page-content-' . $page . '-premium', $tab );
+            } else {
 				// Otherwise, do a actions.
 				do_action( 'learn-press/admin/page-content-' . $page, $tab );
 				do_action( 'learn-press/admin/page-content-' . $page . '/' . $tab );
