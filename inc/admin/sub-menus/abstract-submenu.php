@@ -90,7 +90,8 @@ abstract class LP_Abstract_Submenu {
 		}
 	}
 
-	public function enqueue_assets(){}
+	public function enqueue_assets() {
+	}
 
 	public function is_displaying() {
 		return $this->get_id() === LP_Request::get_string( 'page' );
@@ -350,9 +351,9 @@ abstract class LP_Abstract_Submenu {
 			$callback = array( $this, sprintf( 'page_content_%s', $tab ) );
 			if ( is_callable( $callback ) ) {
 				call_user_func_array( $callback, array() );
-			} elseif (strpos($tab, 'premium') !== false) {
-				do_action( 'learn-press/admin/page-content-' . $page . '-premium', $tab );
-            } else {
+			} elseif ( strpos( $tab, 'premium' ) !== false || strpos( $this->get_active_section(), 'premium' ) !== false ) {
+				do_action( 'learn-press/admin/page-content-' . $page . '-premium', $tab, $this->get_active_section() );
+			} else {
 				// Otherwise, do a actions.
 				do_action( 'learn-press/admin/page-content-' . $page, $tab );
 				do_action( 'learn-press/admin/page-content-' . $page . '/' . $tab );

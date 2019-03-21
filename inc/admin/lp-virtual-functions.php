@@ -161,10 +161,10 @@ if ( ! function_exists( 'learn_press_global_settings_premium' ) ) {
 			$tabs['premium_commission']   = $tab_premium_commission;
 		}
 		if ( ! class_exists( 'LP_Addon_Frontend_Editor' ) ) {
-			$tab_premium_fe       = new LP_Settings_Advanced();
-			$tab_premium_fe->id   = 'premium_frontend_editor';
-			$tab_premium_fe->text = __( 'Frontend Editor', 'learnpress' );
-			$tabs['premium_frontend_editor']   = $tab_premium_fe;
+			$tab_premium_fe                  = new LP_Settings_Advanced();
+			$tab_premium_fe->id              = 'premium_frontend_editor';
+			$tab_premium_fe->text            = __( 'Frontend Editor', 'learnpress' );
+			$tabs['premium_frontend_editor'] = $tab_premium_fe;
 		}
 		if ( ! class_exists( 'LP_Addon_Paid_Memberships_Pro' ) ) {
 			$tab_premium_pmpro       = new LP_Settings_Advanced();
@@ -177,9 +177,9 @@ if ( ! function_exists( 'learn_press_global_settings_premium' ) ) {
 	}
 }
 
-add_action( 'learn-press/admin/page-content-settings-premium', 'learn_press_premium_global_content', 10, 1 );
+add_action( 'learn-press/admin/page-content-settings-premium', 'learn_press_premium_global_content', 10, 2 );
 if ( ! function_exists( 'learn_press_premium_global_content' ) ) {
-	function learn_press_premium_global_content( $tab ) {
+	function learn_press_premium_global_content( $tab, $section ) {
 		$tab_info = array();
 		switch ( $tab ) {
 			case 'premium_certificates':
@@ -211,14 +211,61 @@ if ( ! function_exists( 'learn_press_premium_global_content' ) ) {
 				);
 				break;
 		}
+		switch ( $section ) {
+			case 'premium_2checkout':
+				$tab_info = array(
+					'name_desc'      => __( 'LearnPress 2Checkout Payment Add-on', 'learnpress' ),
+					'premium_url'    => 'https://thimpress.com/product/2checkout-add-learnpress/',
+					'background_url' => LP_PLUGIN_URL . 'assets/images/virtual_functions/global-2checkout.png',
+				);
+				break;
+			case 'premium_authorize':
+				$tab_info = array(
+					'name_desc'      => __( 'LearnPress Authorize.Net Payment Add-on', 'learnpress' ),
+					'premium_url'    => 'https://thimpress.com/product/authorize-net-add-on-learnpress/',
+					'background_url' => LP_PLUGIN_URL . 'assets/images/virtual_functions/global-authorize.png',
+				);
+				break;
+			case 'premium_stripe':
+				$tab_info = array(
+					'name_desc'      => __( 'LearnPress Stripe Add-on', 'learnpress' ),
+					'premium_url'    => 'https://thimpress.com/product/stripe-add-on-for-learnpress/',
+					'background_url' => LP_PLUGIN_URL . 'assets/images/virtual_functions/global-stripe.png',
+				);
+				break;
+			case 'premium_woo':
+				$tab_info = array(
+					'name_desc'      => __( 'LearnPress WooCommerce Add-on', 'learnpress' ),
+					'premium_url'    => 'https://thimpress.com/product/woocommerce-add-on-for-learnpress/',
+					'background_url' => LP_PLUGIN_URL . 'assets/images/virtual_functions/global-woo.png',
+				);
+				break;
+		}
 		echo learn_press_premium_notice( $tab_info );
 	}
 }
 
 //premium payment methods
 add_filter( 'learn-press/submenu-sections', 'learn_press_add_premium_payment_methods', 10, 1 );
-if(!function_exists('learn_press_add_premium_payment_methods')){
-	function learn_press_add_premium_payment_methods($sections){
-		echo'<pre>';print_r($sections);die;
+if ( ! function_exists( 'learn_press_add_premium_payment_methods' ) ) {
+	function learn_press_add_premium_payment_methods( $sections ) {
+		$tab = ! empty( $_REQUEST['tab'] ) ? $_REQUEST['tab'] : false;
+		if ( $tab !== 'payments' ) {
+			return $sections;
+		}
+		if ( ! class_exists( 'LP_Addon_2Checkout_Payment' ) ) {
+			$sections['premium_2checkout'] = __( '2Checkout <i class="lp-premium-subtitle">(Premium)</i>', 'learnpress' );
+		}
+		if ( ! class_exists( 'LP_Addon_Authorizenet_Payment' ) ) {
+			$sections['premium_authorize'] = __( 'Authorize.net <i class="lp-premium-subtitle">(Premium)</i>', 'learnpress' );
+		}
+		if ( ! class_exists( 'LP_Addon_Stripe_Payment' ) ) {
+			$sections['premium_stripe'] = __( 'Stripe <i class="lp-premium-subtitle">(Premium)</i>', 'learnpress' );
+		}
+		if ( ! class_exists( 'LP_Addon_Woo_Payment' ) ) {
+			$sections['premium_woo'] = __( 'Woocommerce <i class="lp-premium-subtitle">(Premium)</i>', 'learnpress' );
+		}
+
+		return $sections;
 	}
 }
