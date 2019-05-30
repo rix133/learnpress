@@ -127,8 +127,8 @@ class LP_Admin_Assets extends LP_Abstract_Assets {
 					'deps' => array( 'jquery' )
 				),
 				'lp-admin'                          => array(
-					'url'  => $this->url( 'js/admin/admin.js' ),
-					'deps' => array( 'learn-press-global', 'learn-press-utils', 'wp-color-picker' ),
+					'url'     => $this->url( 'js/admin/admin.js' ),
+					'deps'    => array( 'learn-press-global', 'learn-press-utils', 'wp-color-picker' ),
 					'screens' => array( 'learnpress' )
 				),
 				'lp-admin-tabs'                     => array(
@@ -183,8 +183,9 @@ class LP_Admin_Assets extends LP_Abstract_Assets {
 					'screens' => array( LP_ORDER_CPT )
 				),
 				'learn-press-update'                => array(
-					'url'  => $this->url( 'js/admin/update.js' ),
-					'deps' => array( 'lp-vue' )
+					'url'     => $this->url( 'js/admin/update.js' ),
+					'deps'    => array( 'lp-vue' ),
+					'screens' => '*'
 				),
 				'learn-press-sync-data'             => array(
 					'url'  => $this->url( 'js/admin/sync-data.js' ),
