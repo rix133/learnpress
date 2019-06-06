@@ -308,7 +308,7 @@ if ( ! class_exists( 'LP_Course_Item' ) ) {
 
 			}
 
-			if ( $course && $item) {
+			if ( $course && $item ) {
 				$item->set_course( $course );
 			}
 
@@ -503,42 +503,51 @@ if ( ! class_exists( 'LP_Course_Item' ) ) {
 				$blocked_items = $this->_parse_item_block_status( $course_id, $user_id, $key );
 			}
 
-			$is_blocked = isset( $blocked_items[ $this->get_id() ] ) ? $blocked_items[ $this->get_id() ] : false;
-
-			if ( false === $is_blocked ) {
-				if ( $course_id ) {
-					$course = learn_press_get_course( $course_id );
-				} else {
-					$course    = $this->get_course();
-					$course_id = $course ? $course->get_id() : 0;
-				}
-
-				if ( ! $user_id ) {
-					$user_id = get_current_user_id();
-				}
-
-				$user = learn_press_get_user( $user_id );
-
-				if ( ! $course ) {
-					$blocked = 'yes';
-				} else if ( ! $course->is_required_enroll() || $this->is_preview() ) {
-					$blocked = 'no';
-				} else {
-					if ( $user ) {
-						$blocked = $this->_item_is_blocked( $user, $course, $user->get_course_data( $course_id ) );
-					} else {
-						$blocked = 'yes';
-					}
-				}
-
-				if ( ! is_array( $blocked_items ) ) {
-					$blocked_items = array();
-				}
-				$blocked_items[ $this->get_id() ] = $blocked;
-
-				LP_Object_Cache::set( $key, $blocked_items, 'learn-press/blocked-items' );
-				$is_blocked = $blocked;
+			/**
+			 * If item is not existed in cache then
+			 * try to delete cache and parse again.
+			 */
+			if ( ! isset( $blocked_items[ $this->get_id() ] ) ) {
+				LP_Object_Cache::delete( $key, 'learn-press/blocked-items' );
+				$blocked_items = $this->_parse_item_block_status( $course_id, $user_id, $key );
 			}
+
+			$is_blocked = isset( $blocked_items[ $this->get_id() ] ) ? $blocked_items[ $this->get_id() ] : 'no';
+
+//			if ( false === $is_blocked ) {
+//				if ( $course_id ) {
+//					$course = learn_press_get_course( $course_id );
+//				} else {
+//					$course    = $this->get_course();
+//					$course_id = $course ? $course->get_id() : 0;
+//				}
+//
+//				if ( ! $user_id ) {
+//					$user_id = get_current_user_id();
+//				}
+//
+//				$user = learn_press_get_user( $user_id );
+//
+//				if ( ! $course ) {
+//					$blocked = 'yes';
+//				} else if ( ! $course->is_required_enroll() || $this->is_preview() ) {
+//					$blocked = 'no';
+//				} else {
+//					if ( $user ) {
+//						$blocked = $this->_item_is_blocked( $user, $course, $user->get_course_data( $course_id ) );
+//					} else {
+//						$blocked = 'yes';
+//					}
+//				}
+//
+//				if ( ! is_array( $blocked_items ) ) {
+//					$blocked_items = array();
+//				}
+//				$blocked_items[ $this->get_id() ] = $blocked;
+//
+//				LP_Object_Cache::set( $key, $blocked_items, 'learn-press/blocked-items' );
+//				$is_blocked = $blocked;
+//			}
 
 			return apply_filters( 'learn-press/course-item/is-blocked', $is_blocked === 'yes' ? true : false, $this->get_id(), $course_id, $user_id );
 		}

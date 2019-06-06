@@ -278,9 +278,9 @@ if ( ! class_exists( 'LearnPress' ) ) {
 				require_once 'inc/admin/class-lp-admin.php';
 				require_once 'inc/admin/settings/abstract-settings-page.php';
 			}
-			if ( ! is_admin() ) {
+			//if ( ! is_admin() ) {
 				require_once 'inc/class-lp-assets.php';
-			}
+			//}
 			require_once 'inc/class-lp-repair-database.php';
 			require_once 'inc/question/class-lp-question.php';
 
