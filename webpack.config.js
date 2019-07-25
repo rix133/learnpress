@@ -1,12 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const args = require('yargs').argv;
+
 // Set different CSS extraction for editor only and common block styles
 const blocksCSSPlugin = new ExtractTextPlugin({
     filename: './assets/css/main.css',
 });
 
-const tools = require('./tools/webpack');
 
 // Configuration for the ExtractTextPlugin.
 const extractConfig = {
@@ -27,49 +28,53 @@ const extractConfig = {
     ],
 };
 
-module.exports = {
-    entry: {
-        './assets/js/admin/admin': './assets/src/js/admin/admin.js',
-        './assets/js/admin/learnpress': './assets/src/js/admin/learnpress.js',
-        './assets/js/admin/utils': './assets/src/js/admin/utils/index.js',
-        './assets/js/admin/editor/course': './assets/src/js/admin/editor/course.js',
-        './assets/js/admin/editor/quiz': './assets/src/js/admin/editor/quiz.js',
-        './assets/js/admin/editor/question': './assets/src/js/admin/editor/question.js',
-        './assets/js/admin/conditional-logic': './assets/src/js/admin/utils/conditional-logic.js',
-        './assets/js/admin/partial/meta-box-order': './assets/src/js/admin/partial/meta-box-order.js',
-        './assets/js/admin/pages/statistic': './assets/src/js/admin/pages/statistic.js',
-        './assets/js/admin/pages/setup': './assets/src/js/admin/pages/setup.js',
-        './assets/js/frontend/learnpress': './assets/src/js/frontend/learnpress.js',
-        './assets/js/frontend/utils': './assets/src/js/frontend/utils/index.js',
-        './assets/js/global': './assets/src/js/global.js',
-        './assets/js/utils': './assets/src/js/utils/index.js',
-    },
-    output: {
-        path: path.resolve(__dirname),
-        filename: 'production' === process.env.NODE_ENV ? '[name].min.js' : '[name].js',
-    },
-    watch: 'production' !== process.env.NODE_ENV,
-    devtool: process.env.NODE_ENV === 'production' ? '' : 'source-map',
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                exclude: /(node_modules|bower_components)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['babel-preset-env', 'es2015']
-                    }
+const getCustomOption = function getCustomOption(name) {
+    var def = args.define;
+    if (!def) {
+        return undefined;
+    }
+
+
+};
+
+const moduleConfig = {
+    admin: require('./tools/webpack.admin')(),
+    app: require('./tools/webpack.app')()
+};
+
+module.exports = function () {
+    var config = {
+        watch: 'production' !== process.env.NODE_ENV,
+        devtool: process.env.NODE_ENV === 'production' ? '' : 'source-map',
+        module: {
+            rules: [
+                {
+                    test: /\.js$/,
+                    exclude: /(node_modules|bower_components)/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['babel-preset-env', 'es2015']
+                        }
+                    },
                 },
-            },
-            {
-                test: /([a-zA-Z0-9\s_\\.\-\(\):])+(.s?css)$/,
-                use: blocksCSSPlugin.extract(extractConfig),
-            },
-        ],
-    },
-    plugins: [
-        blocksCSSPlugin,
-        tools.mergeAndCompressJs
-    ]
+                {
+                    test: /([a-zA-Z0-9\s_\\.\-\(\):])+(.s?css)$/,
+                    use: blocksCSSPlugin.extract(extractConfig),
+                },
+            ],
+        },
+        plugins: [
+            blocksCSSPlugin
+        ]
+    }
+
+    var where = args.define || 'app';
+
+    config = {
+        ...config,
+        ...moduleConfig[where]
+    }
+
+    return config;
 };
