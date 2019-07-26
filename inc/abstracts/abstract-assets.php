@@ -41,12 +41,12 @@ abstract class LP_Abstract_Assets {
 
 		$priory = 1000;
 		if ( is_admin() ) {
-			//add_action( 'admin_enqueue_scripts', array( $this, 'do_register' ) );
+			add_action( 'admin_init', array( $this, 'do_register' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'load_scripts' ), $priory );
 			add_action( 'admin_print_footer_scripts', array( $this, 'localize_printed_admin_scripts' ), $priory + 10 );
 
 		} else {
-			//add_action( 'wp_enqueue_scripts', array( $this, 'do_register' ) );
+			add_action( 'init', array( $this, 'do_register' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'load_scripts' ), $priory );
 			add_action( 'wp_print_scripts', array( $this, 'localize_printed_scripts' ), $priory + 10 );
 			add_action( 'wp_print_footer_scripts', array( $this, 'localize_printed_scripts' ), $priory + 10 );
@@ -54,6 +54,10 @@ abstract class LP_Abstract_Assets {
 	}
 
 	abstract function load_scripts();
+
+	public function do_register(){
+		$this->_register_scripts();
+	}
 
 	/**
 	 * Default scripts

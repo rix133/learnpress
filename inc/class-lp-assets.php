@@ -19,6 +19,34 @@ class LP_Assets extends LP_Abstract_Assets {
 	 */
 	public function __construct() {
 		parent::__construct();
+
+		add_filter('template_include', function (){
+			global $post;
+
+			$init_script = <<<JS
+( function() {
+	window._lpLearningApp = new Promise( function( resolve ) {
+		jQuery( function() {
+			resolve( LP_LEARN.app.init( 'learn-press-course',  %d, %s, %s ) );
+		} );
+	} );
+} )();
+JS;
+
+			$script = sprintf(
+				$init_script,
+				$post->ID,
+				wp_json_encode( array('hello') ),
+				wp_json_encode( array('how are you') )
+			);
+
+			global $wp_scripts;
+
+			//print_r($wp_scripts);die();
+			wp_add_inline_script( 'lp-app', $script );
+
+			return func_get_arg(0);
+		}, 10000);
 	}
 
 	protected function get_bundle_css_url() {
@@ -156,8 +184,22 @@ class LP_Assets extends LP_Abstract_Assets {
 					'deps' => array( 'global' )//, 'jquery-scrollbar', 'watchjs', 'jalerts' )
 				),
 				'lp-app'           => array(
-					'url'  => self::url( 'js/frontend/app.js' ),
-					'deps' => array( 'global' )//, 'jquery-scrollbar', 'watchjs', 'jalerts' )
+					'url'  => self::url( 'js/frontend/app/app.js' ),
+					'enqueue'=>true,
+					'deps' => array( 'global', 'wp-i18n', 'wp-element', 'wp-components', 'wp-core-data', 'wp-data', 'wp-dom', 'lodash' )
+					//'deps' => array( 'global' )
+				),
+				'lp-app-course'           => array(
+					'url'  => self::url( 'js/frontend/app/course/course.js' ),
+					'enqueue'=>true,
+					'deps' => array( 'lp-app' )
+					//'deps' => array( 'global' )
+				),
+				'lp-app-lesson'           => array(
+					'url'  => self::url( 'js/frontend/app/lesson/lesson.js' ),
+					'enqueue'=>true,
+					'deps' => array( 'lp-app' )
+					//'deps' => array( 'global' )
 				),
 				'quiz'             => array(
 					'url'     => self::url( 'js/frontend/quiz.js' ),
