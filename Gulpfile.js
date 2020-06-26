@@ -4,6 +4,8 @@
  * 1/ Run "npm install gulp -g" if you did not run it any time in the past.
  * 2/ Run "npm install gulp --save-dev" to install gulp in your project directory.
  * 3/ Run "npm install package-name[ package-name...] --save-dev
+ * 
+ * npm install --save-dev gulp-zip gulp gulp-copy gulp-clean gulp sass gulp-livereload gulp-sourcemaps read-file gulp-replace mkdir gulp-concat yargs gulp-clean-css gulp-uglify
  */
 'use strict';
 const zip = require('gulp-zip');
@@ -58,9 +60,9 @@ gulp.task('compress-css', function () {
 /*
  * SVN: Copy working directory to SVN and prepare something before submitting.
  */
-var rootPath = '/Users/tu/Documents/foobla',
+var rootPath = 'C:/Users/rix133/Documents/Ropotty',
     svnPath = rootPath + '/svn/learnpress',
-    releasePath = __dirname + '/releases/learnpress',
+    releasePath = rootPath + '/releases/learnpress',
     svnTrunkPath = svnPath + '/trunk',
     svnTagsPath = svnPath + '/tags',
     currentVer = null,
@@ -168,7 +170,7 @@ gulp.task('release', gulp.series('copy-release', function () {
 // main task
 gulp.task('svn', gulp.series('scss', 'copy-trunk', function () {
     updateReadme(getCurrentVer(true), function () {
-        return gulp.start('release', ['copy-tag']);
+        return gulp.series('release', ['copy-tag']);
     })
 }));
 
